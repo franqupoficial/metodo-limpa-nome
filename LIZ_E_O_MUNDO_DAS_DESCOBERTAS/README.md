@@ -9,7 +9,7 @@
 |---|---|
 | `PERSONAGENS/` | **Biblioteca oficial dos personagens** (`personagens.js`): Liz, Pipo, Lumi e Robi desenhados em vetor, com parâmetros de expressão, pose, piscar, fala e pulo. **Ficha da Liz** (frente, lateral, costas, 7 expressões, 6 poses, paleta) e **ficha dos amigos** em PNG. **Bíblia dos personagens** com regras de consistência e prompts para a versão 3D. |
 | `CENARIOS/` | 4 cenários de referência (floresta, porta azul, mundo sem cores, mundo colorido) + regras e prompts 3D. |
-| `EPISODIO_01/` | **Episódio animado completo (2:22)**: `Liz_Ep01_A_Porta_Magica_das_Cores.mp4` (1920×1080, 30 fps), com animação real cena a cena, câmera, trilha, efeitos sonoros, **6 pausas interativas** e legendas. Também: legendas `.srt`, trilha sem voz `.wav`, o episódio interativo `episodio01.html` (abre no navegador, com linha do tempo) e o **roteiro técnico cena a cena** (`ROTEIRO_EP01.md`). |
+| `EPISODIO_01/` | **Episódio animado completo (2:22)**: **`Liz_Ep01_A_Porta_Magica_das_Cores_COM_VOZES.mp4`** (com prévia de dublagem: Liz, Lumi e Robi falando) e `Liz_Ep01_A_Porta_Magica_das_Cores.mp4` (sem vozes, para mixar com a dublagem definitiva) (1920×1080, 30 fps), com animação real cena a cena, câmera, trilha, efeitos sonoros, **6 pausas interativas** e legendas. Também: legendas `.srt`, trilha sem voz `.wav`, o episódio interativo `episodio01.html` (abre no navegador, com linha do tempo) e o **roteiro técnico cena a cena** (`ROTEIRO_EP01.md`). |
 | `AUDIO/` | Guia de **vozes e dublagem**: elenco, direção de cada fala e **tabela de sincronia com tempo exato** (35 falas). |
 | `MUSICAS/` | Tema original **"Vem com a Liz"** (letra, melodia nota a nota, harmonia) e as versões sintetizadas da abertura, da festa e do encerramento em `.wav`. |
 | `IDENTIDADE_VISUAL/` | Logotipo (vetor + PNG transparente), paleta, tipografia, elementos recorrentes, modelo de episódio e de miniatura. Arte-chave 3D do cliente guardada como referência. |
@@ -20,7 +20,7 @@
 ## O que NÃO foi possível fazer neste ambiente (com honestidade)
 
 1. **Animação 3D cinematográfica (padrão Pixar).** Aqui não há motor 3D (Blender, Unreal) nem gerador de vídeo por IA (Veo, Sora, Runway, Kling). O episódio foi animado em **2D vetorial**, no estilo da série, com movimento real (andar, pular, acenar, piscar, boca falando, câmera com zoom e travelling, efeitos de luz). Para a versão 3D, os prompts e as referências estão prontos em `PERSONAGENS/BIBLIA_PERSONAGENS.md` e `CENARIOS/CENARIOS.md`.
-2. **Vozes dos personagens.** Não há síntese de voz infantil natural aqui. **O MP4 não tem vozes**: tem trilha, efeitos e legendas, e a boca dos personagens já mexe no tempo de cada fala. `AUDIO/VOZES_E_DUBLAGEM.md` traz o tempo exato e a direção de cada uma das 35 falas para gravar e mixar sobre `EPISODIO_01/..._trilha.wav`.
+2. **Vozes definitivas.** O vídeo `_COM_VOZES` usa vozes neurais sintéticas (edge-tts) como **prévia**: o serviço não oferece licença comercial. Antes de monetizar, troque por dublagem profissional ou por vozes licenciadas e mixe com `FERRAMENTAS/mixar_vozes.py`. `AUDIO/VOZES_E_DUBLAGEM.md` traz o tempo exato e a direção de cada uma das 35 falas para gravar e mixar sobre `EPISODIO_01/..._trilha.wav`.
 3. **Publicação no YouTube.** Os textos e as imagens estão prontos, mas o upload e as configurações do canal precisam ser feitos por você no YouTube Studio.
 
 ## Próximos passos recomendados

@@ -19,7 +19,7 @@ for m in meta:
     ins += ['-i', f"{pasta}/{m['arquivo']}"]
     fil.append(f"[{n}:a]aresample=48000,aformat=channel_layouts=stereo,atempo={tp:.3f},{FX[who]},loudnorm=I=-16:TP=-2,adelay={int(a*1000)}|{int(a*1000)}[v{n}]")
     labs.append(f"[v{n}]"); n += 1
-fil.append(f"{''.join(labs)}amix=inputs={len(labs)}:normalize=0,volume=1.0[voz]")
+fil.append(f"{''.join(labs)}amix=inputs={len(labs)}:normalize=0,apad=whole_dur=142[voz]")
 fil.append("[voz]asplit=2[voz1][voz2]")
 fil.append("[1:a]volume=1.3[mus]")
 fil.append("[mus][voz1]sidechaincompress=threshold=0.02:ratio=8:attack=15:release=400[duck]")
