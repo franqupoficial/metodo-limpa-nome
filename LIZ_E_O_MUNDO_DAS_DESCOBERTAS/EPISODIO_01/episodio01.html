@@ -348,8 +348,8 @@ S.fim=(t)=>{
   s+=at(lerp(1200,1700,card),980,1.0,robi({expr:boca('ROBI',t)?'uau':'feliz',falar:boca('ROBI',t),bracoD:150+Math.sin(t*9)*20,flutuar:8+Math.sin(t*3)*6}));
   s+=voandoLumi(t,lerp(1380,1720,card),lerp(480,560,card),false);
   if(card>0){s+=`<g transform="translate(1070 470) scale(${r1(card)})"><rect x="-430" y="-250" width="860" height="500" rx="50" fill="#fff" opacity=".95" filter="url(#sombraSuave)"/><text y="-150" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="44" fill="#B667F2">Próximo episódio</text><text y="-60" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="72" fill="#3F9A3F">A Floresta dos Animais</text>`;
-    const bichos=[['#F2B544','🦁'],['#FFFFFF','🐰'],['#8B5A3C','🐵'],['#F6C45B','🦒'],['#9FB0CB','🐘']];
-    bichos.forEach(([c],i)=>{s+=`<g transform="translate(${-200+i*100} 60)"><circle r="36" fill="${c}" stroke="#3F9A3F" stroke-width="5"/><circle cx="-11" cy="-4" r="5" fill="#2A1A14"/><circle cx="11" cy="-4" r="5" fill="#2A1A14"/><path d="M-10 12 Q 0 20 10 12" stroke="#2A1A14" stroke-width="3.5" fill="none" stroke-linecap="round"/></g>`;});
+    const AN=LIZ;const mini=[[AN.coelho,0,-130,.42],[AN.leao,0,-165,.36],[AN.macaco,0,-145,.5],[AN.girafa,112,-812,.4],[AN.elefante,0,-210,.33]];
+    mini.forEach(([fn,ox,oy,sc],i)=>{const x=-200+i*100;s+=`<clipPath id="fa${i}"><circle cx="${x}" cy="60" r="38"/></clipPath><circle cx="${x}" cy="60" r="41" fill="#F2FFE8" stroke="#3F9A3F" stroke-width="5"/><g clip-path="url(#fa${i})"><g transform="translate(${x} 60) scale(${sc}) translate(${-ox} ${-oy})">${fn({sombra:false,piscar:piscar(t,i*.7)})}</g></g>`;});
     s+=`<text y="180" text-anchor="middle" font-family="Fredoka" font-weight="500" font-size="36" fill="#6b5a7b">Até lá, continue descobrindo!</text></g>`;}
   const fo=prog(t,141,142);s+=`<rect width="1920" height="1080" fill="#1b1030" opacity="${r1(fo)}"/>`;
   return s;};
