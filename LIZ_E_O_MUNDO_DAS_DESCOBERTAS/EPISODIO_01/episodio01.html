@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Liz e o Mundo das Descobertas — Ep. 01: A Porta Mágica das Cores</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#1b1030;font-family:Fredoka,system-ui,sans-serif;color:#fff}
+.wrap{max-width:1280px;margin:0 auto;padding:20px 16px 40px}
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.top h1{font-size:24px;font-weight:600}.top h1 span{color:#FF7BC8}
+.vp{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden}
+.stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:#000}
+.stage svg{position:absolute;inset:0}
+.cap{position:absolute;left:50%;bottom:44px;transform:translateX(-50%);max-width:1500px;display:flex;align-items:center;gap:18px;padding:16px 30px 16px 16px;border-radius:999px;background:rgba(20,10,40,.72);box-shadow:0 8px 30px rgba(0,0,0,.35);opacity:0;white-space:nowrap}
+.cap b{font-weight:700;font-size:28px;padding:8px 20px;border-radius:999px;color:#fff;letter-spacing:.04em}
+.cap span{font-size:44px;font-weight:600;letter-spacing:.005em}
+.ctrl{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:12px}
+.ctrl button{font:600 15px Fredoka,sans-serif;background:#FF4FA0;color:#fff;border:0;border-radius:999px;padding:10px 20px;cursor:pointer}
+.ctrl input[type=range]{flex:1 1 260px;accent-color:#FF4FA0}
+.ctrl label{font-size:15px;display:flex;gap:6px;align-items:center}
+.ctrl .tm{font:500 14px ui-monospace,monospace;color:#cbb8e6;min-width:110px;text-align:right}
+body.render .top,body.render .ctrl{display:none}
+body.render .wrap{padding:0;max-width:none}
+body.render .vp{border-radius:0;width:1920px;height:1080px;aspect-ratio:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><h1>Liz e o Mundo das Descobertas · <span>Ep. 01 — A Porta Mágica das Cores</span></h1></div>
+  <div class="vp" id="vp"><div class="stage" id="stage"><svg id="svg" viewBox="0 0 1920 1080" width="1920" height="1080"></svg><div class="cap" id="cap"><b id="capWho"></b><span id="capTxt"></span></div></div></div>
+  <div class="ctrl">
+    <button id="play">▶ Assistir</button>
+    <input type="range" id="scrub" min="0" max="142" step="0.01" value="0">
+    <span class="tm" id="tm">0:00 / 2:22</span>
+    <label><input type="checkbox" id="snd" checked> Som</label>
+    <label><input type="checkbox" id="caps" checked> Legendas</label>
+  </div>
+</div>
+<script src="../PERSONAGENS/personagens.js"></script>
+<script src="../IDENTIDADE_VISUAL/logo.js"></script>
+<script>
+(() => {
+'use strict';
+const {defs,liz,lizLado,pipo,lumi,robi,COR}=LIZ;
+const {logoDefs,logoSVG,estrela}=LOGO;
+/* ---------------- utilidades ---------------- */
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const prog=(t,a,b)=>b<=a?(t>=b?1:0):clamp((t-a)/(b-a));
+const E={out:t=>1-Math.pow(1-t,3),inOut:t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2,back:t=>{const c=1.7;return 1+(c+1)*Math.pow(t-1,3)+c*Math.pow(t-1,2);},elastic:t=>t<=0?0:t>=1?1:Math.pow(2,-10*t)*Math.sin((t*10-.75)*2*Math.PI/3)+1};
+const lerp=(a,b,p)=>a+(b-a)*p;
+const r1=n=>Math.round(n*10)/10;
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const at=(x,y,s,inner,extra='')=>`<g transform="translate(${r1(x)} ${r1(y)}) scale(${s})" ${extra}>${inner}</g>`;
+
+/* ---------------- roteiro: falas e pausas ---------------- */
+const D=142;
+const WHO={LIZ:['Liz','#FF4FA0'],LUMI:['Lumi','#B667F2'],ROBI:['Robi','#2D8CFF'],PIPO:['Pipo','#C9773A']};
+const LINES=[
+ [16.6,19.6,'LIZ','Oi, amiguinho! Eu sou a Liz!'],
+ [19.8,21.2,'LIZ','E esse é o Pipo!'],
+ [21.3,22.3,'PIPO','Au, au!'],
+ [22.5,25.5,'LIZ','Hoje vai ter aventura! Você vem comigo?'],
+ [28.2,29.8,'LIZ','Ebaaa! Então vamos!'],
+ [30.8,33.4,'LIZ','Olha, Pipo! Uma porta azul!'],
+ [33.6,36.2,'LIZ','Vamos contar juntos até três pra abrir?'],
+ [36.4,37.2,'LIZ','Um…'],[38.0,38.8,'LIZ','Dois…'],[39.6,40.4,'LIZ','Três!'],
+ [44.6,46.8,'LIZ','Ué… cadê as cores?'],
+ [47.4,51.6,'LUMI','Olá, Liz! Eu sou a Lumi. As cores do nosso mundo sumiram!'],
+ [51.8,55.0,'LIZ','Oh, não! Amiguinhos, vocês conseguem me ajudar?'],
+ [58.2,59.8,'LIZ','Oba! Eu sabia!'],
+ [60.6,62.4,'ROBI','Bip-bop! Eu sou o Robi!'],
+ [62.6,66.8,'ROBI','Para a magia voltar, precisamos encontrar três cores!'],
+ [67.0,69.6,'LIZ','Três cores! Vamos procurar!'],
+ [70.6,72.6,'LUMI','Olhem ali: uma maçã!'],
+ [72.8,75.6,'LIZ','Que cor será essa maçã?'],
+ [78.8,81.0,'LIZ','Vermelho! Muito bem!'],
+ [81.2,83.0,'ROBI','Primeira cor: encontrada!'],
+ [83.2,84.2,'PIPO','Au!'],
+ [86.6,89.4,'LIZ','E essa florzinha? Que cor ela é?'],
+ [92.6,94.8,'LIZ','Amarelo! Você é demais!'],
+ [95.0,97.0,'ROBI','Segunda cor: encontrada!'],
+ [97.2,99.6,'LIZ','Falta só uma!'],
+ [100.6,103.6,'LIZ','E o lago? Qual é a cor da água?'],
+ [106.8,109.0,'LIZ','Azul! Conseguimos!'],
+ [109.2,112.6,'LUMI','As três cores voltaram! Agora, a magia!'],
+ [117.4,121.4,'LIZ','As cores voltaram! Obrigada, amiguinho! Você me ajudou muito!'],
+ [121.6,125.6,'LIZ','Agora, um desafio: procure uma coisa azul aí na sua casa!'],
+ [129.8,131.8,'LIZ','Achou? Que demais!'],
+ [132.6,135.8,'LIZ','Até a próxima aventura! Tchau, tchau!'],
+ [136.0,137.0,'PIPO','Au, au!'],[137.0,137.8,'ROBI','Bip!']
+];
+const PAUSES=[[25.6,28.1],[55.1,58.1],[75.7,78.7],[89.5,92.5],[103.7,106.7],[125.7,129.7]];
+const COUNT=[[36.4,'1'],[38.0,'2'],[39.6,'3']];
+const BURST={red:79.0,yel:92.8,blu:107.0,all:114.6};
+const SCENES=[['abertura',0,16],['floresta',16,30],['porta',30,44],['cinza',44,60],['robi',60,70],['vermelho',70,86],['amarelo',86,100],['azul',100,114],['festa',114,132],['fim',132,142]];
+const falando=(w,t)=>LINES.some(l=>l[2]===w&&t>=l[0]&&t<l[1]-.08);
+const boca=(w,t)=>falando(w,t)&&(Math.floor(t*9)%3!==2);
+const piscar=(t,off=0)=>((t+off)%3.7)<.13?1:0;
+const emPausa=t=>PAUSES.find(p=>t>=p[0]&&t<p[1]);
+
+/* ---------------- cenários ---------------- */
+function nuvem(x,y,s,op=1){return `<g transform="translate(${r1(x)} ${y}) scale(${s})" opacity="${op}"><ellipse cx="0" cy="0" rx="90" ry="38" fill="#fff"/><circle cx="-40" cy="-20" r="40" fill="#fff"/><circle cx="20" cy="-34" r="50" fill="#fff"/><circle cx="62" cy="-10" r="34" fill="#fff"/><ellipse cx="0" cy="18" rx="88" ry="14" fill="#E3F1FF"/></g>`;}
+function arvore(x,y,s,c1='#4FB54A',c2='#6FD167'){return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-22 0 Q -16 -110 -10 -170 L 10 -170 Q 16 -110 24 0 Z" fill="#8E5A2E"/><path d="M-6 -150 Q 4 -110 2 -40" stroke="#6E4220" stroke-width="5" fill="none"/><circle cx="0" cy="-230" r="90" fill="${c1}"/><circle cx="-70" cy="-190" r="62" fill="${c1}"/><circle cx="70" cy="-190" r="62" fill="${c1}"/><circle cx="-20" cy="-262" r="58" fill="${c2}"/><circle cx="44" cy="-226" r="40" fill="${c2}"/><circle cx="-60" cy="-206" r="30" fill="${c2}"/></g>`;}
+function flor(x,y,s,cor,t,miolo='#FFD23F'){const sw=Math.sin(t*2+x*.01)*6;return `<g transform="translate(${r1(x)} ${y}) rotate(${r1(sw)}) scale(${s})"><path d="M0 0 Q 4 -30 0 -60" stroke="#3E9C42" stroke-width="5" fill="none"/><ellipse cx="10" cy="-26" rx="12" ry="6" fill="#56B84F" transform="rotate(-30 10 -26)"/>${[0,72,144,216,288].map(a=>`<ellipse cx="0" cy="-74" rx="10" ry="15" fill="${cor}" transform="rotate(${a} 0 -62)"/>`).join('')}<circle cx="0" cy="-62" r="9" fill="${miolo}"/></g>`;}
+function casaArvore(x,y){return `<g transform="translate(${x} ${y})"><path d="M-40 0 Q -30 -240 -24 -360 L 24 -360 Q 30 -240 44 0 Z" fill="#8E5A2E"/><circle cx="0" cy="-470" r="150" fill="#43A845"/><circle cx="-110" cy="-400" r="100" fill="#43A845"/><circle cx="110" cy="-410" r="100" fill="#4FB54A"/><circle cx="-30" cy="-520" r="90" fill="#62C75C"/>
+  <rect x="-110" y="-360" width="220" height="16" rx="6" fill="#7B4A24"/><rect x="-90" y="-480" width="180" height="120" rx="10" fill="#D79A5B"/><path d="M-110 -476 L 0 -560 L 110 -476 Z" fill="#E2574C"/><rect x="-30" y="-450" width="60" height="90" rx="26" fill="#7B4A24"/><circle cx="-56" cy="-430" r="16" fill="#FFE79A"/><circle cx="56" cy="-430" r="16" fill="#FFE79A"/>
+  <path d="M60 -350 L 150 -60 M 90 -350 L 180 -60" stroke="#A9733E" stroke-width="6"/>${[0,1,2,3,4,5,6].map(i=>`<path d="M${66+i*13} ${-320+i*40} h 30" stroke="#A9733E" stroke-width="6"/>`).join('')}</g>`;}
+function fundoFloresta(t,extra=''){
+  let s=`<linearGradient id="ceu1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6EC6FF"/><stop offset=".7" stop-color="#CFEFFF"/><stop offset="1" stop-color="#F1FAFF"/></linearGradient>`;
+  s+=`<rect x="-400" y="-200" width="2720" height="1480" fill="url(#ceu1)"/>`;
+  s+=`<circle cx="1640" cy="150" r="90" fill="#FFF6B8" filter="url(#brilhoForte)" opacity=".9"/>`;
+  s+=nuvem(200+t*8%400,170,1.1,.95)+nuvem(900+t*5,110,.8,.9)+nuvem(1450-t*4,230,1,.9);
+  s+=`<path d="M-400 700 Q 200 560 700 660 Q 1200 760 1600 610 Q 1900 520 2300 640 L 2300 1300 L -400 1300 Z" fill="#A6E39A"/>`;
+  s+=`<path d="M-400 780 Q 400 680 900 760 Q 1400 840 2300 720 L 2300 1300 L -400 1300 Z" fill="#86D474"/>`;
+  s+=arvore(1500,760,.9,'#3E9F45','#5CC25A')+arvore(1760,780,1.1)+arvore(560,760,.8,'#3E9F45','#5CC25A');
+  s+=casaArvore(150,880);
+  s+=`<path d="M-400 900 Q 600 840 1100 880 Q 1600 920 2300 870 L 2300 1300 L -400 1300 Z" fill="#74C95F"/>`;
+  s+=`<path d="M700 1300 Q 820 980 980 900 Q 1080 860 1240 870 Q 1080 960 1060 1300 Z" fill="#F2D49B" opacity=".9"/>`;
+  const R=rng(5);for(let i=0;i<34;i++){const x=R()*2300-200,y=900+R()*170;s+=flor(x,y,.7+R()*.5,['#FF6FB5','#B667F2','#FFFFFF','#FFB13B'][i%4],t);}
+  return s+extra;
+}
+function porta(x,y,abrir,t){ /* porta azul no tronco gigante */
+  const a=E.inOut(abrir);
+  let s=`<g transform="translate(${x} ${y})">`;
+  s+=`<path d="M-260 0 Q -230 -300 -190 -620 L 190 -620 Q 230 -300 270 0 Q 120 30 0 10 Q -130 30 -260 0 Z" fill="#8A552B"/>`;
+  s+=`<path d="M-150 -560 Q -130 -300 -170 -40 M140 -580 Q 160 -300 130 -60 M-60 -600 Q -40 -500 -70 -420" stroke="#6D3F1D" stroke-width="8" fill="none" stroke-linecap="round"/>`;
+  s+=`<circle cx="0" cy="-760" r="250" fill="#3E9F45"/><circle cx="-220" cy="-660" r="170" fill="#4FB54A"/><circle cx="230" cy="-660" r="170" fill="#4FB54A"/><circle cx="-60" cy="-860" r="160" fill="#62C75C"/>`;
+  /* luz de dentro */
+  s+=`<radialGradient id="luzPorta"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".45" stop-color="#FFF2B0"/><stop offset="1" stop-color="#FF9ED8"/></radialGradient>`;
+  s+=`<path d="M-100 -20 L -100 -250 Q -100 -350 0 -350 Q 100 -350 100 -250 L 100 -20 Z" fill="url(#luzPorta)"/>`;
+  if(a>0){for(let i=0;i<9;i++){const ang=-90+(i-4)*16;const L=300+200*a;s+=`<path d="M0 -180 L ${r1(Math.cos((ang-5)*Math.PI/180)*L)} ${r1(-180+Math.sin((ang-5)*Math.PI/180)*L)} L ${r1(Math.cos((ang+5)*Math.PI/180)*L)} ${r1(-180+Math.sin((ang+5)*Math.PI/180)*L)} Z" fill="#FFF6C8" opacity="${r1(.35*a)}"/>`;}}
+  /* folha da porta (abre pela dobradiça esquerda) */
+  const sx=r1(1-a*.92);
+  s+=`<g transform="translate(-100 0) scale(${sx} 1)"><path d="M0 -20 L 0 -250 Q 0 -350 100 -350 Q 200 -350 200 -250 L 200 -20 Z" fill="#2F7DF6" stroke="#F7C744" stroke-width="10"/><path d="M30 -60 L 30 -240 Q 30 -316 100 -318 Q 170 -316 170 -240 L 170 -60 Z" fill="none" stroke="#1E5FC8" stroke-width="6"/>${estrela(100,-250,26,0)}<circle cx="168" cy="-160" r="12" fill="#F7C744"/></g>`;
+  s+=`<path d="M-112 -14 L -112 -252 Q -112 -362 0 -362 Q 112 -362 112 -252 L 112 -14" stroke="#F7C744" stroke-width="12" fill="none"/>`;
+  const gl=.25+.25*Math.sin(t*4);s+=`<path d="M-112 -14 L -112 -252 Q -112 -362 0 -362 Q 112 -362 112 -252 L 112 -14" stroke="#9FD0FF" stroke-width="24" fill="none" opacity="${r1(gl)}" filter="url(#brilhoForte)"/>`;
+  return s+`</g>`;
+}
+/* Mundo mágico: grupos com saturação independente */
+function mundo(t,sat){
+  const satF=(id,v)=>`<filter id="${id}"><feColorMatrix type="saturate" values="${v.toFixed(3)}"/><feComponentTransfer><feFuncR type="linear" slope="${(0.85+0.15*v).toFixed(3)}"/><feFuncG type="linear" slope="${(0.85+0.15*v).toFixed(3)}"/><feFuncB type="linear" slope="${(0.85+0.15*v).toFixed(3)}"/></feComponentTransfer></filter>`;
+  let s=satF('sBase',sat.base)+satF('sRed',sat.red)+satF('sYel',sat.yel)+satF('sBlu',sat.blu);
+  /* base */
+  s+=`<g filter="url(#sBase)"><linearGradient id="ceu2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FD0FF"/><stop offset=".65" stop-color="#FFD9F0"/><stop offset="1" stop-color="#FFF4E0"/></linearGradient><rect x="-400" y="-200" width="2720" height="1480" fill="url(#ceu2)"/>`;
+  s+=nuvem(300+t*6,150,1,.9)+nuvem(1200-t*5,110,.8,.85)+nuvem(1700,240,.9,.8);
+  /* castelo */
+  s+=`<g transform="translate(1120 640) scale(.9)"><rect x="-160" y="-220" width="320" height="220" fill="#C99BF0"/><rect x="-220" y="-300" width="80" height="300" fill="#B780E8"/><rect x="140" y="-300" width="80" height="300" fill="#B780E8"/><rect x="-40" y="-380" width="80" height="200" fill="#B780E8"/><path d="M-230 -300 L -180 -400 L -130 -300 Z M130 -300 L 180 -400 L 230 -300 Z M-50 -380 L 0 -490 L 50 -380 Z" fill="#FF6FB5"/><rect x="-36" y="-110" width="72" height="110" rx="36" fill="#7B4FC9"/><circle cx="-180" cy="-220" r="16" fill="#FFF2B0"/><circle cx="180" cy="-220" r="16" fill="#FFF2B0"/><circle cx="0" cy="-300" r="16" fill="#FFF2B0"/></g>`;
+  s+=`<path d="M-400 700 Q 300 580 800 660 Q 1300 740 1700 630 Q 2000 560 2320 640 L 2320 1300 L -400 1300 Z" fill="#9EE08E"/>`;
+  s+=`<path d="M-400 820 Q 500 730 1000 800 Q 1500 870 2320 780 L 2320 1300 L -400 1300 Z" fill="#7ACF68"/>`;
+  s+=arvore(1820,800,1,'#3E9F45','#5CC25A')+arvore(820,780,.7,'#3E9F45','#5CC25A');
+  s+=`<path d="M-400 920 Q 700 860 1200 900 Q 1700 940 2320 900 L 2320 1300 L -400 1300 Z" fill="#6BC45A"/>`;
+  /* porta azul deste lado */
+  s+=`<g transform="translate(150 930) scale(.55)"><path d="M-100 -20 L -100 -250 Q -100 -350 0 -350 Q 100 -350 100 -250 L 100 -20 Z" fill="#2F7DF6" stroke="#F7C744" stroke-width="12"/>${estrela(0,-250,26,0)}</g>`;
+  s+=`</g>`;
+  /* vermelho: macieira */
+  s+=`<g filter="url(#sRed)">${arvore(330,930,1.45,'#3FA34A','#5CC25A')}${[[300,560],[390,520],[250,630],[420,610],[340,470],[230,520]].map(([x,y],i)=>`<g><circle cx="${x}" cy="${y}" r="${i===1?30:20}" fill="#F0322F"/><circle cx="${x-6}" cy="${y-6}" r="${i===1?9:6}" fill="#FF9A8F"/><path d="M${x} ${y-(i===1?30:20)} q 4 -12 12 -14" stroke="#6E4220" stroke-width="4" fill="none"/></g>`).join('')}</g>`;
+  /* amarelo: campo de flores */
+  s+=`<g filter="url(#sYel)">`;const R=rng(9);for(let i=0;i<26;i++){s+=flor(700+R()*560,880+R()*110,.8+R()*.4,'#FFD21F',t,'#FF8A1F');}
+  s+=`<g transform="translate(960 900) rotate(${r1(Math.sin(t*1.6)*3)})"><path d="M0 0 Q 10 -100 0 -200" stroke="#3E9C42" stroke-width="12" fill="none"/><ellipse cx="34" cy="-90" rx="36" ry="16" fill="#56B84F" transform="rotate(-30 34 -90)"/>${[0,45,90,135,180,225,270,315].map(a=>`<ellipse cx="0" cy="-262" rx="28" ry="46" fill="#FFD21F" stroke="#F2B000" stroke-width="3" transform="rotate(${a} 0 -220)"/>`).join('')}<circle cx="0" cy="-220" r="32" fill="#FF9A1F"/><circle cx="-10" cy="-230" r="10" fill="#FFC56A"/></g></g>`;
+  /* azul: lago */
+  s+=`<g filter="url(#sBlu)"><ellipse cx="1500" cy="880" rx="330" ry="86" fill="#2E8CF0"/><ellipse cx="1500" cy="866" rx="300" ry="66" fill="#4FB2FF"/>${[0,1,2].map(i=>{const p=((t*.5+i/3)%1);return `<ellipse cx="1500" cy="870" rx="${r1(60+p*220)}" ry="${r1(14+p*50)}" fill="none" stroke="#C8E8FF" stroke-width="4" opacity="${r1(.7*(1-p))}"/>`;}).join('')}<path d="M1300 860 q 20 -8 40 0 M1600 880 q 20 -8 40 0 M1440 900 q 16 -6 32 0" stroke="#E6F5FF" stroke-width="4" fill="none"/>${[1240,1270,1730,1760].map((x,i)=>`<path d="M${x} 880 q -6 -50 4 -90" stroke="#3E9C42" stroke-width="6" fill="none"/><ellipse cx="${x+4}" cy="${790}" rx="6" ry="16" fill="#8A5A2E"/>`).join('')}</g>`;
+  return s;
+}
+
+/* ---------------- efeitos ---------------- */
+function brilhos(x,y,t,n=10,raio=60,cores=['#FFF3A8','#FF9ED8','#C9A2FF','#9FE6FF'],seed=1){const R=rng(seed);let s='';for(let i=0;i<n;i++){const a=R()*Math.PI*2,d=raio*(.3+R()*.7),tw=.5+.5*Math.sin(t*6+i*1.7);s+=estrelinha(x+Math.cos(a)*d,y+Math.sin(a)*d,4+R()*6,cores[i%cores.length],tw);}return s;}
+function estrelinha(x,y,r,cor,op=1){return `<path d="M${r1(x)} ${r1(y-r)} Q ${r1(x)} ${r1(y)} ${r1(x+r)} ${r1(y)} Q ${r1(x)} ${r1(y)} ${r1(x)} ${r1(y+r)} Q ${r1(x)} ${r1(y)} ${r1(x-r)} ${r1(y)} Q ${r1(x)} ${r1(y)} ${r1(x)} ${r1(y-r)} Z" fill="${cor}" opacity="${r1(op)}" filter="url(#brilho)"/>`;}
+function explosao(x,y,t,t0,cor){const p=prog(t,t0,t0+1.1);if(p<=0||p>=1)return '';let s=`<circle cx="${x}" cy="${y}" r="${r1(20+E.out(p)*260)}" fill="none" stroke="${cor}" stroke-width="${r1(22*(1-p))}" opacity="${r1(1-p)}"/>`;s+=`<circle cx="${x}" cy="${y}" r="${r1(10+E.out(p)*120)}" fill="${cor}" opacity="${r1(.5*(1-p))}" filter="url(#brilhoForte)"/>`;for(let i=0;i<14;i++){const a=i/14*Math.PI*2,d=40+E.out(p)*240;s+=estrelinha(x+Math.cos(a)*d,y+Math.sin(a)*d,14*(1-p)+4,i%2?'#fff':cor,1-p);}return s;}
+function confete(t,t0,t1){if(t<t0||t>t1+3)return '';const R=rng(77);let s='';for(let i=0;i<90;i++){const x=R()*1920,v=150+R()*220,ph=R()*6,c=['#FF4FA0','#FFD21F','#2E8CF0','#5CC25A','#B667F2','#FF8A1F'][i%6];const y=-40+((t-t0)*v+R()*400)%1200-200;if(t>t1&&y<0)continue;s+=`<rect x="${r1(x+Math.sin(t*3+ph)*30)}" y="${r1(y)}" width="14" height="22" rx="3" fill="${c}" transform="rotate(${r1((t*200+ph*60)%360)} ${r1(x)} ${r1(y)})"/>`;}return s;}
+function arcoIris(p){if(p<=0)return '';const cores=['#FF4D4D','#FF9A1F','#FFD21F','#5CC25A','#2E8CF0','#7B4FC9'];let s=`<g opacity="${r1(p)}">`;cores.forEach((c,i)=>{s+=`<path d="M${200+i*28} 760 A ${760-i*28} ${560-i*24} 0 0 1 ${1720-i*28} 760" stroke="${c}" stroke-width="28" fill="none" stroke-dasharray="2600" stroke-dashoffset="${r1(2600*(1-p))}"/>`;});return s+`</g>`;}
+/* HUD das cores */
+function hudCores(t){const ap=E.back(prog(t,63.6,64.2));if(ap<=0||t>=114.6)return '';const out=1-prog(t,114.2,114.6);let s=`<g transform="translate(960 92) scale(${r1(ap*out)})"><rect x="-230" y="-58" width="460" height="116" rx="58" fill="#fff" opacity=".92" filter="url(#sombraSuave)"/>`;
+  [['#F0322F',BURST.red+2.2,'maca'],['#FFD21F',BURST.yel+2.2,'flor'],['#2E8CF0',BURST.blu+2.0,'gota']].forEach(([c,tt,ic],i)=>{const x=-140+i*140;const f=E.back(prog(t,tt,tt+.5));
+   s+=`<circle cx="${x}" cy="0" r="40" fill="#EEE8F4" stroke="#CDBFE0" stroke-width="4"/>`;
+   if(f<=0)s+=`<text x="${x}" y="16" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="44" fill="#B9A9CF">?</text>`;
+   else{s+=`<g transform="translate(${x} 0) scale(${r1(f)})"><circle r="40" fill="${c}"/>${ic==='maca'?`<circle cx="0" cy="4" r="18" fill="#fff" opacity=".9"/><path d="M0 -14 q 4 -10 12 -10" stroke="#fff" stroke-width="4" fill="none"/>`:ic==='flor'?[0,72,144,216,288].map(a=>`<ellipse cx="0" cy="-14" rx="7" ry="11" fill="#fff" transform="rotate(${a})"/>`).join('')+`<circle r="7" fill="#FF9A1F"/>`:`<path d="M0 -22 Q 18 2 12 12 Q 0 26 -12 12 Q -18 2 0 -22 Z" fill="#fff"/>`}</g>`;}
+  });return s+`</g>`;}
+/* indicador "Sua vez!" nas pausas */
+function hudPausa(t){const p=emPausa(t);if(!p)return '';const [a,b]=p;const ap=E.back(prog(t,a,a+.35))*(1-prog(t,b-.25,b));const k=prog(t,a,b);
+  const R=54,C=2*Math.PI*R;let s=`<g transform="translate(1720 150) scale(${r1(ap)})"><circle r="78" fill="#fff" filter="url(#sombraSuave)"/><circle r="${R}" fill="none" stroke="#FFE1EF" stroke-width="12"/><circle r="${R}" fill="none" stroke="#FF4FA0" stroke-width="12" stroke-linecap="round" stroke-dasharray="${r1(C)}" stroke-dashoffset="${r1(C*k)}" transform="rotate(-90)"/>`;
+  s+=`<g transform="scale(${r1(1+.08*Math.sin(t*8))})"><path d="M-6 -26 C 18 -30 26 -4 14 8 C 6 16 8 24 0 26 C -10 28 -14 18 -10 12" stroke="#FF4FA0" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M-2 -10 C 8 -12 10 0 4 4" stroke="#FF4FA0" stroke-width="6" fill="none" stroke-linecap="round"/></g>`;
+  s+=`<g transform="translate(0 112)"><rect x="-96" y="-28" width="192" height="56" rx="28" fill="#FF4FA0"/><text y="12" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="32" fill="#fff">Sua vez!</text></g>`;
+  for(let i=0;i<3;i++){s+=`<circle cx="${-26+i*26}" cy="170" r="8" fill="#fff" opacity="${r1(.4+.6*Math.max(0,Math.sin(t*6-i)))}"/>`;}
+  return s+`</g>`;}
+function cam(cx,cy,z){return `translate(${r1(960-cx*z)} ${r1(540-cy*z)}) scale(${z.toFixed(4)})`;}
+function camK(t,keys){ /* keys: [[t,cx,cy,z],...] */
+  if(t<=keys[0][0])return keys[0].slice(1);for(let i=0;i<keys.length-1;i++){const [ta,...A]=keys[i],[tb,...B]=keys[i+1];if(t<=tb){const p=E.inOut(prog(t,ta,tb));return A.map((v,j)=>lerp(v,B[j],p));}}return keys[keys.length-1].slice(1);}
+/* poses da Liz conforme o momento */
+function lizPose(t,base={}){
+  const o=Object.assign({expr:'feliz',piscar:piscar(t),pulo:Math.max(0,Math.sin(t*2.2))*4},base);
+  if(boca('LIZ',t))o.falar=true;
+  const p=emPausa(t);
+  if(p){o.expr='sorriso';o.bracoD=150+Math.sin(t*3)*4;o.inclinar=-6;o.olharX=.4;o.falar=false;o.pulo=0;}
+  return o;}
+function comemora(t,t0,dur=1.6){const p=prog(t,t0,t0+dur);if(p<=0||p>=1)return null;return {expr:'rindo',bracoE:160,bracoD:160,pulo:Math.abs(Math.sin(p*Math.PI*3))*60};}
+function voandoLumi(t,x,y,falar){return at(x,y+Math.sin(t*3)*10,1,lumi({bater:(Math.sin(t*22)+1)/2,piscar:piscar(t,1.2),falar}));}
+function rastro(t,pts){let s='';pts.forEach(([x,y],i)=>{s+=estrelinha(x,y,3+(i%3)*2,['#FFF3A8','#FF9ED8','#C9A2FF'][i%3],.4+.6*Math.max(0,Math.sin(t*8+i)));});return s;}
+
+/* ---------------- cenas ---------------- */
+const S={};
+S.abertura=(t)=>{
+  let s=`<linearGradient id="abg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7CCBFF"/><stop offset=".6" stop-color="#FFC6E6"/><stop offset="1" stop-color="#FFE9B8"/></linearGradient><rect width="1920" height="1080" fill="url(#abg)"/>`;
+  for(let i=0;i<12;i++){const a=i*30+t*12;s+=`<path d="M960 560 L ${r1(960+Math.cos(a*Math.PI/180)*1600)} ${r1(560+Math.sin(a*Math.PI/180)*1600)} L ${r1(960+Math.cos((a+12)*Math.PI/180)*1600)} ${r1(560+Math.sin((a+12)*Math.PI/180)*1600)} Z" fill="#fff" opacity=".12"/>`;}
+  s+=nuvem(220,880,1.6)+nuvem(1700,900,1.8)+nuvem(960,990,2.2)+nuvem(500,170,.9,.9)+nuvem(1500,140,1,.9);
+  s+=brilhos(960,520,t,26,700,undefined,3);
+  const pop=(t0)=>E.back(prog(t,t0,t0+.6));
+  const lg=E.elastic(prog(t,8.5,10.5));
+  s+=at(960,lerp(-300,330,lg),lg>0?.78:0,logoSVG());
+  s+=at(330,985,1.0*pop(1.0),liz({expr:t>13?'rindo':'feliz',bracoD:t<6?150+Math.sin(t*10)*20:14,piscar:piscar(t),pulo:t>13?Math.abs(Math.sin(t*5))*30:0}));
+  s+=at(590,990,1.05*pop(3.0),pipo({rabo:Math.sin(t*14)*24,latir:t>3.2&&t<3.7,piscar:piscar(t,1)}));
+  s+=at(1600,990,1.0*pop(5.0),robi({expr:'feliz',bracoD:t>5.5&&t<8?150+Math.sin(t*9)*18:20,flutuar:Math.sin(t*3)*6+6}));
+  const lp=prog(t,6.5,8.2);s+=voandoLumi(t,lerp(2100,1360,E.out(lp)),lerp(200,560,E.out(lp)),false);
+  const tg=E.back(prog(t,12,12.6));
+  s+=`<g transform="translate(960 700) scale(${r1(tg)})"><rect x="-430" y="-46" width="860" height="92" rx="46" fill="#7B3DB8"/><text y="16" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="46" fill="#fff">Aprender também é uma <tspan fill="#FFD23F">aventura!</tspan></text></g>`;
+  const ep=prog(t,14.2,14.6)*(1-prog(t,15.6,16));s+=`<rect width="1920" height="1080" fill="#fff" opacity="${r1(ep*.9)}"/>`;
+  return s;};
+S.floresta=(t)=>{
+  const [cx,cy,z]=camK(t,[[16,960,600,1.0],[29.5,960,640,1.1]]);
+  let w=fundoFloresta(t);
+  /* bolinha */
+  const bp=prog(t,16,18.2);const bx=lerp(1320,1180,bp),by=950-Math.abs(Math.sin(bp*Math.PI*3))*120*(1-bp);
+  w+=`<circle cx="${r1(bx)}" cy="${r1(by)}" r="22" fill="#FF4F6E"/><path d="M${r1(bx-22)} ${r1(by)} h44" stroke="#fff" stroke-width="5"/>`;
+  let lo=lizPose(t);
+  if(t<19.6)Object.assign(lo,{bracoD:150+Math.sin(t*11)*22});
+  if(t>=22.5&&t<25.5)Object.assign(lo,{expr:'animada',bracoE:70,bracoD:70});
+  const c=comemora(t,28.2);if(c)Object.assign(lo,c);
+  w+=at(820,965,1.15,liz(lo));
+  w+=at(1100,968,1.15,pipo({rabo:Math.sin(t*14)*24,latir:boca('PIPO',t),pulo:(t<18.3?Math.abs(Math.sin(t*5))*30:0)+(falando('PIPO',t)?Math.abs(Math.sin(t*12))*20:0)+(c?Math.abs(Math.sin(t*9))*30:0),piscar:piscar(t,.6),olharX:t<18.3?1:-.6}));
+  return `<g transform="${cam(cx,cy,z)}">${w}</g>`;};
+S.porta=(t)=>{
+  const [cx,cy,z]=camK(t,[[30,960,600,1.0],[41.6,1000,600,1.08],[43.6,1250,690,2.8]]);
+  let w=fundoFloresta(t,'');
+  const ab=prog(t,40.4,41.6);
+  w+=porta(1250,930,ab,t);
+  if(ab>0)w+=brilhos(1250,750,t,18,260*ab,undefined,4);
+  /* Liz caminha e depois se vira */
+  const wp=prog(t,30,31.6);
+  if(t<31.6)w+=at(lerp(260,760,wp),965,1.12,lizLado({expr:'sorriso',passo:t*12,pulo:Math.abs(Math.sin(t*12))*8,falar:boca('LIZ',t)}));
+  else{let lo=lizPose(t,{olharX:.6});if(t>=33.6&&t<36.2)Object.assign(lo,{expr:'animada',bracoE:60,bracoD:60});
+    COUNT.forEach(([tc])=>{if(t>=tc&&t<tc+1.2)Object.assign(lo,{bracoD:165,expr:'animada'});});
+    if(t>=40.4)Object.assign(lo,{expr:'surpresa',bracoE:50,bracoD:50,olharX:.8});
+    w+=at(760,965,1.12,liz(lo));}
+  const pp=prog(t,30.2,31.4);w+=at(lerp(380,1000,E.out(pp)),968,1.0,pipo({rabo:Math.sin(t*16)*26,inclinar:t>31.5&&t<36?14:0,olharX:1,pulo:t<31.4?Math.abs(Math.sin(t*14))*16:0,latir:t>40.6&&t<41.2}));
+  let s=`<g transform="${cam(cx,cy,z)}">${w}</g>`;
+  /* números da contagem */
+  COUNT.forEach(([tc,n])=>{const p=prog(t,tc,tc+1.4);if(p>0&&p<1){const sc=E.back(prog(t,tc,tc+.35));s+=`<g transform="translate(1520 380) scale(${r1(sc)})" opacity="${r1(1-prog(p,.75,1))}"><circle r="110" fill="#fff" filter="url(#sombraSuave)"/><text y="62" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="190" fill="#2F7DF6">${n}</text></g>${brilhos(1520,380,t,10,170,undefined,+n)}`;}});
+  const fl=prog(t,42.9,43.7)*(1-prog(t,43.8,44));s+=`<rect width="1920" height="1080" fill="#FFFBEA" opacity="${r1(fl)}"/>`;
+  return s;};
+function satAt(t){
+  const g=(t0)=>E.inOut(prog(t,t0,t0+.9));
+  const all=E.inOut(prog(t,BURST.all,BURST.all+2.6));
+  return {base:.04+.96*all,red:Math.max(.04+.96*g(BURST.red),.04+.96*all),yel:Math.max(.04+.96*g(BURST.yel),.04+.96*all),blu:Math.max(.04+.96*g(BURST.blu),.04+.96*all)};}
+S.cinza=(t)=>{
+  const [cx,cy,z]=camK(t,[[44,960,560,1.0],[59.5,960,600,1.06]]);
+  let w=mundo(t,satAt(t));
+  const ent=prog(t,44,45.2);
+  let lo=lizPose(t);
+  if(t<47){Object.assign(lo,{expr:'surpresa',olharX:Math.sin(t*2.5),bracoE:30,bracoD:30});}
+  if(t>=47&&t<51.8)Object.assign(lo,{expr:'feliz',olharX:.7,olharY:-.6});
+  if(t>=51.8&&t<55)Object.assign(lo,{expr:'animada',bracoE:80,bracoD:80});
+  const c=comemora(t,58.2);if(c)Object.assign(lo,c);
+  w+=t<45.2?at(lerp(220,560,E.out(ent)),965,1.05,lizLado({expr:'surpresa',passo:t*12,pulo:Math.abs(Math.sin(t*12))*8})):at(560,965,1.05,liz(lo));
+  w+=at(lerp(160,720,E.out(prog(t,44.3,45.6))),968,.95,pipo({rabo:t<47?0:Math.sin(t*12)*20,orelha:t<47?18:0,inclinar:t<47?-12:0,olharX:t<47?Math.sin(t*2):1,lingua:t>=47,pulo:c?Math.abs(Math.sin(t*9))*30:0}));
+  /* Lumi chega */
+  if(t>=46.8){const lp=E.inOut(prog(t,46.8,48.2));const x=lerp(2050,960,lp),y=lerp(180,430,lp)-Math.sin(lp*Math.PI)*120;
+    const tr=[];for(let i=1;i<12;i++){const q=Math.max(0,lp-i*.03);tr.push([lerp(2050,960,q)+30,lerp(180,430,q)-Math.sin(q*Math.PI)*120+20]);}
+    w+=rastro(t,tr)+voandoLumi(t,x,y,boca('LUMI',t));}
+  return `<g transform="${cam(cx,cy,z)}">${w}</g>`;};
+S.robi=(t)=>{
+  let w=mundo(t,satAt(t));
+  let lo=lizPose(t,{olharX:.8});if(t>=67&&t<69.6)Object.assign(lo,{expr:'animada',bracoE:150,bracoD:150,pulo:Math.abs(Math.sin(t*6))*24});
+  w+=at(560,965,1.05,liz(lo));
+  w+=at(720,968,.95,pipo({rabo:Math.sin(t*14)*24,olharX:1,inclinar:t<62?14:0}));
+  w+=voandoLumi(t,960,430,boca('LUMI',t));
+  const rp=prog(t,60,60.9);const rx=lerp(2150,1080,E.out(rp));
+  w+=at(rx,968,1.05,robi({expr:t<60.6?'uau':(t>=62.6&&t<66.8?'feliz':'piscar'),falar:boca('ROBI',t),bracoD:t>=60.6&&t<62.4?150+Math.sin(t*10)*20:(t>=63.6&&t<66.8?120:20),bracoE:t>=63.6&&t<66.8?120:20,flutuar:6+Math.sin(t*3)*6+(t<60.9?Math.abs(Math.sin(t*16))*14:0)}));
+  return `<g transform="${cam(960,600,1.06)}">${w}</g>`;};
+S.vermelho=(t)=>{
+  const [cx,cy,z]=camK(t,[[70,960,600,1.06],[71.8,520,640,1.5],[85.5,540,650,1.55]]);
+  let w=mundo(t,satAt(t));
+  if(t<BURST.red+.6){const pul=.5+.5*Math.sin(t*5);w+=`<circle cx="390" cy="520" r="${r1(44+pul*10)}" fill="#FFF6C8" opacity="${r1(.35+.25*pul)}" filter="url(#brilhoForte)"/>`;}
+  w+=explosao(390,520,t,BURST.red,'#F0322F');
+  let lo=lizPose(t,{olharX:-.6});
+  if(t>=72.8&&t<75.6)Object.assign(lo,{expr:'animada',bracoE:105,apontarE:true,olharX:0});
+  const c=comemora(t,78.8);if(c)Object.assign(lo,c);
+  w+=at(640,965,1.0,liz(lo));
+  w+=at(790,968,.9,pipo({rabo:Math.sin(t*14)*24,olharX:-1,latir:boca('PIPO',t),pulo:(falando('PIPO',t)||c)?Math.abs(Math.sin(t*10))*30:0}));
+  w+=voandoLumi(t,470,430,boca('LUMI',t));
+  w+=at(900,968,.9,robi({expr:t>=BURST.red?'feliz':'pensando',falar:boca('ROBI',t),bracoE:t>=81.2&&t<83?150:20,bracoD:t>=81.2&&t<83?150:20,flutuar:6+Math.sin(t*3)*6}));
+  return `<g transform="${cam(cx,cy,z)}">${w}</g>`;};
+S.amarelo=(t)=>{
+  const [cx,cy,z]=camK(t,[[86,560,650,1.55],[87.6,1010,660,1.55],[99.5,1020,660,1.6]]);
+  let w=mundo(t,satAt(t));
+  if(t<BURST.yel+.6){const pul=.5+.5*Math.sin(t*5);w+=`<circle cx="960" cy="680" r="${r1(80+pul*14)}" fill="#FFF6C8" opacity="${r1(.3+.25*pul)}" filter="url(#brilhoForte)"/>`;}
+  w+=explosao(960,680,t,BURST.yel,'#FFD21F');
+  let lo=lizPose(t,{olharX:-.6});
+  if(t>=86.6&&t<89.4)Object.assign(lo,{expr:'animada',bracoE:100,apontarE:true,olharX:0});
+  if(t>=97.2&&t<99.6)Object.assign(lo,{expr:'animada',bracoD:165});
+  const c=comemora(t,92.6);if(c)Object.assign(lo,c);
+  w+=at(1200,965,1.0,liz(lo));
+  w+=at(1080,968,.85,pipo({rabo:Math.sin(t*14)*24,inclinar:t<92?16:0,olharX:-1,pulo:c?Math.abs(Math.sin(t*10))*30:0}));
+  w+=voandoLumi(t,1080,500,false);
+  w+=at(780,968,.9,robi({expr:t>=BURST.yel?'feliz':'pensando',falar:boca('ROBI',t),bracoE:t>=95&&t<97?150:20,bracoD:t>=95&&t<97?150:20,flutuar:6+Math.sin(t*3)*6}));
+  return `<g transform="${cam(cx,cy,z)}">${w}</g>`;};
+S.azul=(t)=>{
+  const [cx,cy,z]=camK(t,[[100,1020,660,1.6],[101.6,1400,660,1.5],[113.5,1420,650,1.52]]);
+  let w=mundo(t,satAt(t));
+  if(t<BURST.blu+.6){const pul=.5+.5*Math.sin(t*5);w+=`<ellipse cx="1500" cy="870" rx="${r1(300+pul*20)}" ry="${r1(80+pul*8)}" fill="#FFF6C8" opacity="${r1(.18+.18*pul)}" filter="url(#brilhoForte)"/>`;}
+  w+=explosao(1500,870,t,BURST.blu,'#2E8CF0');
+  let lo=lizPose(t,{olharX:.6});
+  if(t>=100.6&&t<103.6)Object.assign(lo,{expr:'animada',bracoD:100,apontarD:true,olharX:0});
+  const c=comemora(t,106.8);if(c)Object.assign(lo,c);
+  w+=at(1120,965,1.0,liz(lo));
+  w+=at(990,968,.85,pipo({rabo:Math.sin(t*14)*24,olharX:1,pulo:c?Math.abs(Math.sin(t*10))*30:0}));
+  w+=voandoLumi(t,1500,560,boca('LUMI',t));
+  w+=at(1880,968,.9,robi({expr:t>=BURST.blu?'feliz':'pensando',bracoE:c?150:20,bracoD:c?150:20,flutuar:6+Math.sin(t*3)*6}));
+  return `<g transform="${cam(cx,cy,z)}">${w}</g>`;};
+S.festa=(t)=>{
+  const [cx,cy,z]=camK(t,[[114,1420,650,1.52],[116.2,960,560,1.0],[121.4,960,580,1.02],[122.6,900,640,1.9],[131.6,900,640,1.95]]);
+  let w=mundo(t,satAt(t));
+  w+=arcoIris(E.out(prog(t,116,118)));
+  w+=explosao(960,560,t,BURST.all,'#FFFFFF');
+  const party=t>=116.5&&t<121.4;
+  let lo=lizPose(t,{});
+  if(party)Object.assign(lo,{expr:t<117.4?'rindo':'feliz',bracoE:150,bracoD:150,pulo:Math.abs(Math.sin(t*5))*40,falar:boca('LIZ',t)});
+  if(t>=121.6&&t<125.6)Object.assign(lo,{expr:'animada',bracoD:100,apontarD:true,pulo:0});
+  const c=comemora(t,129.8,2);if(c)Object.assign(lo,c);
+  w+=at(900,965,1.0,liz(lo));
+  w+=at(1070,968,.9,pipo({rabo:Math.sin(t*16)*26,pulo:party?Math.abs(Math.sin(t*6+1))*40:0,latir:party&&Math.floor(t*2)%2===0}));
+  w+=at(1280,968,.95,robi({expr:'feliz',bracoE:party?150+Math.sin(t*8)*20:20,bracoD:party?150-Math.sin(t*8)*20:20,flutuar:party?10+Math.abs(Math.sin(t*5))*30:6}));
+  w+=voandoLumi(t,700+Math.sin(t*.9)*60,430+Math.cos(t*1.1)*40,boca('LUMI',t));
+  if(party)w+=brilhos(960,400,t,30,700,undefined,11);
+  let s=`<g transform="${cam(cx,cy,z)}">${w}</g>`+confete(t,116.2,121.5);
+  /* dica visual do desafio: coisas azuis */
+  const dp=E.back(prog(t,124.4,125))*(1-prog(t,129.6,130));if(dp>0){s+=`<g transform="translate(1480 520) scale(${r1(dp)})"><circle r="170" fill="#fff" opacity=".92" filter="url(#sombraSuave)"/><g transform="translate(-70 -40)"><path d="M-36 -30 h72 l -8 70 h -56 Z" fill="#2E8CF0"/><path d="M36 -16 q 26 0 22 26 q -4 16 -24 14" stroke="#2E8CF0" stroke-width="10" fill="none"/></g><g transform="translate(70 -40)"><rect x="-44" y="-20" width="88" height="40" rx="14" fill="#2E8CF0"/><rect x="-24" y="-44" width="48" height="30" rx="10" fill="#4FB2FF"/><circle cx="-24" cy="24" r="12" fill="#1B2440"/><circle cx="24" cy="24" r="12" fill="#1B2440"/></g><g transform="translate(0 80)"><circle r="40" fill="#2E8CF0"/><path d="M-40 0 h80 M0 -40 v80" stroke="#BFE2FF" stroke-width="6"/></g><circle cx="110" cy="100" r="34" fill="none" stroke="#7B3DB8" stroke-width="10"/><path d="M134 124 l 30 30" stroke="#7B3DB8" stroke-width="14" stroke-linecap="round"/></g>`;}
+  return s;};
+S.fim=(t)=>{
+  let s=`<linearGradient id="fbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7CCBFF"/><stop offset=".6" stop-color="#FFC6E6"/><stop offset="1" stop-color="#FFE9B8"/></linearGradient><rect width="1920" height="1080" fill="url(#fbg)"/>`;
+  s+=nuvem(200,880,1.6)+nuvem(1750,900,1.8)+nuvem(960,1000,2.4)+brilhos(960,500,t,22,760,undefined,8);
+  const card=E.back(prog(t,137.5,138.2));
+  const chars=1-E.inOut(prog(t,137.2,137.8))*.0;
+  const wave=t<136?150+Math.sin(t*10)*22:14;
+  s+=at(lerp(760,430,card),965,1.05*chars,liz({expr:boca('LIZ',t)?'feliz':'rindo',falar:boca('LIZ',t),bracoD:wave,piscar:piscar(t),pulo:t>136?Math.abs(Math.sin(t*5))*20:0}));
+  s+=at(lerp(990,230,card),975,1.05,pipo({rabo:Math.sin(t*16)*26,latir:boca('PIPO',t),pulo:falando('PIPO',t)?Math.abs(Math.sin(t*12))*24:0}));
+  s+=at(lerp(1200,1700,card),980,1.0,robi({expr:boca('ROBI',t)?'uau':'feliz',falar:boca('ROBI',t),bracoD:150+Math.sin(t*9)*20,flutuar:8+Math.sin(t*3)*6}));
+  s+=voandoLumi(t,lerp(1380,1720,card),lerp(480,560,card),false);
+  if(card>0){s+=`<g transform="translate(1070 470) scale(${r1(card)})"><rect x="-430" y="-250" width="860" height="500" rx="50" fill="#fff" opacity=".95" filter="url(#sombraSuave)"/><text y="-150" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="44" fill="#B667F2">Próximo episódio</text><text y="-60" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="76" fill="#E8418A">O Jardim dos Números</text>`;
+    for(let i=1;i<=5;i++){s+=`<g transform="translate(${-240+i*80} 60)"><circle r="34" fill="${['#FF4FA0','#FFD21F','#2E8CF0','#5CC25A','#B667F2'][i-1]}"/><text y="16" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="44" fill="#fff">${i}</text></g>`;}
+    s+=`<text y="180" text-anchor="middle" font-family="Fredoka" font-weight="500" font-size="36" fill="#6b5a7b">Até lá, continue descobrindo!</text></g>`;}
+  const fo=prog(t,141,142);s+=`<rect width="1920" height="1080" fill="#1b1030" opacity="${r1(fo)}"/>`;
+  return s;};
+
+/* ---------------- quadro ---------------- */
+const svg=document.getElementById('svg'),cap=document.getElementById('cap'),capWho=document.getElementById('capWho'),capTxt=document.getElementById('capTxt');
+let showCaps=true,lastLine=-2;
+const DEFS=defs()+logoDefs();
+function renderAt(t){
+  t=clamp(t,0,D);
+  const sc=SCENES.find(s=>t>=s[1]&&t<s[2])||SCENES[SCENES.length-1];
+  let body=S[sc[0]](t);
+  /* transições: cortina rosa nas trocas de lugar */
+  [[30,'#FF8BC6'],[132,'#B667F2']].forEach(([a,c])=>{if(t>=a&&t<a+.5){const p=prog(t,a,a+.5);body+=`<rect x="${r1(-1920+p*3840)}" y="0" width="1920" height="1080" fill="${c}" opacity="${r1(1-p*.6)}"/>`;}});
+  body+=hudCores(t)+hudPausa(t);
+  svg.innerHTML=DEFS+body;
+  /* legenda */
+  let li=-1;LINES.forEach((l,i)=>{if(t>=l[0]-.05&&t<l[1]+.25)li=i;});
+  if(li!==lastLine){lastLine=li;if(li>=0){const [n,c]=WHO[LINES[li][2]];capWho.textContent=n;capWho.style.background=c;capTxt.textContent=LINES[li][3];}}
+  if(li>=0&&showCaps){const l=LINES[li];const p=Math.min(prog(t,l[0]-.05,l[0]+.15),1-prog(t,l[1]+.05,l[1]+.25));cap.style.opacity=p;cap.style.transform=`translateX(-50%) translateY(${(1-p)*14}px)`;}else cap.style.opacity=0;
+}
+
+/* ---------------- trilha e efeitos sonoros (sintetizados, originais) ---------------- */
+const mtof=m=>440*Math.pow(2,(m-69)/12);
+const N={C4:60,D4:62,E4:64,F4:65,G4:67,A4:69,B4:71,C5:72,D5:74,E5:76,F5:77,G5:79,A5:81,B5:83,C6:84};
+/* tema "Vem com a Liz" — 8 compassos, 120 bpm (0,5 s por tempo) */
+const TEMA=[[0,.5,'C5'],[.5,.5,'C5'],[1,.5,'D5'],[1.5,1.5,'E5'],[3,.5,'G4'],[3.5,.5,'G4'],
+ [4,.5,'A4'],[4.5,.5,'C5'],[5,.5,'D5'],[5.5,.5,'E5'],[6,1,'D5'],[7,1,'C5'],
+ [8,.5,'E5'],[8.5,.5,'E5'],[9,.5,'F5'],[9.5,1.5,'G5'],[11,.5,'E5'],[11.5,.5,'C5'],
+ [12,.5,'D5'],[12.5,.5,'E5'],[13,.5,'D5'],[13.5,.5,'C5'],[14,2,'D5'],
+ [16,.5,'A5'],[16.5,.5,'G5'],[17,.5,'E5'],[17.5,1.5,'G5'],[19,1,'E5'],
+ [20,.5,'F5'],[20.5,.5,'E5'],[21,.5,'D5'],[21.5,.5,'E5'],[22,1,'F5'],[23,1,'G5'],
+ [24,.5,'E5'],[24.5,.5,'G5'],[25,1,'C6'],[26,.5,'B5'],[26.5,.5,'A5'],[27,1,'G5'],
+ [28,.5,'A5'],[28.5,.5,'G5'],[29,.5,'E5'],[29.5,.5,'D5'],[30,2,'C5']];
+const ACORDES={C:[48,52,55,60],G:[43,47,50,55],F:[41,45,48,53],Am:[45,48,52,57],Dm:[38,45,50,53]};
+const TEMA_AC=['C','G','F','C','Am','F','Dm','G'];
+const LEITO_AC=['C','Am','F','G'];
+function impulso(ctx,dur,dec){const sr=ctx.sampleRate,n=Math.floor(sr*dur),b=ctx.createBuffer(2,n,sr),R=rng(42);for(let c=0;c<2;c++){const d=b.getChannelData(c);for(let i=0;i<n;i++)d[i]=(R()*2-1)*Math.pow(1-i/n,dec);}return b;}
+function trilha(ctx,dest,off,base){
+  const master=ctx.createGain();master.gain.value=.85;const comp=ctx.createDynamicsCompressor();comp.threshold.value=-14;comp.ratio.value=3;master.connect(comp);comp.connect(dest);
+  const rev=ctx.createConvolver();rev.buffer=impulso(ctx,2.2,3);const rg=ctx.createGain();rg.gain.value=.28;rev.connect(rg);rg.connect(master);
+  const mus=ctx.createGain();mus.gain.value=1;mus.connect(master);
+  const nb=ctx.createBuffer(1,ctx.sampleRate,ctx.sampleRate);{const d=nb.getChannelData(0),R=rng(8);for(let i=0;i<d.length;i++)d[i]=R()*2-1;}
+  const T=x=>base+(x-off);const ok=x=>x>=off&&x<=D;
+  const env=(g,x,a,pk,dur)=>{const t0=T(x);g.gain.setValueAtTime(.0001,t0);g.gain.linearRampToValueAtTime(pk,t0+a);g.gain.exponentialRampToValueAtTime(.0001,t0+a+dur);};
+  const out=(n,bus,dry=1,wet=0)=>{const g=ctx.createGain();g.gain.value=dry;n.connect(g);g.connect(bus);if(wet){const w=ctx.createGain();w.gain.value=wet;n.connect(w);w.connect(rev);}};
+  const osc=(type,f,x,dur)=>{const o=ctx.createOscillator();o.type=type;o.frequency.setValueAtTime(f,T(x));o.start(T(x));o.stop(T(x)+dur+.1);return o;};
+  const ruido=(x,dur)=>{const s=ctx.createBufferSource();s.buffer=nb;s.loop=true;s.start(T(x));s.stop(T(x)+dur+.05);return s;};
+  /* instrumentos */
+  const sino=(x,m,dur=.5,v=1)=>{if(!ok(x))return;const f=mtof(N[m]??m);const g=ctx.createGain();env(g,x,.005,.14*v,dur+.6);[[1,'sine',1],[2,'sine',.35],[3.01,'triangle',.12]].forEach(([k,ty,a])=>{const o=osc(ty,f*k,x,dur+.8);const gg=ctx.createGain();gg.gain.value=a;o.connect(gg);gg.connect(g);});out(g,mus,1,.5);};
+  const ukulele=(x,m,v=1)=>{if(!ok(x))return;const g=ctx.createGain();const fl=ctx.createBiquadFilter();fl.type='lowpass';fl.frequency.setValueAtTime(3200,T(x));fl.frequency.exponentialRampToValueAtTime(900,T(x)+.3);env(g,x,.003,.07*v,.35);const o=osc('triangle',mtof(m+12),x,.5);o.connect(fl);fl.connect(g);out(g,mus,1,.25);};
+  const baixo=(x,m,dur=.45,v=1)=>{if(!ok(x))return;const g=ctx.createGain();env(g,x,.008,.22*v,dur);const o=osc('triangle',mtof(m-12),x,dur);const o2=osc('sine',mtof(m-12),x,dur);o.connect(g);o2.connect(g);out(g,mus);};
+  const bumbo=(x,v=1)=>{if(!ok(x))return;const o=osc('sine',130,x,.3);o.frequency.exponentialRampToValueAtTime(48,T(x)+.12);const g=ctx.createGain();env(g,x,.002,.55*v,.22);o.connect(g);out(g,mus);};
+  const palma=(x,v=1)=>{if(!ok(x))return;const n=ruido(x,.2),f=ctx.createBiquadFilter(),g=ctx.createGain();f.type='bandpass';f.frequency.value=1500;f.Q.value=1;env(g,x,.002,.25*v,.12);n.connect(f);f.connect(g);out(g,mus,1,.3);};
+  const chocalho=(x,v=1)=>{if(!ok(x))return;const n=ruido(x,.08),f=ctx.createBiquadFilter(),g=ctx.createGain();f.type='highpass';f.frequency.value=6500;env(g,x,.01,.07*v,.05);n.connect(f);f.connect(g);out(g,mus);};
+  const brilho=(x,v=1,n=6,seed=1)=>{const R=rng(seed);for(let i=0;i<n;i++){const xx=x+i*.06;if(!ok(xx))continue;const g=ctx.createGain();env(g,xx,.003,.06*v,.35);const o=osc('sine',1600+R()*1800,xx,.4);o.connect(g);out(g,master,1,.8);}};
+  const harpa=(x,v=1)=>{[60,64,67,72,76,79,84,88].forEach((m,i)=>sino(x+i*.06,m,.25,.7*v));};
+  const pop=(x,v=1)=>{if(!ok(x))return;const o=osc('sine',500,x,.12);o.frequency.exponentialRampToValueAtTime(1100,T(x)+.08);const g=ctx.createGain();env(g,x,.003,.18*v,.08);o.connect(g);out(g,master,1,.2);};
+  const whoosh=(x,dur=.5,v=1)=>{if(!ok(x))return;const n=ruido(x,dur),f=ctx.createBiquadFilter(),g=ctx.createGain();f.type='bandpass';f.Q.value=1.5;f.frequency.setValueAtTime(500,T(x));f.frequency.exponentialRampToValueAtTime(3500,T(x)+dur*.6);f.frequency.exponentialRampToValueAtTime(900,T(x)+dur);g.gain.setValueAtTime(.0001,T(x));g.gain.linearRampToValueAtTime(.22*v,T(x)+dur*.5);g.gain.linearRampToValueAtTime(.0001,T(x)+dur);n.connect(f);f.connect(g);out(g,master,1,.3);};
+  const latido=(x,v=1)=>{if(!ok(x))return;const o=osc('sawtooth',620,x,.18);o.frequency.exponentialRampToValueAtTime(330,T(x)+.14);const f=ctx.createBiquadFilter();f.type='bandpass';f.frequency.value=1100;f.Q.value=2.2;const g=ctx.createGain();env(g,x,.006,.32*v,.13);o.connect(f);f.connect(g);out(g,master,1,.15);
+    const n=ruido(x,.12),f2=ctx.createBiquadFilter(),g2=ctx.createGain();f2.type='bandpass';f2.frequency.value=900;env(g2,x,.004,.12*v,.09);n.connect(f2);f2.connect(g2);out(g2,master);};
+  const bip=(x,m=84,dur=.08,v=1)=>{if(!ok(x))return;const o=osc('square',mtof(m),x,dur);const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=3000;const g=ctx.createGain();env(g,x,.003,.08*v,dur);o.connect(f);f.connect(g);out(g,master,1,.15);};
+  const bola=(x,v=1)=>{if(!ok(x))return;const o=osc('sine',220,x,.15);o.frequency.exponentialRampToValueAtTime(90,T(x)+.1);const g=ctx.createGain();env(g,x,.002,.3*v,.1);o.connect(g);out(g,master);};
+  const rangido=(x,dur=1.1)=>{if(!ok(x))return;const o=osc('sawtooth',95,x,dur);const lfo=osc('sine',7,x,dur);const lg=ctx.createGain();lg.gain.value=25;lfo.connect(lg);lg.connect(o.frequency);o.frequency.linearRampToValueAtTime(140,T(x)+dur);const f=ctx.createBiquadFilter();f.type='bandpass';f.frequency.value=900;f.Q.value=4;const g=ctx.createGain();g.gain.setValueAtTime(.0001,T(x));g.gain.linearRampToValueAtTime(.12,T(x)+.15);g.gain.linearRampToValueAtTime(.0001,T(x)+dur);o.connect(f);f.connect(g);out(g,master,1,.4);};
+  const vinheta=(x)=>{[72,76,79,84].forEach((m,i)=>sino(x+i*.11,m,.3,1.1));sino(x+.44,88,.9,1);brilho(x+.3,1.2,8,Math.floor(x));};
+  const corneta=(x)=>{if(!ok(x))return;const o=osc('sawtooth',300,x,.7);o.frequency.exponentialRampToValueAtTime(700,T(x)+.5);const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=1800;const g=ctx.createGain();env(g,x,.02,.12,.6);o.connect(f);f.connect(g);out(g,master,1,.3);};
+  /* arranjos */
+  function tema(x0,compassos=8,bateria=true,melodia=true,v=1){
+    for(let b=0;b<compassos;b++){const ac=ACORDES[TEMA_AC[b%8]],x=x0+b*2;
+      for(let k=0;k<8;k++){const xx=x+k*.25;ukulele(xx,ac[[0,2,1,3,2,1,3,2][k]],.9*v);}
+      baixo(x,ac[0],.45,v);baixo(x+1,ac[0],.45,v);baixo(x+1.5,ac[2],.3,.7*v);
+      if(bateria){for(let k=0;k<4;k++){bumbo(x+k*.5,k%2?.6:.9);chocalho(x+k*.5+.25);}palma(x+.5);palma(x+1.5);}}
+    if(melodia)TEMA.forEach(([b,d,m])=>{if(b<compassos*4)sino(x0+b*.5,m,d*.5,1.05*v);});
+  }
+  function leito(x0,x1,v=.55){for(let x=x0;x<x1-.01;x+=2){const ac=ACORDES[LEITO_AC[Math.floor((x-x0)/2)%4]];
+      for(let k=0;k<8;k++){const xx=x+k*.25;if(xx<x1)ukulele(xx,ac[[0,2,1,3,2,1,3,2][k]],v);}baixo(x,ac[0],.45,v);if(x+1<x1)baixo(x+1,ac[2],.45,v*.8);}}
+  /* 0–16 abertura */
+  tema(0,8,true,true,1);pop(1.0);latido(3.2);latido(3.45);bip(5.0,88);bip(5.12,84);harpa(6.5,.8);brilho(9.5,1.2,10,9);whoosh(8.4,.6);sino(10.4,'C6',1.2,1);vinheta(12);whoosh(15.5,.5);
+  /* 16–30 floresta */
+  leito(16,30,.5);[16.2,16.7,17.1,17.45,17.7,17.9].forEach((x,i)=>bola(x,1-i*.12));latido(21.35);latido(21.7);
+  /* 30–44 porta */
+  whoosh(30,.5,.8);leito(30.5,36.2,.45);latido(30.4,.7);sino(36.4,'C5',.4);sino(38,'E5',.4);sino(39.6,'G5',.6,1.2);rangido(40.4,1.2);harpa(40.8,1);brilho(41,1.2,12,4);whoosh(42.9,1,1);
+  /* 44–60 mundo sem cores: mais suave e misterioso */
+  for(let x=44;x<60;x+=2){sino(x,'A4',.8,.35);sino(x+1,'E5',.8,.25);}harpa(46.8,.9);brilho(47.2,1,10,47);vinheta(58.2);
+  /* 60–70 Robi */
+  leito(60,70,.5);[60.6,60.72,60.84,61.0].forEach((x,i)=>bip(x,[84,79,88,91][i]));bip(62.6,86);bip(62.72,81);pop(63.6);pop(63.8);pop(64.0);
+  /* 70–114 as três cores */
+  leito(70,114,.45);
+  [BURST.red,BURST.yel,BURST.blu].forEach(x=>{vinheta(x);bumbo(x,.7);});
+  [81.2,95].forEach(x=>{bip(x,84);bip(x+.12,88);bip(x+.24,91);pop(x+.6);});pop(109.3);latido(83.25);harpa(70.6,.6);
+  /* pausas: "tique-taque" suave de espera */
+  PAUSES.forEach(([a,b])=>{for(let x=a+.2;x<b-.2;x+=.5)sino(x,(Math.round((x-a)*2)%2)?'G5':'E5',.12,.35);});
+  /* 114–132 festa: o mundo volta a ter cor */
+  harpa(114.6,1.2);brilho(114.8,1.5,16,114);whoosh(114.4,.8);corneta(116.2);corneta(117.3);
+  tema(116,8,true,true,.95);for(let x=116.2;x<121.5;x+=.37)pop(x,.35);latido(117.6);latido(118.6);latido(119.6);
+  /* 132–142 encerramento */
+  tema(132,4,true,true,1);latido(136.05);latido(136.4);bip(137.0,88);bip(137.12,92);
+  [60,64,67,72].forEach(m=>sino(140,m,1.4,.8));baixo(140,48,1.4);
+  const fo=ctx.createGain();
+  master.gain.setValueAtTime(.85,Math.max(T(off),T(140.5)));master.gain.linearRampToValueAtTime(.0001,T(D));
+  return master;
+}
+async function renderAudioWav(){
+  const sr=48000,ctx=new OfflineAudioContext(2,sr*D,sr);trilha(ctx,ctx.destination,0,0);const buf=await ctx.startRendering();
+  return wav(buf);}
+async function renderTemaWav(){ /* música de abertura isolada (16 s) */
+  const sr=48000,ctx=new OfflineAudioContext(2,sr*17,sr);trilha(ctx,ctx.destination,0,0);const buf=await ctx.startRendering();return wav(buf);}
+function wav(buf){const L=buf.getChannelData(0),R=buf.getChannelData(1),n=buf.length;const ab=new ArrayBuffer(44+n*4),dv=new DataView(ab);const ws=(o,s)=>{for(let i=0;i<s.length;i++)dv.setUint8(o+i,s.charCodeAt(i));};
+  ws(0,'RIFF');dv.setUint32(4,36+n*4,true);ws(8,'WAVE');ws(12,'fmt ');dv.setUint32(16,16,true);dv.setUint16(20,1,true);dv.setUint16(22,2,true);dv.setUint32(24,buf.sampleRate,true);dv.setUint32(28,buf.sampleRate*4,true);dv.setUint16(32,4,true);dv.setUint16(34,16,true);ws(36,'data');dv.setUint32(40,n*4,true);
+  let o=44;for(let i=0;i<n;i++){dv.setInt16(o,clamp(L[i],-1,1)*32767,true);dv.setInt16(o+2,clamp(R[i],-1,1)*32767,true);o+=4;}
+  const u=new Uint8Array(ab);let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s);}
+function srt(){const f=s=>{const h=Math.floor(s/3600),m=Math.floor(s%3600/60),ss=Math.floor(s%60),ms=Math.round((s%1)*1000);return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')},${String(ms).padStart(3,'0')}`;};
+  return LINES.map((l,i)=>`${i+1}\n${f(l[0])} --> ${f(l[1]+.2)}\n${WHO[l[2]][0]}: ${l[3]}\n`).join('\n');}
+
+/* ---------------- player ---------------- */
+const params=new URLSearchParams(location.search),render=params.has('render');
+if(params.get('caps')==='0')showCaps=false;
+let T0=0,playing=false,actx=null,aStart=0,aNode=null,perf=0,raf=0;
+const stage=document.getElementById('stage');
+function fit(){if(render){stage.style.transform='none';return;}const vp=document.getElementById('vp');stage.style.transform=`scale(${vp.clientWidth/1920})`;}
+function now(){if(!playing)return T0;if(actx&&aNode)return T0+(actx.currentTime-aStart);return T0+(performance.now()-perf)/1000;}
+function stopA(){if(aNode){try{aNode.disconnect();}catch(e){}aNode=null;}}
+function startA(){stopA();if(!document.getElementById('snd').checked)return;if(!actx)actx=new AudioContext();actx.resume();aStart=actx.currentTime+.05;aNode=trilha(actx,actx.destination,T0,aStart);T0-=.05;}
+const fmt=s=>`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+function loop(){let t=now();if(t>=D){t=D;T0=D;playing=false;stopA();document.getElementById('play').textContent='↺ Ver de novo';}renderAt(t);document.getElementById('scrub').value=t;document.getElementById('tm').textContent=`${fmt(t)} / ${fmt(D)}`;if(playing)raf=requestAnimationFrame(loop);}
+function play(){if(T0>=D-.05)T0=0;playing=true;perf=performance.now();startA();document.getElementById('play').textContent='❚❚ Pausar';loop();}
+function pause(){T0=now();playing=false;stopA();document.getElementById('play').textContent='▶ Assistir';}
+if(render)document.body.classList.add('render');
+else{document.getElementById('play').onclick=()=>playing?pause():play();
+  document.getElementById('scrub').oninput=e=>{const w=playing;if(w){playing=false;stopA();}T0=+e.target.value;renderAt(T0);if(w)play();};
+  document.getElementById('caps').onchange=e=>{showCaps=e.target.checked;renderAt(now());};
+  document.getElementById('snd').onchange=()=>{if(playing){T0=now();perf=performance.now();startA();}};
+  addEventListener('resize',fit);addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();playing?pause():play();}});}
+const ready=document.fonts.ready.then(()=>{fit();renderAt(0);});
+window.EP={D,renderAt,renderAudioWav,renderTemaWav,srt,ready,LINES,PAUSES};
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+1
+00:00:16,600 --> 00:00:19,800
+Liz: Oi, amiguinho! Eu sou a Liz!
+
+2
+00:00:19,800 --> 00:00:21,400
+Liz: E esse é o Pipo!
+
+3
+00:00:21,300 --> 00:00:22,500
+Pipo: Au, au!
+
+4
+00:00:22,500 --> 00:00:25,700
+Liz: Hoje vai ter aventura! Você vem comigo?
+
+5
+00:00:28,200 --> 00:00:30,000
+Liz: Ebaaa! Então vamos!
+
+6
+00:00:30,800 --> 00:00:33,600
+Liz: Olha, Pipo! Uma porta azul!
+
+7
+00:00:33,600 --> 00:00:36,400
+Liz: Vamos contar juntos até três pra abrir?
+
+8
+00:00:36,400 --> 00:00:37,400
+Liz: Um…
+
+9
+00:00:38,000 --> 00:00:39,000
+Liz: Dois…
+
+10
+00:00:39,600 --> 00:00:40,600
+Liz: Três!
+
+11
+00:00:44,600 --> 00:00:47,000
+Liz: Ué… cadê as cores?
+
+12
+00:00:47,400 --> 00:00:51,800
+Lumi: Olá, Liz! Eu sou a Lumi. As cores do nosso mundo sumiram!
+
+13
+00:00:51,800 --> 00:00:55,200
+Liz: Oh, não! Amiguinhos, vocês conseguem me ajudar?
+
+14
+00:00:58,200 --> 00:01:00,000
+Liz: Oba! Eu sabia!
+
+15
+00:01:00,600 --> 00:01:02,600
+Robi: Bip-bop! Eu sou o Robi!
+
+16
+00:01:02,600 --> 00:01:07,000
+Robi: Para a magia voltar, precisamos encontrar três cores!
+
+17
+00:01:07,000 --> 00:01:09,800
+Liz: Três cores! Vamos procurar!
+
+18
+00:01:10,600 --> 00:01:12,800
+Lumi: Olhem ali: uma maçã!
+
+19
+00:01:12,800 --> 00:01:15,800
+Liz: Que cor será essa maçã?
+
+20
+00:01:18,800 --> 00:01:21,200
+Liz: Vermelho! Muito bem!
+
+21
+00:01:21,200 --> 00:01:23,200
+Robi: Primeira cor: encontrada!
+
+22
+00:01:23,200 --> 00:01:24,400
+Pipo: Au!
+
+23
+00:01:26,600 --> 00:01:29,600
+Liz: E essa florzinha? Que cor ela é?
+
+24
+00:01:32,600 --> 00:01:35,000
+Liz: Amarelo! Você é demais!
+
+25
+00:01:35,000 --> 00:01:37,200
+Robi: Segunda cor: encontrada!
+
+26
+00:01:37,200 --> 00:01:39,800
+Liz: Falta só uma!
+
+27
+00:01:40,600 --> 00:01:43,800
+Liz: E o lago? Qual é a cor da água?
+
+28
+00:01:46,800 --> 00:01:49,200
+Liz: Azul! Conseguimos!
+
+29
+00:01:49,200 --> 00:01:52,800
+Lumi: As três cores voltaram! Agora, a magia!
+
+30
+00:01:57,400 --> 00:02:01,600
+Liz: As cores voltaram! Obrigada, amiguinho! Você me ajudou muito!
+
+31
+00:02:01,600 --> 00:02:05,800
+Liz: Agora, um desafio: procure uma coisa azul aí na sua casa!
+
+32
+00:02:09,800 --> 00:02:12,000
+Liz: Achou? Que demais!
+
+33
+00:02:12,600 --> 00:02:16,000
+Liz: Até a próxima aventura! Tchau, tchau!
+
+34
+00:02:16,000 --> 00:02:17,200
+Pipo: Au, au!
+
+35
+00:02:17,000 --> 00:02:18,000
+Robi: Bip!

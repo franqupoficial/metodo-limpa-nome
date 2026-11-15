@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Peças do canal — Liz e o Mundo das Descobertas</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>html,body{margin:0;background:transparent;font-family:Fredoka,sans-serif}svg{display:block}</style></head>
+<body><div id="out"></div>
+<script src="../PERSONAGENS/personagens.js"></script>
+<script src="../IDENTIDADE_VISUAL/logo.js"></script>
+<script>
+/* ?peca=banner (2560x1440) | perfil (800x800) | miniatura (1280x720) | logo (1600x1000, fundo transparente) */
+const {defs,liz,pipo,lumi,robi}=LIZ;const {logoDefs,logoSVG,estrela}=LOGO;
+const peca=new URLSearchParams(location.search).get('peca')||'miniatura';
+const at=(x,y,s,i)=>`<g transform="translate(${x} ${y}) scale(${s})">${i}</g>`;
+const nuvem=(x,y,s)=>`<g transform="translate(${x} ${y}) scale(${s})"><ellipse rx="90" ry="38" fill="#fff"/><circle cx="-40" cy="-20" r="40" fill="#fff"/><circle cx="20" cy="-34" r="50" fill="#fff"/><circle cx="62" cy="-10" r="34" fill="#fff"/></g>`;
+function fundo(W,H){let s=`<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6EC6FF"/><stop offset=".62" stop-color="#FFC6E6"/><stop offset="1" stop-color="#FFE9B8"/></linearGradient><rect width="${W}" height="${H}" fill="url(#bg)"/>`;
+  for(let i=0;i<16;i++){const a=i*22.5;const cx=W/2,cy=H*.55,L=Math.max(W,H)*1.2;s+=`<path d="M${cx} ${cy} L ${cx+Math.cos(a*Math.PI/180)*L} ${cy+Math.sin(a*Math.PI/180)*L} L ${cx+Math.cos((a+9)*Math.PI/180)*L} ${cy+Math.sin((a+9)*Math.PI/180)*L} Z" fill="#fff" opacity=".13"/>`;}
+  return s;}
+const sparkle=(x,y,r,c='#FFF3A8')=>`<path d="M${x} ${y-r} Q ${x} ${y} ${x+r} ${y} Q ${x} ${y} ${x} ${y+r} Q ${x} ${y} ${x-r} ${y} Q ${x} ${y} ${x} ${y-r} Z" fill="${c}" filter="url(#brilho)"/>`;
+let W,H,s='';
+if(peca==='banner'){W=2560;H=1440;s=fundo(W,H);
+  /* área segura do YouTube: 1546x423 no centro */
+  s+=nuvem(300,1250,2.4)+nuvem(2260,1260,2.6)+nuvem(1280,1380,3.4)+nuvem(500,330,1.2)+nuvem(2050,300,1.3);
+  s+=at(1280,680,.58,logoSVG());
+  s+=at(760,925,.76,liz({expr:'feliz',bracoD:155}));s+=at(560,930,.85,pipo({rabo:20}));
+  s+=at(1820,930,.8,robi({bracoD:150}));s+=at(2010,650,.9,lumi({bater:.2}));
+  s+=`<g transform="translate(1280 895)"><rect x="-300" y="-30" width="600" height="60" rx="30" fill="#7B3DB8"/><text y="12" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="34" fill="#fff">Novos episódios toda semana!</text></g>`;
+  [[420,520,26],[2140,540,30],[1000,420,18],[1560,1020,22]].forEach(([x,y,r])=>s+=sparkle(x,y,r));}
+else if(peca==='perfil'){W=800;H=800;s=`<radialGradient id="pf"><stop offset="0" stop-color="#FFE3F1"/><stop offset="1" stop-color="#FF8BC6"/></radialGradient><clipPath id="cp"><circle cx="400" cy="400" r="400"/></clipPath><g clip-path="url(#cp)"><circle cx="400" cy="400" r="400" fill="url(#pf)"/>`;
+  for(let i=0;i<12;i++){const a=i*30;s+=`<path d="M400 400 L ${400+Math.cos(a*Math.PI/180)*600} ${400+Math.sin(a*Math.PI/180)*600} L ${400+Math.cos((a+12)*Math.PI/180)*600} ${400+Math.sin((a+12)*Math.PI/180)*600} Z" fill="#fff" opacity=".18"/>`;}
+  s+=`${at(400,1010,1.45,liz({expr:'feliz',sombra:false}))}</g>`;
+  s+=sparkle(130,200,30)+sparkle(680,170,24)+sparkle(700,420,16,'#fff');}
+else if(peca==='miniatura'){W=1280;H=720;
+  /* metade cinza x metade colorida = a história do episódio em um olhar */
+  s=fundo(W,H);s+=`<filter id="cinza"><feColorMatrix type="saturate" values="0"/></filter>`;
+  s+=nuvem(160,640,1.6)+nuvem(1130,650,1.8)+nuvem(640,700,2.2);
+  /* porta azul brilhando */
+  s+=`<g transform="translate(1080 600) scale(.9)"><path d="M-110 -10 L -110 -250 Q -110 -360 0 -360 Q 110 -360 110 -250 L 110 -10 Z" fill="#FFF3B0" filter="url(#brilhoForte)"/><path d="M-100 -20 L -100 -250 Q -100 -350 0 -350 Q 100 -350 100 -250 L 100 -20 Z" fill="#2F7DF6" stroke="#F7C744" stroke-width="12"/>${estrela(0,-250,30,0)}<circle cx="68" cy="-160" r="12" fill="#F7C744"/></g>`;
+  /* três cores */
+  [['#F0322F',880,170],['#FFD21F',1000,110],['#2E8CF0',1120,170]].forEach(([c,x,y],i)=>{s+=`<circle cx="${x}" cy="${y}" r="52" fill="${c}" stroke="#fff" stroke-width="10" filter="url(#sombraSuave)"/>`;});
+  s+=`<text x="1000" y="306" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="58" fill="#fff" stroke="#7B3DB8" stroke-width="14" paint-order="stroke">Qual é a cor?</text>`;
+  s+=at(420,800,1.12,liz({expr:'surpresa',bracoD:100,apontarD:true,olharX:.6,sombra:false}));
+  s+=at(150,705,.9,pipo({rabo:20,latir:true}));s+=at(720,690,.85,robi({expr:'uau',bracoE:130,bracoD:130}));s+=at(730,260,1.1,lumi({bater:.2}));
+  s+=at(250,120,.36,logoSVG());
+  s+=sparkle(620,120,22)+sparkle(1220,400,18,'#fff')+sparkle(560,500,14,'#fff');}
+else { W=1600;H=1000;s=at(800,470,1.4,logoSVG()); }
+document.getElementById('out').innerHTML=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">${defs()}${logoDefs()}${s}</svg>`;
+document.title=peca;
+</script></body></html>

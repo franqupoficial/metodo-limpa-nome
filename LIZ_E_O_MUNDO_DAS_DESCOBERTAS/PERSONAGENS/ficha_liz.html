@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Ficha oficial — Liz</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FFF7FB;font-family:Fredoka,system-ui,sans-serif;color:#4A2A3A}
+.sheet{width:2400px;height:1600px;position:relative;overflow:hidden;background:radial-gradient(1200px 700px at 80% 0%,#FFE3F1,transparent),radial-gradient(900px 600px at 0% 100%,#E7F4FF,transparent),#FFF9FC}
+h1{position:absolute;left:70px;top:40px;margin:0;font-size:64px;color:#E8418A;font-weight:700}
+h1 small{display:block;font-size:26px;color:#8a6377;font-weight:500;margin-top:4px}
+.tag{position:absolute;font-size:22px;font-weight:600;color:#fff;background:#E8418A;border-radius:999px;padding:6px 18px}
+.lbl{position:absolute;font-size:24px;font-weight:600;color:#8a3d63;text-align:center;transform:translateX(-50%)}
+svg{position:absolute;left:0;top:0;z-index:0}.tag,.lbl{z-index:2}
+.pal{position:absolute;left:1560px;top:760px;width:780px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.sw{border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 4px 14px rgba(120,40,80,.12);font-size:17px}
+.sw i{display:block;height:58px}
+.sw span{display:block;padding:6px 10px;line-height:1.2}
+.sw b{display:block;font-weight:600}
+.notes{position:absolute;left:1560px;top:150px;width:780px;font-size:22px;line-height:1.45;background:#fff;border-radius:24px;padding:26px 30px;box-shadow:0 6px 20px rgba(120,40,80,.1)}
+.notes h3{margin:0 0 8px;color:#E8418A;font-size:28px}
+.notes ul{margin:0 0 10px;padding-left:22px}
+.box{position:absolute;border:3px dashed #F4B6D2;border-radius:30px}
+</style></head><body>
+<div class="sheet" id="sheet">
+  <h1>LIZ — Ficha oficial do personagem<small>Liz e o Mundo das Descobertas · v1.0 · referência obrigatória para todos os episódios</small></h1>
+  <div class="box" style="left:50px;top:150px;width:1480px;height:640px"></div>
+  <span class="tag" style="left:80px;top:170px">Turnaround</span>
+  <div class="box" style="left:50px;top:820px;width:1480px;height:360px"></div>
+  <span class="tag" style="left:80px;top:840px">Expressões</span>
+  <div class="box" style="left:50px;top:1210px;width:1480px;height:360px"></div>
+  <span class="tag" style="left:80px;top:1230px">Poses principais</span>
+  <div class="notes">
+    <h3>Quem é a Liz</h3>
+    Menina de ~5 anos, curiosa, inteligente, alegre, carinhosa, brincalhona e comunicativa. Conversa direto com a criança: olha para a câmera, pergunta, espera a resposta e comemora.
+    <h3 style="margin-top:16px">Regras de consistência</h3>
+    <ul>
+      <li>Cabelo <b>acobreado e cacheado</b>, franja ondulada, <b>rabo alto à direita</b> com <b>laço rosa</b>.</li>
+      <li>Olhos grandes <b>castanhos</b> com 2 brilhos; cílios com 2 traços; sardinhas nas bochechas.</li>
+      <li>Roupa oficial: camiseta rosa-clarinho, <b>jardineira rosa</b> com <b>florzinha branca</b> no peito e <b>botões dourados</b>, mochila rosa, tênis brancos com faixa rosa, pulseira rosa no pulso direito.</li>
+      <li>Proporção: cabeça ≈ 45% da altura (estilo infantil). Nunca mudar penteado, cores ou roupa sem aprovação.</li>
+      <li>Rosto sempre visível e iluminado; nos diálogos, olha para a câmera.</li>
+    </ul>
+  </div>
+  <div class="pal" id="pal"></div>
+  <svg id="art" width="2400" height="1600" viewBox="0 0 2400 1600"></svg>
+</div>
+<script src="personagens.js"></script>
+<script>
+const {defs,liz,lizLado,lizCostas,COR}=LIZ;
+const P=(x,y,s,inner)=>`<g transform="translate(${x} ${y}) scale(${s})">${inner}</g>`;
+let g=defs();
+/* turnaround */
+g+=P(330,760,1.18,liz({expr:'sorriso'}));
+g+=P(760,760,1.18,lizLado({expr:'sorriso'}));
+g+=P(1190,760,1.18,lizCostas({}));
+/* expressões (cabeças) */
+const ex=[['feliz','Feliz'],['rindo','Rindo'],['surpresa','Surpresa'],['pensativa','Pensativa'],['animada','Animada (falando)'],['triste','Tristinha'],['piscando','Piscando']];
+ex.forEach(([e,n],i)=>{const x=170+i*200;const o=e==='piscando'?{expr:'sorriso',piscar:1}:e==='animada'?{expr:'feliz',falar:true}:e==='pensativa'?{expr:'pensativa',olharX:-.8,olharY:-1}:{expr:e};
+  g+=`<g transform="translate(${x} 1240) scale(.62)"><clipPath id="c${i}"><rect x="-200" y="-620" width="400" height="430"/></clipPath><g clip-path="url(#c${i})">${liz(Object.assign({sombra:false},o))}</g></g>`;});
+/* poses */
+const poses=[
+ ['Acenando (oi!)',{expr:'feliz',bracoD:155,bracoE:14}],
+ ['Apontando',{expr:'animada',bracoD:95,apontarD:true}],
+ ['Ouvindo a criança',{expr:'sorriso',bracoD:150,olharX:.5,inclinar:-6}],
+ ['Pensando',{expr:'pensativa',bracoD:160,olharX:-.8,olharY:-1}],
+ ['Comemorando',{expr:'rindo',bracoE:160,bracoD:160,pulo:40}],
+ ['Surpresa',{expr:'surpresa',bracoE:60,bracoD:60}]
+];
+poses.forEach(([n,o],i)=>{g+=P(190+i*240,1515,.6,liz(o));});
+document.getElementById('art').innerHTML=g;
+/* rótulos */
+const L=(x,y,t)=>{const d=document.createElement('div');d.className='lbl';d.style.left=x+'px';d.style.top=y+'px';d.textContent=t;document.getElementById('sheet').appendChild(d);};
+L(330,770,'Frente');L(760,770,'Lateral');L(1190,770,'Costas');
+ex.forEach(([e,n],i)=>L(170+i*200,1128,n));
+poses.forEach(([n],i)=>L(190+i*240,1530,n));
+/* paleta */
+const pal=[['Cabelo',COR.cabelo],['Cabelo luz',COR.cabeloClaro],['Pele',COR.pele],['Bochecha',COR.bochecha],['Laço',COR.laco],['Jardineira',COR.jardineira],['Camiseta',COR.camiseta],['Botões',COR.botao],['Olhos',COR.iris],['Mochila',COR.mochila],['Tênis detalhe',COR.tenisDetalhe],['Flor (miolo)',COR.florMiolo]];
+document.getElementById('pal').innerHTML=pal.map(([n,c])=>`<div class="sw"><i style="background:${c}"></i><span><b>${n}</b>${c}</span></div>`).join('');
+</script></body></html>

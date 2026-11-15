@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Ficha oficial — Pipo, Lumi e Robi</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:Fredoka,system-ui,sans-serif;color:#3D2A4A}
+.sheet{width:2400px;height:1600px;position:relative;overflow:hidden;background:radial-gradient(900px 600px at 100% 0%,#E3F2FF,transparent),radial-gradient(900px 600px at 0% 100%,#FFE8F4,transparent),#FBFAFF}
+h1{position:absolute;left:70px;top:40px;margin:0;font-size:64px;color:#7B3DB8;font-weight:700}
+h1 small{display:block;font-size:26px;color:#7a6a8a;font-weight:500;margin-top:4px}
+.col{position:absolute;top:150px;width:740px;height:1410px;border-radius:34px;background:#fff;box-shadow:0 8px 26px rgba(70,40,120,.1)}
+.col h2{margin:26px 34px 4px;font-size:46px}
+.col p{margin:0 34px;font-size:22px;line-height:1.45;color:#5d4f6b}
+.lbl{position:absolute;font-size:21px;font-weight:600;color:#6b5a7b;text-align:center;transform:translateX(-50%);z-index:2}
+.sw{position:absolute;display:flex;gap:10px;z-index:2}
+.sw i{width:64px;height:64px;border-radius:14px;display:block;box-shadow:0 3px 10px rgba(0,0,0,.12)}
+svg{position:absolute;left:0;top:0;z-index:1}
+</style></head><body>
+<div class="sheet" id="sheet">
+  <h1>Os amigos da Liz — fichas oficiais<small>Pipo · Lumi · Robi · v1.0 · mesma aparência em todos os episódios</small></h1>
+  <div class="col" style="left:50px"><h2 style="color:#C9773A">Pipo</h2><p>Cachorrinho pequeno, fofo e brincalhão. <b>Não fala</b>: late ("au, au!"), funga, choraminga e faz sons engraçados. Expressa tudo com o rabo, as orelhas e a linguinha. Marrom-caramelo com focinho e peito creme, coleira rosa com medalha dourada de patinha.</p></div>
+  <div class="col" style="left:830px"><h2 style="color:#B667F2">Lumi</h2><p>Borboleta mágica que guia a Liz pelas aventuras. Asas rosa→lilás com pontos brilhantes, rostinho redondo e antenas com bolinhas. Deixa um <b>rastro de brilhos</b> por onde voa e usa a magia para abrir caminhos e revelar segredos. Voz doce e sussurrada, com eco mágico.</p></div>
+  <div class="col" style="left:1610px"><h2 style="color:#2D8CFF">Robi</h2><p>Robozinho arredondado, branco e azul, com tela preta no rosto e olhos de luz azul. Apresenta os <b>desafios educativos</b> e comemora cada acerto ("Bip-bop! Encontrada!"). Coração azul que acende quando está feliz. Voz divertida e levemente eletrônica.</p></div>
+  <svg id="art" width="2400" height="1600" viewBox="0 0 2400 1600"></svg>
+</div>
+<script src="personagens.js"></script>
+<script>
+const {defs,pipo,lumi,robi,COR}=LIZ;
+const P=(x,y,s,inner)=>`<g transform="translate(${x} ${y}) scale(${s})">${inner}</g>`;
+let g=defs();const labels=[];
+/* Pipo */
+g+=P(420,850,2.15,pipo({rabo:-10}));labels.push([420,870,'Sentado (pose padrão)']);
+[['Latindo',{latir:true,rabo:10,orelha:-12}],['Feliz (rabo abanando)',{rabo:25,piscar:1}],['Curioso',{inclinar:14,olharX:1,lingua:false,orelha:10}],['Pulando',{pulo:40,rabo:20,latir:true,orelha:-18}]]
+ .forEach(([n,o],i)=>{const x=150+i*180;g+=P(x,1260,.95,pipo(o));labels.push([x,1280,n]);});
+/* Lumi */
+g+=P(1200,640,2.4,lumi({}));labels.push([1200,900,'Asas abertas']);
+[['Batendo asas',{bater:.7}],['Piscando',{piscar:1}],['Falando',{falar:true,bater:.3}]]
+ .forEach(([n,o],i)=>{const x=980+i*220;g+=P(x,1150,1.1,lumi(o));labels.push([x,1280,n]);});
+let tr='';for(let i=0;i<14;i++){const x=900+i*22,y=1390+Math.sin(i*.8)*18;tr+=`<circle cx="${x}" cy="${y}" r="${3+(i%3)}" fill="${['#FFF3A8','#FF9ED8','#C9A2FF'][i%3]}" filter="url(#brilho)"/>`;}
+g+=tr+P(1240,1390,.7,lumi({bater:.4}));labels.push([1100,1450,'Rastro de brilhos mágicos']);
+/* Robi */
+g+=P(1980,880,1.9,robi({}));labels.push([1980,900,'Pose padrão (feliz)']);
+[['Uau!',{expr:'uau',bracoE:120,bracoD:120}],['Piscadinha',{expr:'piscar',bracoD:150}],['Pensando',{expr:'pensando',bracoD:150}],['Falando',{falar:true,bracoE:60}]]
+ .forEach(([n,o],i)=>{const x=1720+i*175;g+=P(x,1260,.72,robi(o));labels.push([x,1280,n]);});
+document.getElementById('art').innerHTML=g;
+const sheet=document.getElementById('sheet');
+labels.forEach(([x,y,t])=>{const d=document.createElement('div');d.className='lbl';d.style.left=x+'px';d.style.top=y+'px';d.textContent=t;sheet.appendChild(d);});
+const sw=(x,cs)=>{const d=document.createElement('div');d.className='sw';d.style.left=x+'px';d.style.top='1480px';d.innerHTML=cs.map(c=>`<i style="background:${c}" title="${c}"></i>`).join('');sheet.appendChild(d);};
+sw(90,[COR.pipoMarrom,COR.pipoMarromEscuro,COR.pipoCreme,COR.coleira,COR.medalha]);
+sw(870,[COR.lumiAsa1,COR.lumiAsa2,COR.lumiAsaBorda,COR.lumiCorpo,COR.lumiRosto]);
+sw(1650,[COR.robiBranco,COR.robiAzul,COR.robiTela,COR.robiBrilho,COR.robiMao]);
+</script></body></html>
