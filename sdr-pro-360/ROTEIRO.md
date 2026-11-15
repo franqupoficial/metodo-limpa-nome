@@ -230,6 +230,7 @@ O animatic define **tempo, ritmo, texto e enquadramento**. Para o filme final em
 | `sdr-pro-360/videos/sdr-pro-360_15s_16x9.mp4` | Corte 1920×1080 · 15 s |
 | `sdr-pro-360/videos/sdr-pro-360_15s_9x16.mp4` | Corte vertical 1080×1920 · 15 s |
 | `sdr-pro-360/tools/render.cjs` | Renderizador (Playwright + ffmpeg) que gera os MP4 a partir do `index.html` |
+| `sdr-pro-360/ninguem-fica-para-tras.html` + `ROTEIRO-FILME-2.md` | **Filme 2 — "Ninguém fica para trás"**: leads perdidos, carteira e novos clientes (ver roteiro próprio) |
 
 **Os MP4 não têm narração gravada.** As legendas seguem o texto da locução. Para a versão final: gravar a voz (seção 5), mixar sobre a trilha e substituir/limpar as legendas se necessário.
 
