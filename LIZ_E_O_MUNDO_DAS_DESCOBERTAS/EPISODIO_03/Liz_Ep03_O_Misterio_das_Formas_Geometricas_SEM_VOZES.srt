@@ -1,0 +1,231 @@
+1
+00:00:17,600 --> 00:00:21,280
+Mamãe Scarllet: Liz, hoje temos uma surpresa especial!
+
+2
+00:00:21,380 --> 00:00:23,160
+Liz: O que será, mamãe?
+
+3
+00:00:25,560 --> 00:00:28,550
+Liz: Uaaaaau! O que são essas figuras?
+
+4
+00:00:28,650 --> 00:00:33,050
+Mamãe Scarllet: São formas geométricas! Vamos aprender juntas?
+
+5
+00:00:33,050 --> 00:00:34,060
+Liz: Vamos!
+
+6
+00:00:33,860 --> 00:00:35,060
+Pipo: Au! Au!
+
+7
+00:00:37,260 --> 00:00:40,390
+Papai Kennedy: Liz, sabe qual é essa forma?
+
+8
+00:00:40,490 --> 00:00:42,230
+Liz: Não sei, papai!
+
+9
+00:00:42,330 --> 00:00:44,400
+Papai Kennedy: É um círculo!
+
+10
+00:00:45,600 --> 00:00:49,470
+Papai Kennedy: A bola é redondinha, assim como o relógio!
+
+11
+00:00:49,570 --> 00:00:51,840
+Liz: Círculo! Círculo!
+
+12
+00:00:51,940 --> 00:00:55,950
+Liz: Amiguinhos, vocês conseguem encontrar alguma coisa redonda?
+
+13
+00:00:59,750 --> 00:01:01,010
+Liz: Muito bem!
+
+14
+00:01:03,210 --> 00:01:06,220
+Vovó Rose: Olha, Liz! Esse é um quadrado!
+
+15
+00:01:06,320 --> 00:01:08,200
+Liz: Ele tem quatro lados!
+
+16
+00:01:08,300 --> 00:01:11,230
+Vovó Rose: Muito bem! Vamos contar?
+
+17
+00:01:11,530 --> 00:01:12,980
+Todos: Um!
+
+18
+00:01:13,380 --> 00:01:15,020
+Todos: Dois!
+
+19
+00:01:15,420 --> 00:01:16,990
+Todos: Três!
+
+20
+00:01:17,390 --> 00:01:18,960
+Todos: Quatro!
+
+21
+00:01:19,360 --> 00:01:23,230
+Vovó Rose: A janela e os bloquinhos também são quadrados!
+
+22
+00:01:26,030 --> 00:01:29,200
+Liz: Papai! Essa forma tem três pontinhas!
+
+23
+00:01:29,300 --> 00:01:32,960
+Papai Kennedy: Muito bem! É o triângulo!
+
+24
+00:01:33,960 --> 00:01:35,410
+Todos: Um!
+
+25
+00:01:35,810 --> 00:01:37,450
+Todos: Dois!
+
+26
+00:01:37,850 --> 00:01:39,420
+Todos: Três!
+
+27
+00:01:39,820 --> 00:01:43,980
+Papai Kennedy: O telhado da casinha e a placa também são triângulos!
+
+28
+00:01:46,780 --> 00:01:49,980
+Mamãe Scarllet: Liz, olha o formato deste livro!
+
+29
+00:01:50,080 --> 00:01:51,620
+Liz: Ele é compridinho!
+
+30
+00:01:51,720 --> 00:01:54,630
+Mamãe Scarllet: Isso mesmo! É um retângulo!
+
+31
+00:01:55,830 --> 00:01:59,730
+Mamãe Scarllet: A porta, o livro e a televisão são retângulos!
+
+32
+00:02:02,530 --> 00:02:06,040
+Papai Kennedy: Agora vamos brincar de caça às formas!
+
+33
+00:02:06,040 --> 00:02:07,610
+Liz: Vamos, Pipo!
+
+34
+00:02:07,410 --> 00:02:08,610
+Pipo: Au! Au!
+
+35
+00:02:09,610 --> 00:02:12,830
+Liz: Achei um círculo! A almofada!
+
+36
+00:02:14,030 --> 00:02:17,300
+Liz: Achei um quadrado! O porta-retrato!
+
+37
+00:02:18,500 --> 00:02:19,900
+Pipo: Au! Au! Au!
+
+38
+00:02:19,700 --> 00:02:22,900
+Liz: O Pipo achou um triângulo! A bandeirinha!
+
+39
+00:02:24,100 --> 00:02:25,980
+Liz: E o tapete é um retângulo!
+
+40
+00:02:26,780 --> 00:02:29,310
+Liz: E a bola do papai também é um círculo!
+
+41
+00:02:29,910 --> 00:02:33,540
+Vovó Rose: Vamos contar quantas coisas a Liz encontrou?
+
+42
+00:02:33,740 --> 00:02:35,190
+Todos: Um!
+
+43
+00:02:35,490 --> 00:02:37,130
+Todos: Dois!
+
+44
+00:02:37,430 --> 00:02:39,000
+Todos: Três!
+
+45
+00:02:39,300 --> 00:02:40,870
+Todos: Quatro!
+
+46
+00:02:41,170 --> 00:02:42,830
+Todos: Cinco!
+
+47
+00:02:43,030 --> 00:02:46,710
+Vovó Rose: Cinco coisas! Parabéns, Liz!
+
+48
+00:02:48,510 --> 00:02:50,150
+Liz: Agora é sua vez!
+
+49
+00:02:50,550 --> 00:02:52,000
+Liz: Que forma é essa?
+
+50
+00:02:55,300 --> 00:02:56,510
+Liz: Círculo!
+
+51
+00:02:57,310 --> 00:02:58,760
+Liz: Que forma é essa?
+
+52
+00:03:02,060 --> 00:03:03,220
+Liz: Quadrado!
+
+53
+00:03:04,020 --> 00:03:05,460
+Liz: Que forma é essa?
+
+54
+00:03:08,760 --> 00:03:10,210
+Liz: Triângulo!
+
+55
+00:03:11,010 --> 00:03:12,460
+Liz: Que forma é essa?
+
+56
+00:03:15,760 --> 00:03:17,060
+Liz: Retângulo!
+
+57
+00:03:17,460 --> 00:03:19,300
+Liz: Você acertou tudo!
+
+58
+00:03:53,700 --> 00:03:58,240
+Liz: Aprender brincando é muito divertido! Até a próxima aventura!
