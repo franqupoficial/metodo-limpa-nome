@@ -7,8 +7,8 @@ Duração de 2 a 3 min, com 5 a 7 pausas de participação.
 | Ep. | Título | Tema / objetivo | Cor da miniatura |
 |---|---|---|---|
 | 01 | A Porta Mágica das Cores ✅ *produzido* | Cores primárias: vermelho, amarelo e azul | Arco-íris |
-| 02 | O Jardim dos Números | Contar de 1 a 5 e associar quantidade ao número | Verde |
-| 03 | A Floresta dos Animais | Animais e seus sons; grande × pequeno | Laranja |
+| 02 | A Floresta dos Animais ✅ *produzido* | Animais: nomes, sons e características; respeito aos animais | Verde-floresta |
+| 03 | O Jardim dos Números | Contar de 1 a 5 e associar quantidade ao número | Amarelo-girassol |
 | 04 | O Trem das Letras | Vogais A, E, I, O, U e palavras que começam com elas | Azul |
 | 05 | O Tesouro da Amizade | Amizade: dividir, ajudar e convidar para brincar | Rosa |
 | 06 | O Planeta dos Sons | Alto × baixo, rápido × devagar, instrumentos | Roxo |
@@ -17,20 +17,16 @@ Duração de 2 a 3 min, com 5 a 7 pausas de participação.
 
 ---
 
-## 02 · O Jardim dos Números
+## 02 · A Floresta dos Animais ✅ (produzido)
+Ver `EPISODIO_02/ROTEIRO_EP02.md`. Coelhinho (pula), leão (ruge), macaquinho (sobe nas árvores), girafa (pescoço comprido) e elefante (tromba), com álbum dos animais e a mensagem "cada animal é especial e merece carinho e respeito". Gancho: "Próximo episódio: O Jardim dos Números".
+
+## 03 · O Jardim dos Números
 - **Portal:** uma semente mágica que vira um pé de feijão. A Liz sobe e encontra um jardim onde **os números fugiram das plaquinhas**.
 - **Problema (Lumi):** as flores não sabem quantas são e não conseguem florescer.
 - **Missão (Robi):** 3 canteiros. Contar **2 joaninhas**, **3 cogumelos** e **5 flores**.
 - **Participação:** "Conta comigo: um, dois… três!" (contagem com intervalo de 0,8 s) · "Quantas flores tem aqui?" (pausa de 3 s) · mostrar os dedinhos: "Mostra cinco dedinhos pra mim!"
 - **Desafio em casa:** contar quantas portas ou janelas tem na sala.
-- **Gancho:** pegadas de animais saindo do jardim → Ep. 03.
-
-## 03 · A Floresta dos Animais
-- **Portal:** o Pipo segue um som misterioso até um túnel de folhas.
-- **Problema:** os animais da floresta perderam a voz, e só voltam a falar se alguém imitar o som certo.
-- **Missão:** vaca ("muuu"), gato ("miau") e passarinho ("piu-piu"). Bônus: o Pipo late e o leão ruge baixinho.
-- **Participação:** "Como faz a vaquinha?" (pausa: a criança imita) · "Quem é maior: o elefante ou o ratinho?"
-- **Desafio em casa:** imitar o animal favorito para a família.
+- **Gancho:** uma trilha de flores coloridas leva até a estação do trem → Ep. 04.
 
 ## 04 · O Trem das Letras
 - **Portal:** um trem colorido para na estação da floresta. Cada vagão carrega uma vogal.

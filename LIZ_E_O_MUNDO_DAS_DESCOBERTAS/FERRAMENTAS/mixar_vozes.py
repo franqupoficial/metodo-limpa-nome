@@ -3,10 +3,11 @@ Uso: python3 FERRAMENTAS/mixar_vozes.py <video_sem_voz.mp4> <trilha.wav> <html> 
 import json, re, subprocess, sys
 video, trilha, html, pasta, saida = sys.argv[1:6]
 src = open(html, encoding='utf-8').read()
+DUR = float(re.search(r'const D=([\d.]+)', src).group(1))
 bloco = src[src.index('const LINES=['):src.index('];', src.index('const LINES=['))]
 L = re.findall(r"\[([\d.]+),([\d.]+),'(\w+)','([^']+)'\]", bloco)
 meta = json.load(open(f'{pasta}/falas.json', encoding='utf-8'))
-FX = {'LIZ': 'highpass=f=90,equalizer=f=3000:t=q:w=1:g=2',
+FX = {'PIPO': 'anull', 'LEAO': 'anull', 'MACACO': 'anull', 'ELEFANTE': 'anull','LIZ': 'highpass=f=90,equalizer=f=3000:t=q:w=1:g=2',
       'LUMI': 'highpass=f=120,aecho=0.8:0.6:70|140:0.22|0.12',
       'ROBI': 'highpass=f=100,flanger=delay=2:depth=2:speed=0.6,aecho=0.8:0.5:14:0.35,acrusher=bits=12:mix=0.15'}
 ins, fil, labs = ['-i', video, '-i', trilha], [], []
@@ -19,7 +20,7 @@ for m in meta:
     ins += ['-i', f"{pasta}/{m['arquivo']}"]
     fil.append(f"[{n}:a]aresample=48000,aformat=channel_layouts=stereo,atempo={tp:.3f},{FX[who]},loudnorm=I=-16:TP=-2,adelay={int(a*1000)}|{int(a*1000)}[v{n}]")
     labs.append(f"[v{n}]"); n += 1
-fil.append(f"{''.join(labs)}amix=inputs={len(labs)}:normalize=0,apad=whole_dur=142[voz]")
+fil.append(f"{''.join(labs)}amix=inputs={len(labs)}:normalize=0,apad=whole_dur={DUR}[voz]")
 fil.append("[voz]asplit=2[voz1][voz2]")
 fil.append("[1:a]volume=1.3[mus]")
 fil.append("[mus][voz1]sidechaincompress=threshold=0.02:ratio=8:attack=15:release=400[duck]")

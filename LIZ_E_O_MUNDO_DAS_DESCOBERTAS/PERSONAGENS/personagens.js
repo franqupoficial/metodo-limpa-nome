@@ -326,5 +326,138 @@ function robi(o = {}) {
   return s;
 }
 
-root.LIZ = { COR, defs, liz, lizLado, lizCostas, pipo, lumi, robi };
+
+/* =====================================================================
+   ANIMAIS DA FLORESTA (Episódio 2) — mesmo estilo e regras da turma.
+   ===================================================================== */
+Object.assign(COR, {
+  coelho: '#FFFFFF', coelhoSombra: '#E9E3EE', coelhoOrelha: '#FFB3CF',
+  leao: '#F2B544', leaoClaro: '#FCE3A6', juba: '#D9772B', jubaClara: '#E8933F', leaoNariz: '#8A4B2A',
+  macaco: '#8B5A3C', macacoEscuro: '#6E432B', macacoRosto: '#EBCBA2', banana: '#FFD84A',
+  girafa: '#F6C45B', girafaClara: '#FBDD95', girafaMancha: '#C77A33', casco: '#6E4220',
+  elefante: '#9FB0CB', elefanteClaro: '#B4C3DB', elefanteOrelha: '#F6B6C8'
+});
+const olhoFofo = (x, y, r, piscar, ox = 0) => (piscar > .5)
+  ? `<path d="M${x - r} ${y} Q ${x} ${y - r * 1.2} ${x + r} ${y}" stroke="#2A1A14" stroke-width="${r * .45}" fill="none" stroke-linecap="round"/>`
+  : `<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r * 1.2}" fill="#2A1A14"/><circle cx="${x - r * .35 + ox}" cy="${y - r * .45}" r="${r * .42}" fill="#fff"/><circle cx="${x + r * .35 + ox}" cy="${y + r * .35}" r="${r * .18}" fill="#fff"/>`;
+
+/* ---------- COELHINHO ---------- o: {pulo, orelha, nariz, piscar, olharX} */
+function coelho(o = {}) {
+  const pulo = o.pulo || 0, orl = o.orelha || 0, nz = (o.nariz || 0) * 2;
+  let s = `<g class="coelho"><ellipse cx="0" cy="0" rx="${r1(56 - pulo * .15)}" ry="9" fill="#000" opacity=".15"/><g transform="translate(0 ${-pulo})">`;
+  s += `<circle cx="42" cy="-38" r="17" fill="#fff" stroke="${COR.coelhoSombra}" stroke-width="3"/>`;
+  s += `<ellipse cx="0" cy="-56" rx="46" ry="50" fill="${COR.coelho}" stroke="${COR.coelhoSombra}" stroke-width="3"/><ellipse cx="0" cy="-46" rx="28" ry="34" fill="#FFF5F8"/>`;
+  s += `<ellipse cx="-27" cy="-9" rx="27" ry="12" fill="#fff" stroke="${COR.coelhoSombra}" stroke-width="3"/><ellipse cx="27" cy="-9" rx="27" ry="12" fill="#fff" stroke="${COR.coelhoSombra}" stroke-width="3"/>`;
+  s += `<ellipse cx="-14" cy="-36" rx="10" ry="12" fill="#fff" stroke="${COR.coelhoSombra}" stroke-width="2"/><ellipse cx="14" cy="-36" rx="10" ry="12" fill="#fff" stroke="${COR.coelhoSombra}" stroke-width="2"/>`;
+  const orelha = (x, a) => `<g transform="translate(${x} -160) rotate(${r1(a)})"><ellipse cx="0" cy="-54" rx="16" ry="58" fill="#fff" stroke="${COR.coelhoSombra}" stroke-width="3"/><ellipse cx="0" cy="-50" rx="8" ry="44" fill="${COR.coelhoOrelha}"/></g>`;
+  s += orelha(-18, -12 + orl) + orelha(18, 12 - orl * .6);
+  s += `<circle cx="0" cy="-124" r="47" fill="#fff" stroke="${COR.coelhoSombra}" stroke-width="3"/>`;
+  s += olhoFofo(-17, -130, 9, o.piscar || 0, (o.olharX || 0) * 3) + olhoFofo(17, -130, 9, o.piscar || 0, (o.olharX || 0) * 3);
+  s += `<ellipse cx="-30" cy="-110" rx="9" ry="6" fill="${COR.bochecha}" opacity=".55"/><ellipse cx="30" cy="-110" rx="9" ry="6" fill="${COR.bochecha}" opacity=".55"/>`;
+  s += `<path d="M-7 ${-116 + nz} h14 l -7 8 z" fill="#FF7FA8"/><path d="M0 ${-108 + nz} v6 M-9 -98 q 9 6 9 -4 q 0 10 9 4" stroke="#C9A6B4" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+  s += `<path d="M-16 -110 h-26 M-16 -106 l -24 6 M16 -110 h26 M16 -106 l 24 6" stroke="#D9CCD6" stroke-width="2" stroke-linecap="round"/>`;
+  s += `<rect x="-5" y="-100" width="10" height="7" rx="2" fill="#fff" stroke="#E2D8DE" stroke-width="1.5"/>`;
+  return s + `</g></g>`;
+}
+
+/* ---------- LEÃO ---------- o: {rugir (0..1), juba, rabo, piscar, olharX} */
+function leao(o = {}) {
+  const rg = o.rugir || 0, jb = 1 + (o.juba || 0) * .06, rabo = o.rabo || 0;
+  let s = `<g class="leao"><ellipse cx="0" cy="0" rx="100" ry="13" fill="#000" opacity=".15"/>`;
+  s += `<g transform="translate(62 -40) rotate(${rabo})"><path d="M0 0 Q 50 -10 60 -60" stroke="${COR.leao}" stroke-width="12" fill="none" stroke-linecap="round"/><ellipse cx="62" cy="-68" rx="14" ry="18" fill="${COR.juba}"/></g>`;
+  s += `<ellipse cx="-52" cy="-22" rx="32" ry="24" fill="${COR.leao}"/><ellipse cx="52" cy="-22" rx="32" ry="24" fill="${COR.leao}"/>`;
+  s += `<ellipse cx="0" cy="-74" rx="72" ry="64" fill="${COR.leao}"/><ellipse cx="0" cy="-58" rx="40" ry="44" fill="${COR.leaoClaro}"/>`;
+  s += `<rect x="-38" y="-86" width="26" height="78" rx="13" fill="${COR.leao}"/><rect x="12" y="-86" width="26" height="78" rx="13" fill="${COR.leao}"/>`;
+  s += `<ellipse cx="-25" cy="-8" rx="19" ry="11" fill="${COR.leaoClaro}"/><ellipse cx="25" cy="-8" rx="19" ry="11" fill="${COR.leaoClaro}"/>`;
+  /* juba */
+  s += `<g transform="translate(0 -168) scale(${r1(jb)})">`;
+  for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2; s += `<circle cx="${r1(Math.cos(a) * 80)}" cy="${r1(Math.sin(a) * 76)}" r="36" fill="${i % 2 ? COR.juba : COR.jubaClara}"/>`; }
+  s += `<circle cx="0" cy="0" r="84" fill="${COR.juba}"/></g>`;
+  /* cabeça */
+  s += `<circle cx="-50" cy="-218" r="19" fill="${COR.leao}"/><circle cx="-50" cy="-218" r="10" fill="${COR.juba}"/><circle cx="50" cy="-218" r="19" fill="${COR.leao}"/><circle cx="50" cy="-218" r="10" fill="${COR.juba}"/>`;
+  s += `<ellipse cx="0" cy="-162" rx="64" ry="60" fill="#F5BE55"/>`;
+  s += olhoFofo(-24, -176, 11, o.piscar || 0, (o.olharX || 0) * 3) + olhoFofo(24, -176, 11, o.piscar || 0, (o.olharX || 0) * 3);
+  s += `<path d="M-40 -200 q 14 -8 26 -2 M14 -202 q 12 -6 26 2" stroke="${COR.juba}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+  s += `<ellipse cx="-44" cy="-146" rx="12" ry="7" fill="${COR.bochecha}" opacity=".45"/><ellipse cx="44" cy="-146" rx="12" ry="7" fill="${COR.bochecha}" opacity=".45"/>`;
+  s += `<ellipse cx="0" cy="${-138 + rg * 6}" rx="38" ry="${r1(26 + rg * 10)}" fill="${COR.leaoClaro}"/>`;
+  if (rg > .15) s += `<ellipse cx="0" cy="${-124 + rg * 8}" rx="${r1(16 + rg * 10)}" ry="${r1(8 + rg * 18)}" fill="#7A2A2A"/><ellipse cx="0" cy="${-114 + rg * 14}" rx="${r1(8 + rg * 5)}" ry="${r1(4 + rg * 5)}" fill="${COR.lingua}"/><path d="M${-10 - rg * 6} ${-128 + rg * 2} l 4 7 l 4 -7 M${2 + rg * 6} ${-128 + rg * 2} l 4 7 l 4 -7" fill="#fff"/>`;
+  else s += `<path d="M-14 -128 Q -7 -120 0 -130 Q 7 -120 14 -128" stroke="${COR.leaoNariz}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+  s += `<path d="M-13 ${-152 + rg * 2} Q 0 ${-158 + rg * 2} 13 ${-152 + rg * 2} Q 6 ${-138 + rg * 2} 0 ${-138 + rg * 2} Q -6 ${-138 + rg * 2} -13 ${-152 + rg * 2} Z" fill="${COR.leaoNariz}"/>`;
+  [[-22, -140], [-28, -132], [22, -140], [28, -132]].forEach(([x, y]) => { s += `<circle cx="${x}" cy="${y + rg * 4}" r="2.2" fill="${COR.leaoNariz}" opacity=".6"/>`; });
+  return s + `</g>`;
+}
+
+/* ---------- MACAQUINHO ---------- o: {bracoE, bracoD (graus, 0=baixo), banana, falar ('u'|'a'|false), piscar, rabo, sombra} */
+function macaco(o = {}) {
+  const aE = o.bracoE ?? 30, aD = o.bracoD ?? 30;
+  const braco = (x, a, lado, ban) => `<g transform="translate(${x} -112) rotate(${r1(a * lado)})"><rect x="-8" y="0" width="16" height="74" rx="8" fill="${COR.macaco}"/><circle cx="0" cy="80" r="12" fill="${COR.macacoRosto}"/>${ban ? `<g transform="translate(0 84) rotate(${-a * lado})"><path d="M-6 -4 Q 6 30 34 30 Q 18 36 0 26 Q -10 14 -10 -2 Z" fill="${COR.banana}" stroke="#D9A21E" stroke-width="2.5"/><path d="M-9 -4 l 3 -6" stroke="#6E4220" stroke-width="4" stroke-linecap="round"/></g>` : ''}</g>`;
+  let s = `<g class="macaco">`;
+  if (o.sombra !== false) s += `<ellipse cx="0" cy="0" rx="58" ry="9" fill="#000" opacity=".15"/>`;
+  s += `<path d="M28 -30 Q 96 -30 92 -90 Q 88 -120 66 -112 Q 52 -104 64 -92" transform="rotate(${o.rabo || 0} 28 -30)" stroke="${COR.macaco}" stroke-width="10" fill="none" stroke-linecap="round"/>`;
+  s += `<ellipse cx="-24" cy="-20" rx="22" ry="17" fill="${COR.macaco}"/><ellipse cx="24" cy="-20" rx="22" ry="17" fill="${COR.macaco}"/><ellipse cx="-32" cy="-6" rx="15" ry="8" fill="${COR.macacoRosto}"/><ellipse cx="32" cy="-6" rx="15" ry="8" fill="${COR.macacoRosto}"/>`;
+  s += braco(-34, aE, 1, false);
+  s += `<ellipse cx="0" cy="-62" rx="40" ry="46" fill="${COR.macaco}"/><ellipse cx="0" cy="-56" rx="26" ry="32" fill="${COR.macacoRosto}"/>`;
+  s += braco(34, aD, -1, o.banana);
+  s += `<circle cx="-48" cy="-150" r="18" fill="${COR.macaco}"/><circle cx="-48" cy="-150" r="10" fill="${COR.macacoRosto}"/><circle cx="48" cy="-150" r="18" fill="${COR.macaco}"/><circle cx="48" cy="-150" r="10" fill="${COR.macacoRosto}"/>`;
+  s += `<circle cx="0" cy="-150" r="46" fill="${COR.macaco}"/><path d="M-8 -194 q 6 -14 14 -4 q 4 -12 10 0" stroke="${COR.macacoEscuro}" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+  s += `<circle cx="-14" cy="-156" r="21" fill="${COR.macacoRosto}"/><circle cx="14" cy="-156" r="21" fill="${COR.macacoRosto}"/><ellipse cx="0" cy="-130" rx="30" ry="22" fill="${COR.macacoRosto}"/>`;
+  s += olhoFofo(-14, -158, 8, o.piscar || 0) + olhoFofo(14, -158, 8, o.piscar || 0);
+  s += `<circle cx="-5" cy="-138" r="2.5" fill="${COR.macacoEscuro}"/><circle cx="5" cy="-138" r="2.5" fill="${COR.macacoEscuro}"/>`;
+  s += o.falar === 'u' ? `<ellipse cx="0" cy="-122" rx="7" ry="8" fill="#6E2430"/>` : o.falar === 'a' ? `<ellipse cx="0" cy="-122" rx="13" ry="10" fill="#6E2430"/><ellipse cx="0" cy="-117" rx="7" ry="4" fill="${COR.lingua}"/>` : `<path d="M-14 -126 Q 0 -114 14 -126" stroke="${COR.macacoEscuro}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+  s += `<ellipse cx="-30" cy="-134" rx="7" ry="5" fill="${COR.bochecha}" opacity=".45"/><ellipse cx="30" cy="-134" rx="7" ry="5" fill="${COR.bochecha}" opacity=".45"/>`;
+  return s + `</g>`;
+}
+
+/* ---------- GIRAFA (de perfil, olhando para a direita) ---------- o: {cabeca, pescoco, mastigar, folha, piscar, cauda} */
+function girafa(o = {}) {
+  const pc = o.pescoco || 0, cb = o.cabeca || 0, ms = (o.mastigar || 0) * 4;
+  const mancha = (x, y, rx, ry, a) => `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" transform="rotate(${a} ${x} ${y})" fill="${COR.girafaMancha}" opacity=".9"/>`;
+  let s = `<g class="girafa"><ellipse cx="-10" cy="0" rx="130" ry="13" fill="#000" opacity=".15"/>`;
+  [[-96, .92], [-56, 1], [34, .92], [74, 1]].forEach(([x, k]) => { s += `<rect x="${x}" y="-420" width="24" height="410" rx="11" fill="${k < 1 ? '#E9B24A' : COR.girafa}"/><circle cx="${x + 12}" cy="-210" r="14" fill="${k < 1 ? '#E9B24A' : COR.girafa}"/><rect x="${x - 2}" y="-26" width="28" height="26" rx="6" fill="${COR.casco}"/>`; });
+  s += `<g transform="rotate(${o.cauda || 0} -128 -452)"><path d="M-128 -452 Q -150 -410 -146 -350" stroke="${COR.girafa}" stroke-width="6" fill="none"/><ellipse cx="-146" cy="-342" rx="9" ry="16" fill="${COR.casco}"/></g>`;
+  s += `<ellipse cx="-10" cy="-445" rx="132" ry="72" fill="${COR.girafa}"/>`;
+  s += mancha(-80, -470, 22, 16, 20) + mancha(-30, -490, 20, 14, -15) + mancha(20, -470, 24, 15, 10) + mancha(-60, -420, 20, 13, -10) + mancha(0, -415, 18, 12, 25) + mancha(60, -440, 18, 13, -20) + mancha(-110, -440, 12, 10, 0);
+  s += `<ellipse cx="-10" cy="-400" rx="90" ry="22" fill="${COR.girafaClara}" opacity=".6"/>`;
+  /* pescoço + cabeça */
+  s += `<g transform="rotate(${pc} 70 -480)">`;
+  s += `<path d="M44 -490 L 70 -800 L 108 -800 L 116 -470 Z" fill="${COR.girafa}"/>`;
+  s += `<path d="M48 -500 L 72 -800" stroke="${COR.casco}" stroke-width="10" stroke-linecap="round" stroke-dasharray="14 8" opacity=".75"/>`;
+  s += mancha(88, -540, 14, 10, 80) + mancha(90, -610, 13, 9, 80) + mancha(92, -680, 12, 9, 80) + mancha(94, -748, 11, 8, 80) + mancha(76, -575, 9, 7, 60) + mancha(80, -715, 9, 7, 60);
+  s += `<g transform="rotate(${cb} 90 -800)">`;
+  s += `<path d="M78 -820 L 72 -862" stroke="${COR.girafaMancha}" stroke-width="9" stroke-linecap="round"/><circle cx="72" cy="-866" r="10" fill="${COR.casco}"/><path d="M100 -822 L 98 -862" stroke="${COR.girafaMancha}" stroke-width="9" stroke-linecap="round"/><circle cx="98" cy="-866" r="10" fill="${COR.casco}"/>`;
+  s += `<ellipse cx="54" cy="-826" rx="24" ry="10" transform="rotate(-25 54 -826)" fill="${COR.girafa}" stroke="#E0A63F" stroke-width="2"/>`;
+  s += `<ellipse cx="106" cy="-806" rx="50" ry="34" fill="${COR.girafa}"/><ellipse cx="146" cy="${-796 + ms * .3}" rx="28" ry="${22 + ms * .3}" fill="${COR.girafaClara}"/>`;
+  s += `<ellipse cx="160" cy="-806" rx="4" ry="3" fill="${COR.casco}"/>`;
+  s += (o.piscar || 0) > .5 ? `<path d="M96 -816 q 10 -10 20 0" stroke="#2A1A14" stroke-width="4" fill="none" stroke-linecap="round"/>` : `<ellipse cx="106" cy="-818" rx="10" ry="12" fill="#2A1A14"/><circle cx="103" cy="-823" r="4.5" fill="#fff"/><path d="M98 -830 l -6 -8 M104 -831 l -2 -9 M110 -830 l 2 -8" stroke="#2A1A14" stroke-width="3" stroke-linecap="round"/>`;
+  s += `<path d="M132 ${-780 + ms} Q 150 ${-772 + ms} 168 ${-784 + ms}" stroke="${COR.casco}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
+  s += `<ellipse cx="124" cy="-798" rx="9" ry="6" fill="${COR.bochecha}" opacity=".5"/>`;
+  if (o.folha) s += `<g transform="translate(168 ${-782 + ms})"><path d="M0 0 Q 18 -16 38 -6 Q 22 10 0 0 Z" fill="#5CC25A" stroke="#3F9A3F" stroke-width="2"/><path d="M0 0 L 30 -6" stroke="#3F9A3F" stroke-width="2"/></g>`;
+  s += `</g></g>`;
+  return s + `</g>`;
+}
+
+/* ---------- ELEFANTE ---------- o: {tromba (0 baixo .. 1 erguida), orelha, piscar, falar, olharX} */
+function elefante(o = {}) {
+  const tr = o.tromba || 0, fl = 1 + (o.orelha || 0) * .1;
+  let s = `<g class="elefante"><ellipse cx="0" cy="0" rx="130" ry="14" fill="#000" opacity=".15"/>`;
+  s += `<rect x="-96" y="-96" width="40" height="80" rx="18" fill="#8E9FBA"/><rect x="56" y="-96" width="40" height="80" rx="18" fill="#8E9FBA"/>`;
+  s += `<ellipse cx="0" cy="-122" rx="112" ry="86" fill="${COR.elefante}"/>`;
+  s += `<rect x="-58" y="-100" width="44" height="100" rx="20" fill="${COR.elefante}"/><rect x="14" y="-100" width="44" height="100" rx="20" fill="${COR.elefante}"/>`;
+  [[-50, -8], [-36, -6], [-22, -8], [22, -8], [36, -6], [50, -8]].forEach(([x, y]) => { s += `<ellipse cx="${x}" cy="${y}" rx="6" ry="4.5" fill="#fff" opacity=".85"/>`; });
+  const orelha = (lado) => `<g transform="translate(${lado * 64} -212) scale(${r1(fl * lado)} 1)"><ellipse cx="56" cy="8" rx="72" ry="82" fill="${COR.elefante}"/><ellipse cx="62" cy="10" rx="48" ry="58" fill="${COR.elefanteOrelha}"/></g>`;
+  s += orelha(-1) + orelha(1);
+  s += `<circle cx="0" cy="-212" r="84" fill="${COR.elefanteClaro}"/>`;
+  s += olhoFofo(-32, -228, 11, o.piscar || 0, (o.olharX || 0) * 3) + olhoFofo(32, -228, 11, o.piscar || 0, (o.olharX || 0) * 3);
+  s += `<ellipse cx="-56" cy="-196" rx="13" ry="8" fill="${COR.bochecha}" opacity=".5"/><ellipse cx="56" cy="-196" rx="13" ry="8" fill="${COR.bochecha}" opacity=".5"/>`;
+  s += `<path d="M-34 -172 Q -24 -162 -14 -170" stroke="#5E6E8A" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+  /* tromba: interpola entre caída e erguida */
+  const L = (a, b) => r1(a + (b - a) * tr);
+  const d = `M0 -196 C ${L(0, 20)} ${L(-150, -230)} ${L(-6, 70)} ${L(-120, -290)} ${L(12, 120)} ${L(-96, -330)}`;
+  s += `<path d="${d}" stroke="${COR.elefanteClaro}" stroke-width="34" fill="none" stroke-linecap="round"/>`;
+  s += `<path d="${d}" stroke="#93A4C0" stroke-width="34" fill="none" stroke-linecap="round" stroke-dasharray="3 16" opacity=".7"/>`;
+  s += `<circle cx="${L(12, 120)}" cy="${L(-96, -330)}" r="${o.falar ? 19 : 16}" fill="${o.falar ? '#6E5A6E' : '#8E9FBA'}"/>`;
+  return s + `</g>`;
+}
+
+root.LIZ = { COR, defs, liz, lizLado, lizCostas, pipo, lumi, robi, coelho, leao, macaco, girafa, elefante };
 })(typeof window !== 'undefined' ? window : globalThis);

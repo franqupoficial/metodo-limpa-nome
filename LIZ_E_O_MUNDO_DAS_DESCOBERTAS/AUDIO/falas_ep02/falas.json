@@ -1,0 +1,282 @@
+[
+ {
+  "arquivo": "EP02_L01_LIZ.mp3",
+  "inicio": 17.4,
+  "fim": 20.18,
+  "personagem": "LIZ",
+  "fala": "Uau! Pipo, olha que floresta linda!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L02_LIZ.mp3",
+  "inicio": 20.48,
+  "fim": 23.17,
+  "personagem": "LIZ",
+  "fala": "Será que existem animaizinhos morando aqui?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L04_LIZ.mp3",
+  "inicio": 27.17,
+  "fim": 28.92,
+  "personagem": "LIZ",
+  "fala": "Então vamos descobrir!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L05_LUMI.mp3",
+  "inicio": 29.62,
+  "fim": 33.87,
+  "personagem": "LUMI",
+  "fala": "Venham comigo! A floresta está cheia de amigos!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L06_LIZ.mp3",
+  "inicio": 37.27,
+  "fim": 40.03,
+  "personagem": "LIZ",
+  "fala": "Olha, Pipo! Um coelhinho!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L07_LIZ.mp3",
+  "inicio": 40.43,
+  "fim": 43.41,
+  "personagem": "LIZ",
+  "fala": "Você sabia que o coelhinho tem orelhas compridas?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L08_LIZ.mp3",
+  "inicio": 43.71,
+  "fim": 45.48,
+  "personagem": "LIZ",
+  "fala": "E sabe como ele se movimenta?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L09_LIZ.mp3",
+  "inicio": 48.48,
+  "fim": 50.57,
+  "personagem": "LIZ",
+  "fala": "Isso mesmo! Ele pula!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L10_LIZ.mp3",
+  "inicio": 50.87,
+  "fim": 52.96,
+  "personagem": "LIZ",
+  "fala": "Vamos pular igual ao coelhinho?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L11_LIZ.mp3",
+  "inicio": 53.16,
+  "fim": 55.34,
+  "personagem": "LIZ",
+  "fala": "Pula! Pula! Pula!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L12_LIZ.mp3",
+  "inicio": 60.94,
+  "fim": 62.6,
+  "personagem": "LIZ",
+  "fala": "Uau! É um leão!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L13_LIZ.mp3",
+  "inicio": 62.9,
+  "fim": 65.4,
+  "personagem": "LIZ",
+  "fala": "O leão é conhecido como o rei da floresta!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L14_LIZ.mp3",
+  "inicio": 65.7,
+  "fim": 67.83,
+  "personagem": "LIZ",
+  "fala": "Você sabe que som o leão faz?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L16_LIZ.mp3",
+  "inicio": 73.03,
+  "fim": 75.31,
+  "personagem": "LIZ",
+  "fala": "Muito bem! O leão ruge!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L18_LIZ.mp3",
+  "inicio": 80.21,
+  "fim": 82.56,
+  "personagem": "LIZ",
+  "fala": "Olha só! Um macaquinho!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L20_LIZ.mp3",
+  "inicio": 84.66,
+  "fim": 87.38,
+  "personagem": "LIZ",
+  "fala": "O macaquinho gosta de subir nas árvores!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L21_LIZ.mp3",
+  "inicio": 90.58,
+  "fim": 92.57,
+  "personagem": "LIZ",
+  "fala": "Obrigada, amiguinho!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L22_LIZ.mp3",
+  "inicio": 97.17,
+  "fim": 99.57,
+  "personagem": "LIZ",
+  "fala": "Nossa! Que pescoço comprido!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L23_LIZ.mp3",
+  "inicio": 99.77,
+  "fim": 100.94,
+  "personagem": "LIZ",
+  "fala": "É uma girafa!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L24_LIZ.mp3",
+  "inicio": 101.24,
+  "fim": 104.96,
+  "personagem": "LIZ",
+  "fala": "Ela usa seu pescoço comprido para alcançar folhas lá no alto!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L25_LIZ.mp3",
+  "inicio": 105.26,
+  "fim": 108.26,
+  "personagem": "LIZ",
+  "fala": "Estique o pescoço bem alto, igual à girafa!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L26_LIZ.mp3",
+  "inicio": 113.66,
+  "fim": 115.49,
+  "personagem": "LIZ",
+  "fala": "Olha! Um elefante!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L27_LIZ.mp3",
+  "inicio": 115.79,
+  "fim": 118.69,
+  "personagem": "LIZ",
+  "fala": "Você sabia que ele tem uma tromba muito especial?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L28_LIZ.mp3",
+  "inicio": 118.99,
+  "fim": 120.74,
+  "personagem": "LIZ",
+  "fala": "E sabe que som ele faz?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L30_LIZ.mp3",
+  "inicio": 125.84,
+  "fim": 128.41,
+  "personagem": "LIZ",
+  "fala": "Isso mesmo! Que som divertido!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L31_LIZ.mp3",
+  "inicio": 133.01,
+  "fim": 135.36,
+  "personagem": "LIZ",
+  "fala": "Hoje conhecemos muitos animais!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L32_LIZ.mp3",
+  "inicio": 135.66,
+  "fim": 137.03,
+  "personagem": "LIZ",
+  "fala": "O coelhinho pula,",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L33_LIZ.mp3",
+  "inicio": 137.15,
+  "fim": 138.33,
+  "personagem": "LIZ",
+  "fala": "o leão ruge,",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L34_LIZ.mp3",
+  "inicio": 138.45,
+  "fim": 140.73,
+  "personagem": "LIZ",
+  "fala": "o macaquinho sobe nas árvores,",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L35_LIZ.mp3",
+  "inicio": 140.85,
+  "fim": 143.15,
+  "personagem": "LIZ",
+  "fala": "a girafa tem um pescoço comprido",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L36_LIZ.mp3",
+  "inicio": 143.27,
+  "fim": 145.26,
+  "personagem": "LIZ",
+  "fala": "e o elefante tem uma tromba!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L37_LIZ.mp3",
+  "inicio": 145.66,
+  "fim": 148.06,
+  "personagem": "LIZ",
+  "fala": "Cada um é especial do seu jeitinho!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L38_LIZ.mp3",
+  "inicio": 148.26,
+  "fim": 150.59,
+  "personagem": "LIZ",
+  "fala": "E todos merecem carinho e respeito!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L40_LIZ.mp3",
+  "inicio": 153.99,
+  "fim": 156.49,
+  "personagem": "LIZ",
+  "fala": "Foi muito divertido aprender com vocês!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP02_L41_LIZ.mp3",
+  "inicio": 156.79,
+  "fim": 159.45,
+  "personagem": "LIZ",
+  "fala": "Até a próxima aventura, amiguinhos!",
+  "tempo": 1.0
+ }
+]

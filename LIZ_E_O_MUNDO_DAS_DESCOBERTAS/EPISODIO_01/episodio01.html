@@ -347,8 +347,9 @@ S.fim=(t)=>{
   s+=at(lerp(990,230,card),975,1.05,pipo({rabo:Math.sin(t*16)*26,latir:boca('PIPO',t),pulo:falando('PIPO',t)?Math.abs(Math.sin(t*12))*24:0}));
   s+=at(lerp(1200,1700,card),980,1.0,robi({expr:boca('ROBI',t)?'uau':'feliz',falar:boca('ROBI',t),bracoD:150+Math.sin(t*9)*20,flutuar:8+Math.sin(t*3)*6}));
   s+=voandoLumi(t,lerp(1380,1720,card),lerp(480,560,card),false);
-  if(card>0){s+=`<g transform="translate(1070 470) scale(${r1(card)})"><rect x="-430" y="-250" width="860" height="500" rx="50" fill="#fff" opacity=".95" filter="url(#sombraSuave)"/><text y="-150" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="44" fill="#B667F2">Próximo episódio</text><text y="-60" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="76" fill="#E8418A">O Jardim dos Números</text>`;
-    for(let i=1;i<=5;i++){s+=`<g transform="translate(${-240+i*80} 60)"><circle r="34" fill="${['#FF4FA0','#FFD21F','#2E8CF0','#5CC25A','#B667F2'][i-1]}"/><text y="16" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="44" fill="#fff">${i}</text></g>`;}
+  if(card>0){s+=`<g transform="translate(1070 470) scale(${r1(card)})"><rect x="-430" y="-250" width="860" height="500" rx="50" fill="#fff" opacity=".95" filter="url(#sombraSuave)"/><text y="-150" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="44" fill="#B667F2">Próximo episódio</text><text y="-60" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="72" fill="#3F9A3F">A Floresta dos Animais</text>`;
+    const bichos=[['#F2B544','🦁'],['#FFFFFF','🐰'],['#8B5A3C','🐵'],['#F6C45B','🦒'],['#9FB0CB','🐘']];
+    bichos.forEach(([c],i)=>{s+=`<g transform="translate(${-200+i*100} 60)"><circle r="36" fill="${c}" stroke="#3F9A3F" stroke-width="5"/><circle cx="-11" cy="-4" r="5" fill="#2A1A14"/><circle cx="11" cy="-4" r="5" fill="#2A1A14"/><path d="M-10 12 Q 0 20 10 12" stroke="#2A1A14" stroke-width="3.5" fill="none" stroke-linecap="round"/></g>`;});
     s+=`<text y="180" text-anchor="middle" font-family="Fredoka" font-weight="500" font-size="36" fill="#6b5a7b">Até lá, continue descobrindo!</text></g>`;}
   const fo=prog(t,141,142);s+=`<rect width="1920" height="1080" fill="#1b1030" opacity="${r1(fo)}"/>`;
   return s;};

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Ficha oficial — Animais da Floresta</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Fredoka,sans-serif;color:#2F4A2A}.sheet{width:2400px;height:1500px;position:relative;overflow:hidden;background:radial-gradient(1000px 700px at 100% 0%,#E6F7DE,transparent),radial-gradient(900px 600px at 0% 100%,#FFF3D9,transparent),#FAFFF6}
+h1{position:absolute;left:70px;top:40px;margin:0;font-size:62px;color:#3F9A3F;font-weight:700}h1 small{display:block;font-size:26px;color:#6b7f62;font-weight:500;margin-top:4px}
+.lbl{position:absolute;transform:translateX(-50%);text-align:center;font-size:30px;font-weight:700;z-index:2}.lbl small{display:block;font-size:19px;font-weight:500;color:#6b7f62;max-width:340px}
+svg{position:absolute;left:0;top:0;z-index:1}</style></head><body>
+<div class="sheet" id="sheet"><h1>Animais da Floresta — fichas oficiais<small>Episódio 2 · A Floresta dos Animais · mesmo estilo da turma da Liz</small></h1>
+<svg id="art" width="2400" height="1500" viewBox="0 0 2400 1500"></svg></div>
+<script src="personagens.js"></script>
+<script>
+const {defs,coelho,leao,macaco,girafa,elefante,liz}=LIZ;const P=(x,y,s,i)=>`<g transform="translate(${x} ${y}) scale(${s})">${i}</g>`;
+let g=defs();
+g+=P(250,1080,1.5,coelho({}));g+=P(250,1380,.8,coelho({pulo:50,orelha:14}));
+g+=P(690,1080,1.45,leao({}));g+=P(690,1400,.62,leao({rugir:1,juba:1}));
+g+=P(1130,1080,1.55,macaco({}));g+=P(1050,1390,.7,macaco({bracoE:180,falar:'a',sombra:false}));g+=P(1220,1390,.7,macaco({bracoD:100,banana:true}));
+g+=P(1560,1080,.92,girafa({}));g+=P(1700,1400,.36,girafa({pescoco:14,cabeca:-10,folha:true}));
+g+=P(2080,1080,1.3,elefante({}));g+=P(2080,1400,.62,elefante({tromba:1,falar:true,orelha:1}));
+g+=P(2330,1400,.42,liz({expr:'feliz',bracoD:150}));
+document.getElementById('art').innerHTML=g;
+const L=(x,y,n,d)=>{const e=document.createElement('div');e.className='lbl';e.style.left=x+'px';e.style.top=y+'px';e.innerHTML=n+'<small>'+d+'</small>';document.getElementById('sheet').appendChild(e);};
+L(250,160,'Coelhinho','Branco, orelhas compridas com interior rosa, nariz que mexe. Ação: pular.');
+L(690,160,'Leão','Simpático e carinhoso, juba laranja fofa. Ação: rugir (divertido, nunca assustador).');
+L(1130,160,'Macaquinho','Marrom com rosto em coração. Ações: balançar nos galhos, subir em árvores, oferecer banana.');
+L(1600,160,'Girafa','Amarela com manchas caramelo. Ação: alcançar folhas no alto com o pescoço comprido.');
+L(2080,160,'Elefante','Azul-acinzentado, orelhas com interior rosa. Ações: jogar água com a tromba, "pruuu!".');
+</script></body></html>

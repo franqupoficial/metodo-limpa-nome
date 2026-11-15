@@ -1,0 +1,44 @@
+{"cenas":[
+ {"id":"abertura","titulo":"Abertura","fixo":16,"itens":[]},
+ {"id":"entrada","titulo":"A entrada na floresta","itens":[
+  ["gap",1.4],["L","LIZ","Uau! Pipo, olha que floresta linda!"],["gap",0.3],
+  ["L","LIZ","Será que existem animaizinhos morando aqui?"],["P",2.8],
+  ["L","PIPO","Au! Au!",1.0],["gap",0.2],["L","LIZ","Então vamos descobrir!"],
+  ["A","lumi"],["gap",0.7],["L","LUMI","Venham comigo! A floresta está cheia de amigos!"],["gap",2.2]]},
+ {"id":"coelho","titulo":"O coelhinho","itens":[
+  ["gap",1.2],["L","LIZ","Olha, Pipo! Um coelhinho!"],["gap",0.4],
+  ["L","LIZ","Você sabia que o coelhinho tem orelhas compridas?"],["gap",0.3],
+  ["L","LIZ","E sabe como ele se movimenta?"],["P",3.0],["A","pula"],
+  ["L","LIZ","Isso mesmo! Ele pula!"],["gap",0.3],
+  ["L","LIZ","Vamos pular igual ao coelhinho?"],["gap",0.2],["L","LIZ","Pula! Pula! Pula!"],["P",3.0],["gap",0.8]]},
+ {"id":"leao","titulo":"O leão","itens":[
+  ["gap",1.8],["L","LIZ","Uau! É um leão!"],["gap",0.3],
+  ["L","LIZ","O leão é conhecido como o rei da floresta!"],["gap",0.3],
+  ["L","LIZ","Você sabe que som o leão faz?"],["P",3.0],
+  ["L","LEAO","ROOOAAARRR!",2.0],["gap",0.2],["L","LIZ","Muito bem! O leão ruge!"],["gap",0.2],
+  ["L","PIPO","Au?! Au!",1.2],["gap",0.9]]},
+ {"id":"macaco","titulo":"O macaquinho","itens":[
+  ["gap",2.6],["L","LIZ","Olha só! Um macaquinho!"],["gap",0.2],
+  ["L","MACACO","Uh! Uh! Ah! Ah!",1.6],["gap",0.3],
+  ["L","LIZ","O macaquinho gosta de subir nas árvores!"],["A","sobe"],["gap",3.2],
+  ["L","LIZ","Obrigada, amiguinho!"],["gap",1.2]]},
+ {"id":"girafa","titulo":"A girafa","itens":[
+  ["gap",3.4],["L","LIZ","Nossa! Que pescoço comprido!"],["gap",0.2],["L","LIZ","É uma girafa!"],["gap",0.3],
+  ["L","LIZ","Ela usa seu pescoço comprido para alcançar folhas lá no alto!"],["gap",0.3],
+  ["L","LIZ","Estique o pescoço bem alto, igual à girafa!"],["P",2.8],["gap",0.6]]},
+ {"id":"elefante","titulo":"O elefante","itens":[
+  ["gap",2.0],["L","LIZ","Olha! Um elefante!"],["gap",0.3],
+  ["L","LIZ","Você sabia que ele tem uma tromba muito especial?"],["gap",0.3],
+  ["L","LIZ","E sabe que som ele faz?"],["P",3.0],
+  ["L","ELEFANTE","PRUUUUU!",1.8],["A","agua"],["gap",0.3],["L","LIZ","Isso mesmo! Que som divertido!"],["gap",1.8]]},
+ {"id":"descoberta","titulo":"A grande descoberta","itens":[
+  ["gap",2.8],["L","LIZ","Hoje conhecemos muitos animais!"],["gap",0.3],
+  ["L","LIZ","O coelhinho pula,"],["gap",0.12],["L","LIZ","o leão ruge,"],["gap",0.12],
+  ["L","LIZ","o macaquinho sobe nas árvores,"],["gap",0.12],["L","LIZ","a girafa tem um pescoço comprido"],["gap",0.12],
+  ["L","LIZ","e o elefante tem uma tromba!"],["gap",0.4],
+  ["L","LIZ","Cada um é especial do seu jeitinho!"],["gap",0.2],["L","LIZ","E todos merecem carinho e respeito!"],["gap",0.2],
+  ["L","PIPO","Au! Au!",1.0],["gap",0.8]]},
+ {"id":"final","titulo":"Encerramento","itens":[
+  ["gap",1.4],["L","LIZ","Foi muito divertido aprender com vocês!"],["gap",0.3],
+  ["L","LIZ","Até a próxima aventura, amiguinhos!"],["A","titulo"],["gap",9.5]]}
+]}
