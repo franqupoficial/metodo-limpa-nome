@@ -5,7 +5,7 @@ video, trilha, html, pasta, saida = sys.argv[1:6]
 src = open(html, encoding='utf-8').read()
 DUR = float(re.search(r'const D=([\d.]+)', src).group(1))
 bloco = src[src.index('const LINES=['):src.index('];', src.index('const LINES=['))]
-L = re.findall(r"\[([\d.]+),([\d.]+),'(\w+)','([^']+)'\]", bloco)
+L = re.findall(r"\[([\d.]+),\s*([\d.]+),\s*['\"](\w+)['\"],\s*['\"]([^'\"]+)['\"]\]", bloco)
 meta = json.load(open(f'{pasta}/falas.json', encoding='utf-8'))
 FX = {'PIPO': 'anull', 'LEAO': 'anull', 'MACACO': 'anull', 'ELEFANTE': 'anull','LIZ': 'highpass=f=90,equalizer=f=3000:t=q:w=1:g=2',
       'LUMI': 'highpass=f=120,aecho=0.8:0.6:70|140:0.22|0.12',
