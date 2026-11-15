@@ -7,7 +7,8 @@
 | `foto_perfil_800x800.png` | Foto de perfil | 800×800, circular, fundo transparente fora do círculo. |
 | `miniatura_ep01_1280x720.png` | Miniatura do episódio 01 | 1280×720 (16:9), abaixo de 2 MB. |
 | `miniatura_ep02_1280x720.png` | Miniatura do episódio 02 | 1280×720 (16:9) |
-| `pecas.html` | Fonte editável das três peças | `?peca=banner`, `?peca=perfil`, `?peca=miniatura`, `?peca=miniatura2` |
+| `miniatura_ep03_1280x720.png` | Miniatura do episódio 03 | 1280×720 (16:9) |
+| `pecas.html` | Fonte editável das três peças | `?peca=banner`, `?peca=perfil`, `?peca=miniatura`, `?peca=miniatura2`, `?peca=miniatura3` |
 
 > **Sobre a arte 3D enviada** (`IDENTIDADE_VISUAL/arte_referencia_3D_key_art.png`): é uma ótima arte-chave para a futura versão 3D. **Enquanto os episódios forem em 2D**, use as miniaturas 2D. O YouTube pede que a miniatura represente o conteúdo do vídeo, e uma miniatura 3D num episódio 2D pode ser vista como enganosa, além de frustrar quem clica.
 
@@ -117,6 +118,55 @@ Cada animal é especial e merece carinho e respeito.
 **Tags:** `liz e o mundo das descobertas, sons dos animais, animais para crianças, desenho de animais, som do leão, som do elefante, coelhinho, macaquinho, girafa, desenho infantil educativo, aprender animais, desenho para crianças de 2 anos, desenho para crianças de 3 anos, educação infantil, desenho interativo, floresta encantada, desenho animado em português`
 
 **Legendas:** `EPISODIO_02/Liz_Ep02_A_Floresta_dos_Animais_SEM_VOZES.srt` (Português - Brasil) · **Público:** Conteúdo para crianças · **Playlist:** Temporada 1 + "Animais".
+
+
+---
+
+## Episódio 03 — dados de publicação
+
+**Título:** `Liz e o Mistério das Formas Geométricas 🔺🟨🔴 | Aprenda as Formas | Ep. 03`
+
+Alternativas: `Que forma é essa? Círculo, Quadrado, Triângulo e Retângulo com a Liz` · `Música das Formas Geométricas para Crianças | Liz`
+
+**Miniatura:** `miniatura_ep03_1280x720.png`
+
+**Descrição:**
+```
+Uma caixa mágica apareceu na sala da Liz… e de dentro saíram formas geométricas! 🎁✨
+
+Com a mamãe Scarllet, o papai Kennedy e a vovó Rose, a Liz aprende:
+🔴 Círculo: redondinho, como a bola e o relógio
+🟨 Quadrado: tem quatro lados iguais, como a janela
+🔷 Triângulo: tem três pontinhas, como o telhado da casinha
+🟩 Retângulo: é compridinho, como a porta, o livro e a TV
+
+Conte junto, procure formas pela casa, responda o desafio e cante a música das formas! 🎵
+
+🎯 Neste episódio a criança aprende:
+• Círculo, quadrado, triângulo e retângulo
+• Contar de 1 a 5
+• Reconhecer formas em objetos do dia a dia
+
+⏱️ Capítulos
+0:00 Abertura
+0:16 A caixa mágica 🎁
+0:35 O círculo 🔴
+1:01 O quadrado 🟨
+1:24 O triângulo 🔷
+1:45 O retângulo 🟩
+2:01 Caça às formas 🔍
+2:47 Desafio: que forma é essa? ❓
+3:20 Música das formas 🎵
+
+📺 Liz e o Mundo das Descobertas: aprender também é uma aventura!
+👨‍👩‍👧 Para pais e educadores: depois do vídeo, brinque de caça às formas em casa!
+
+#LizEOMundoDasDescobertas #FormasGeometricas #DesenhoInfantil
+```
+
+**Tags:** `liz e o mundo das descobertas, formas geométricas, formas para crianças, círculo quadrado triângulo retângulo, música das formas, aprender formas, desenho educativo, educação infantil, contar até 5, desenho infantil em português, desenho para crianças de 2 anos, desenho para crianças de 3 anos, pré-escola, desenho com família, caça às formas`
+
+**Legendas:** `EPISODIO_03/Liz_Ep03_O_Misterio_das_Formas_Geometricas_SEM_VOZES.srt` · **Público:** Conteúdo para crianças · **Playlist:** Temporada 1 + "Formas e cores".
 
 ---
 

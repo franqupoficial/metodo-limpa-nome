@@ -16,11 +16,12 @@ for c in R['cenas']:
         elif k == 'A': A[c['id']][it[1]] = round(t, 2)
         elif k == 'L':
             n += 1; who, txt = it[1], it[2]
-            f = f"{pref}_L{n:02d}_{who}.mp3"
-            if os.path.exists(os.path.join(pasta, f)):
-                d = dur(os.path.join(pasta, f)) - 0.12
-                MIX.append({'arquivo': f, 'inicio': round(t, 2), 'fim': round(t + d, 2), 'personagem': who, 'fala': txt, 'tempo': 1.0})
-            else: d = it[3]; f = ''
+            fs = [f"{pref}_L{n:02d}_{who}.mp3"] if who != 'TODOS' else sorted(x for x in os.listdir(pasta) if x.startswith(f"{pref}_L{n:02d}_TODOS_"))
+            fs = [x for x in fs if os.path.exists(os.path.join(pasta, x))]
+            if fs:
+                d = max(dur(os.path.join(pasta, x)) for x in fs) - 0.12
+                for x in fs: MIX.append({'arquivo': x, 'inicio': round(t, 2), 'fim': round(t + d, 2), 'personagem': who if who != 'TODOS' else x.split('_TODOS_')[1][:-4], 'fala': txt, 'tempo': 1.0})
+            else: d = it[3]
             LN.append([round(t, 2), round(t + d, 2), who, txt]); LS[c['id']].append(round(t, 2)); t += d
     SC.append([c['id'], round(a, 2), round(t, 2)])
 D = round(t, 2)

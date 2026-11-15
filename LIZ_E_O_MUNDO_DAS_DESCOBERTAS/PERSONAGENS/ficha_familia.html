@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Ficha oficial — Família da Liz</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>body{margin:0;font-family:Fredoka,sans-serif;color:#4A2A3A}.sheet{width:2400px;height:1500px;position:relative;overflow:hidden;background:radial-gradient(1000px 700px at 100% 0%,#FFE9DD,transparent),radial-gradient(900px 600px at 0% 100%,#E9F7F3,transparent),#FFFBF7}
+h1{position:absolute;left:70px;top:40px;margin:0;font-size:62px;color:#E8418A;font-weight:700}h1 small{display:block;font-size:26px;color:#8a6377;font-weight:500;margin-top:4px}
+.lbl{position:absolute;transform:translateX(-50%);text-align:center;font-size:40px;font-weight:700;z-index:2}.lbl small{display:block;font-size:20px;font-weight:500;color:#7a6070;max-width:520px;line-height:1.35}
+.sw{position:absolute;display:flex;gap:10px;transform:translateX(-50%);z-index:2}.sw i{width:52px;height:52px;border-radius:12px;display:block;box-shadow:0 3px 10px rgba(0,0,0,.12)}
+svg{position:absolute;left:0;top:0;z-index:1}</style></head><body>
+<div class="sheet" id="sheet"><h1>A família da Liz — fichas oficiais<small>Scarllet (mamãe) · Kennedy (papai) · Rose (vovó) · v1.0 · Episódio 3</small></h1>
+<svg id="art" width="2400" height="1500" viewBox="0 0 2400 1500"></svg></div>
+<script src="personagens.js"></script>
+<script>
+const {defs,mae,pai,vovo,liz,pipo,COR}=LIZ;const P=(x,y,s,i)=>`<g transform="translate(${x} ${y}) scale(${s})">${i}</g>`;
+let g=defs();
+g+=P(380,1040,1.05,mae({expr:'feliz'}))+P(1000,1040,1.05,pai({expr:'feliz'}))+P(1620,1040,1.05,vovo({expr:'feliz'}));
+g+=P(2100,1040,1.05,liz({expr:'feliz',bracoD:150}))+P(2260,1045,1,pipo({rabo:20}));
+const ex=(f,x,o)=>P(x,1460,.5,f(o));
+g+=ex(mae,200,{falar:true,bracoD:110})+ex(mae,380,{expr:'surpresa',bracoE:60,bracoD:60})+ex(mae,560,{expr:'rindo',bracoE:150,bracoD:150,pulo:30});
+g+=ex(pai,820,{falar:true,bracoD:100})+ex(pai,1000,{expr:'surpresa',bracoE:60,bracoD:60})+ex(pai,1180,{expr:'rindo',bracoE:150,bracoD:150,pulo:30});
+g+=ex(vovo,1440,{falar:true,bracoD:100})+ex(vovo,1620,{expr:'surpresa'})+ex(vovo,1800,{expr:'rindo',bracoE:150,bracoD:150});
+document.getElementById('art').innerHTML=g;
+const L=(x,y,n,d)=>{const e=document.createElement('div');e.className='lbl';e.style.left=x+'px';e.style.top=y+'px';e.innerHTML=n+'<small>'+d+'</small>';document.getElementById('sheet').appendChild(e);};
+L(380,150,'Scarllet · mamãe','Cabelo ruivo longo e ondulado (a Liz puxou dela), olhos castanhos, vestido verde-água com gola branca, brincos dourados. Carinhosa e animada.');
+L(1000,150,'Kennedy · papai','Cabelo castanho curto com topete, barba curtinha, camisa polo azul, calça cáqui. Brincalhão e paciente.');
+L(1620,150,'Rose · vovó','Cabelo grisalho com coque, óculos redondos, casaquinho lilás, colar de pérolas, saia longa. Doce e sábia.');
+L(2180,150,'Liz e Pipo','Mesmos designs dos episódios 1 e 2.');
+const sw=(x,cs)=>{const d=document.createElement('div');d.className='sw';d.style.left=x+'px';d.style.top='1090px';d.innerHTML=cs.map(c=>`<i style="background:${c}"></i>`).join('');document.getElementById('sheet').appendChild(d);};
+sw(380,[COR.maeCabelo,COR.maeVestido,COR.maeSapato,COR.pele]);sw(1000,[COR.paiCabelo,COR.paiCamisa,COR.paiCalca,COR.paiSapato]);sw(1620,[COR.vovoCabelo,COR.vovoCasaco,COR.vovoSaia,COR.vovoChinelo]);
+</script></body></html>

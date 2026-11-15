@@ -1,0 +1,730 @@
+[
+ {
+  "arquivo": "EP03_L01_MAE.mp3",
+  "inicio": 17.6,
+  "fim": 21.08,
+  "personagem": "MAE",
+  "fala": "Liz, hoje temos uma surpresa especial!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L02_LIZ.mp3",
+  "inicio": 21.38,
+  "fim": 22.96,
+  "personagem": "LIZ",
+  "fala": "O que será, mamãe?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L03_LIZ.mp3",
+  "inicio": 25.56,
+  "fim": 28.35,
+  "personagem": "LIZ",
+  "fala": "Uaaaaau! O que são essas figuras?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L04_MAE.mp3",
+  "inicio": 28.65,
+  "fim": 32.85,
+  "personagem": "MAE",
+  "fala": "São formas geométricas! Vamos aprender juntas?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L05_LIZ.mp3",
+  "inicio": 33.05,
+  "fim": 33.86,
+  "personagem": "LIZ",
+  "fala": "Vamos!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L07_PAI.mp3",
+  "inicio": 37.26,
+  "fim": 40.19,
+  "personagem": "PAI",
+  "fala": "Liz, sabe qual é essa forma?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L08_LIZ.mp3",
+  "inicio": 40.49,
+  "fim": 42.03,
+  "personagem": "LIZ",
+  "fala": "Não sei, papai!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L09_PAI.mp3",
+  "inicio": 42.33,
+  "fim": 44.2,
+  "personagem": "PAI",
+  "fala": "É um círculo!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L10_PAI.mp3",
+  "inicio": 45.6,
+  "fim": 49.27,
+  "personagem": "PAI",
+  "fala": "A bola é redondinha, assim como o relógio!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L11_LIZ.mp3",
+  "inicio": 49.57,
+  "fim": 51.64,
+  "personagem": "LIZ",
+  "fala": "Círculo! Círculo!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L12_LIZ.mp3",
+  "inicio": 51.94,
+  "fim": 55.75,
+  "personagem": "LIZ",
+  "fala": "Amiguinhos, vocês conseguem encontrar alguma coisa redonda?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L13_LIZ.mp3",
+  "inicio": 59.75,
+  "fim": 60.81,
+  "personagem": "LIZ",
+  "fala": "Muito bem!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L14_VOVO.mp3",
+  "inicio": 63.21,
+  "fim": 66.02,
+  "personagem": "VOVO",
+  "fala": "Olha, Liz! Esse é um quadrado!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L15_LIZ.mp3",
+  "inicio": 66.32,
+  "fim": 68.0,
+  "personagem": "LIZ",
+  "fala": "Ele tem quatro lados!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L16_VOVO.mp3",
+  "inicio": 68.3,
+  "fim": 71.03,
+  "personagem": "VOVO",
+  "fala": "Muito bem! Vamos contar?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L17_TODOS_LIZ.mp3",
+  "inicio": 71.53,
+  "fim": 72.78,
+  "personagem": "LIZ",
+  "fala": "Um!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L17_TODOS_MAE.mp3",
+  "inicio": 71.53,
+  "fim": 72.78,
+  "personagem": "MAE",
+  "fala": "Um!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L17_TODOS_PAI.mp3",
+  "inicio": 71.53,
+  "fim": 72.78,
+  "personagem": "PAI",
+  "fala": "Um!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L17_TODOS_VOVO.mp3",
+  "inicio": 71.53,
+  "fim": 72.78,
+  "personagem": "VOVO",
+  "fala": "Um!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L18_TODOS_LIZ.mp3",
+  "inicio": 73.38,
+  "fim": 74.82,
+  "personagem": "LIZ",
+  "fala": "Dois!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L18_TODOS_MAE.mp3",
+  "inicio": 73.38,
+  "fim": 74.82,
+  "personagem": "MAE",
+  "fala": "Dois!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L18_TODOS_PAI.mp3",
+  "inicio": 73.38,
+  "fim": 74.82,
+  "personagem": "PAI",
+  "fala": "Dois!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L18_TODOS_VOVO.mp3",
+  "inicio": 73.38,
+  "fim": 74.82,
+  "personagem": "VOVO",
+  "fala": "Dois!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L19_TODOS_LIZ.mp3",
+  "inicio": 75.42,
+  "fim": 76.79,
+  "personagem": "LIZ",
+  "fala": "Três!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L19_TODOS_MAE.mp3",
+  "inicio": 75.42,
+  "fim": 76.79,
+  "personagem": "MAE",
+  "fala": "Três!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L19_TODOS_PAI.mp3",
+  "inicio": 75.42,
+  "fim": 76.79,
+  "personagem": "PAI",
+  "fala": "Três!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L19_TODOS_VOVO.mp3",
+  "inicio": 75.42,
+  "fim": 76.79,
+  "personagem": "VOVO",
+  "fala": "Três!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L20_TODOS_LIZ.mp3",
+  "inicio": 77.39,
+  "fim": 78.76,
+  "personagem": "LIZ",
+  "fala": "Quatro!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L20_TODOS_MAE.mp3",
+  "inicio": 77.39,
+  "fim": 78.76,
+  "personagem": "MAE",
+  "fala": "Quatro!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L20_TODOS_PAI.mp3",
+  "inicio": 77.39,
+  "fim": 78.76,
+  "personagem": "PAI",
+  "fala": "Quatro!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L20_TODOS_VOVO.mp3",
+  "inicio": 77.39,
+  "fim": 78.76,
+  "personagem": "VOVO",
+  "fala": "Quatro!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L21_VOVO.mp3",
+  "inicio": 79.36,
+  "fim": 83.03,
+  "personagem": "VOVO",
+  "fala": "A janela e os bloquinhos também são quadrados!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L22_LIZ.mp3",
+  "inicio": 86.03,
+  "fim": 89.0,
+  "personagem": "LIZ",
+  "fala": "Papai! Essa forma tem três pontinhas!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L23_PAI.mp3",
+  "inicio": 89.3,
+  "fim": 92.76,
+  "personagem": "PAI",
+  "fala": "Muito bem! É o triângulo!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L24_TODOS_LIZ.mp3",
+  "inicio": 93.96,
+  "fim": 95.21,
+  "personagem": "LIZ",
+  "fala": "Um!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L24_TODOS_MAE.mp3",
+  "inicio": 93.96,
+  "fim": 95.21,
+  "personagem": "MAE",
+  "fala": "Um!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L24_TODOS_PAI.mp3",
+  "inicio": 93.96,
+  "fim": 95.21,
+  "personagem": "PAI",
+  "fala": "Um!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L24_TODOS_VOVO.mp3",
+  "inicio": 93.96,
+  "fim": 95.21,
+  "personagem": "VOVO",
+  "fala": "Um!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L25_TODOS_LIZ.mp3",
+  "inicio": 95.81,
+  "fim": 97.25,
+  "personagem": "LIZ",
+  "fala": "Dois!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L25_TODOS_MAE.mp3",
+  "inicio": 95.81,
+  "fim": 97.25,
+  "personagem": "MAE",
+  "fala": "Dois!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L25_TODOS_PAI.mp3",
+  "inicio": 95.81,
+  "fim": 97.25,
+  "personagem": "PAI",
+  "fala": "Dois!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L25_TODOS_VOVO.mp3",
+  "inicio": 95.81,
+  "fim": 97.25,
+  "personagem": "VOVO",
+  "fala": "Dois!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L26_TODOS_LIZ.mp3",
+  "inicio": 97.85,
+  "fim": 99.22,
+  "personagem": "LIZ",
+  "fala": "Três!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L26_TODOS_MAE.mp3",
+  "inicio": 97.85,
+  "fim": 99.22,
+  "personagem": "MAE",
+  "fala": "Três!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L26_TODOS_PAI.mp3",
+  "inicio": 97.85,
+  "fim": 99.22,
+  "personagem": "PAI",
+  "fala": "Três!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L26_TODOS_VOVO.mp3",
+  "inicio": 97.85,
+  "fim": 99.22,
+  "personagem": "VOVO",
+  "fala": "Três!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L27_PAI.mp3",
+  "inicio": 99.82,
+  "fim": 103.78,
+  "personagem": "PAI",
+  "fala": "O telhado da casinha e a placa também são triângulos!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L28_MAE.mp3",
+  "inicio": 106.78,
+  "fim": 109.78,
+  "personagem": "MAE",
+  "fala": "Liz, olha o formato deste livro!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L29_LIZ.mp3",
+  "inicio": 110.08,
+  "fim": 111.42,
+  "personagem": "LIZ",
+  "fala": "Ele é compridinho!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L30_MAE.mp3",
+  "inicio": 111.72,
+  "fim": 114.43,
+  "personagem": "MAE",
+  "fala": "Isso mesmo! É um retângulo!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L31_MAE.mp3",
+  "inicio": 115.83,
+  "fim": 119.53,
+  "personagem": "MAE",
+  "fala": "A porta, o livro e a televisão são retângulos!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L32_PAI.mp3",
+  "inicio": 122.53,
+  "fim": 125.84,
+  "personagem": "PAI",
+  "fala": "Agora vamos brincar de caça às formas!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L33_LIZ.mp3",
+  "inicio": 126.04,
+  "fim": 127.41,
+  "personagem": "LIZ",
+  "fala": "Vamos, Pipo!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L35_LIZ.mp3",
+  "inicio": 129.61,
+  "fim": 132.63,
+  "personagem": "LIZ",
+  "fala": "Achei um círculo! A almofada!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L36_LIZ.mp3",
+  "inicio": 134.03,
+  "fim": 137.1,
+  "personagem": "LIZ",
+  "fala": "Achei um quadrado! O porta-retrato!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L38_LIZ.mp3",
+  "inicio": 139.7,
+  "fim": 142.7,
+  "personagem": "LIZ",
+  "fala": "O Pipo achou um triângulo! A bandeirinha!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L39_LIZ.mp3",
+  "inicio": 144.1,
+  "fim": 145.78,
+  "personagem": "LIZ",
+  "fala": "E o tapete é um retângulo!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L40_LIZ.mp3",
+  "inicio": 146.78,
+  "fim": 149.11,
+  "personagem": "LIZ",
+  "fala": "E a bola do papai também é um círculo!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L41_VOVO.mp3",
+  "inicio": 149.91,
+  "fim": 153.34,
+  "personagem": "VOVO",
+  "fala": "Vamos contar quantas coisas a Liz encontrou?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L42_TODOS_LIZ.mp3",
+  "inicio": 153.74,
+  "fim": 154.99,
+  "personagem": "LIZ",
+  "fala": "Um!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L42_TODOS_MAE.mp3",
+  "inicio": 153.74,
+  "fim": 154.99,
+  "personagem": "MAE",
+  "fala": "Um!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L42_TODOS_PAI.mp3",
+  "inicio": 153.74,
+  "fim": 154.99,
+  "personagem": "PAI",
+  "fala": "Um!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L42_TODOS_VOVO.mp3",
+  "inicio": 153.74,
+  "fim": 154.99,
+  "personagem": "VOVO",
+  "fala": "Um!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L43_TODOS_LIZ.mp3",
+  "inicio": 155.49,
+  "fim": 156.93,
+  "personagem": "LIZ",
+  "fala": "Dois!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L43_TODOS_MAE.mp3",
+  "inicio": 155.49,
+  "fim": 156.93,
+  "personagem": "MAE",
+  "fala": "Dois!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L43_TODOS_PAI.mp3",
+  "inicio": 155.49,
+  "fim": 156.93,
+  "personagem": "PAI",
+  "fala": "Dois!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L43_TODOS_VOVO.mp3",
+  "inicio": 155.49,
+  "fim": 156.93,
+  "personagem": "VOVO",
+  "fala": "Dois!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L44_TODOS_LIZ.mp3",
+  "inicio": 157.43,
+  "fim": 158.8,
+  "personagem": "LIZ",
+  "fala": "Três!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L44_TODOS_MAE.mp3",
+  "inicio": 157.43,
+  "fim": 158.8,
+  "personagem": "MAE",
+  "fala": "Três!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L44_TODOS_PAI.mp3",
+  "inicio": 157.43,
+  "fim": 158.8,
+  "personagem": "PAI",
+  "fala": "Três!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L44_TODOS_VOVO.mp3",
+  "inicio": 157.43,
+  "fim": 158.8,
+  "personagem": "VOVO",
+  "fala": "Três!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L45_TODOS_LIZ.mp3",
+  "inicio": 159.3,
+  "fim": 160.67,
+  "personagem": "LIZ",
+  "fala": "Quatro!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L45_TODOS_MAE.mp3",
+  "inicio": 159.3,
+  "fim": 160.67,
+  "personagem": "MAE",
+  "fala": "Quatro!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L45_TODOS_PAI.mp3",
+  "inicio": 159.3,
+  "fim": 160.67,
+  "personagem": "PAI",
+  "fala": "Quatro!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L45_TODOS_VOVO.mp3",
+  "inicio": 159.3,
+  "fim": 160.67,
+  "personagem": "VOVO",
+  "fala": "Quatro!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L46_TODOS_LIZ.mp3",
+  "inicio": 161.17,
+  "fim": 162.63,
+  "personagem": "LIZ",
+  "fala": "Cinco!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L46_TODOS_MAE.mp3",
+  "inicio": 161.17,
+  "fim": 162.63,
+  "personagem": "MAE",
+  "fala": "Cinco!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L46_TODOS_PAI.mp3",
+  "inicio": 161.17,
+  "fim": 162.63,
+  "personagem": "PAI",
+  "fala": "Cinco!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L46_TODOS_VOVO.mp3",
+  "inicio": 161.17,
+  "fim": 162.63,
+  "personagem": "VOVO",
+  "fala": "Cinco!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L47_VOVO.mp3",
+  "inicio": 163.03,
+  "fim": 166.51,
+  "personagem": "VOVO",
+  "fala": "Cinco coisas! Parabéns, Liz!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L48_LIZ.mp3",
+  "inicio": 168.51,
+  "fim": 169.95,
+  "personagem": "LIZ",
+  "fala": "Agora é sua vez!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L49_LIZ.mp3",
+  "inicio": 170.55,
+  "fim": 171.8,
+  "personagem": "LIZ",
+  "fala": "Que forma é essa?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L50_LIZ.mp3",
+  "inicio": 175.3,
+  "fim": 176.31,
+  "personagem": "LIZ",
+  "fala": "Círculo!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L51_LIZ.mp3",
+  "inicio": 177.31,
+  "fim": 178.56,
+  "personagem": "LIZ",
+  "fala": "Que forma é essa?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L52_LIZ.mp3",
+  "inicio": 182.06,
+  "fim": 183.02,
+  "personagem": "LIZ",
+  "fala": "Quadrado!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L53_LIZ.mp3",
+  "inicio": 184.02,
+  "fim": 185.26,
+  "personagem": "LIZ",
+  "fala": "Que forma é essa?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L54_LIZ.mp3",
+  "inicio": 188.76,
+  "fim": 190.01,
+  "personagem": "LIZ",
+  "fala": "Triângulo!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L55_LIZ.mp3",
+  "inicio": 191.01,
+  "fim": 192.26,
+  "personagem": "LIZ",
+  "fala": "Que forma é essa?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L56_LIZ.mp3",
+  "inicio": 195.76,
+  "fim": 196.86,
+  "personagem": "LIZ",
+  "fala": "Retângulo!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L57_LIZ.mp3",
+  "inicio": 197.46,
+  "fim": 199.1,
+  "personagem": "LIZ",
+  "fala": "Você acertou tudo!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP03_L58_LIZ.mp3",
+  "inicio": 233.7,
+  "fim": 238.04,
+  "personagem": "LIZ",
+  "fala": "Aprender brincando é muito divertido! Até a próxima aventura!",
+  "tempo": 1.0
+ }
+]

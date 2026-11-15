@@ -1,0 +1,54 @@
+{"cenas":[
+ {"id":"abertura","titulo":"Abertura","fixo":16,"itens":[]},
+ {"id":"caixa","titulo":"A caixa mágica","itens":[
+  ["gap",1.6],["L","MAE","Liz, hoje temos uma surpresa especial!"],["gap",0.3],
+  ["L","LIZ","O que será, mamãe?"],["A","abre"],["gap",2.6],
+  ["L","LIZ","Uaaaaau! O que são essas figuras?"],["gap",0.3],
+  ["L","MAE","São formas geométricas! Vamos aprender juntas?"],["gap",0.2],
+  ["L","LIZ","Vamos!"],["L","PIPO","Au! Au!",1.0],["gap",0.8]]},
+ {"id":"circulo","titulo":"O círculo com papai Kennedy","itens":[
+  ["gap",1.6],["L","PAI","Liz, sabe qual é essa forma?"],["gap",0.3],
+  ["L","LIZ","Não sei, papai!"],["gap",0.3],
+  ["L","PAI","É um círculo!"],["A","gira"],["gap",1.4],
+  ["L","PAI","A bola é redondinha, assim como o relógio!"],["gap",0.3],
+  ["L","LIZ","Círculo! Círculo!"],["gap",0.3],
+  ["L","LIZ","Amiguinhos, vocês conseguem encontrar alguma coisa redonda?"],["P",4.0],
+  ["L","LIZ","Muito bem!"],["gap",0.8]]},
+ {"id":"quadrado","titulo":"O quadrado com vovó Rose","itens":[
+  ["gap",1.6],["L","VOVO","Olha, Liz! Esse é um quadrado!"],["gap",0.3],
+  ["L","LIZ","Ele tem quatro lados!"],["gap",0.3],
+  ["L","VOVO","Muito bem! Vamos contar?"],["gap",0.5],
+  ["L","TODOS","Um!"],["gap",0.6],["L","TODOS","Dois!"],["gap",0.6],["L","TODOS","Três!"],["gap",0.6],["L","TODOS","Quatro!"],["gap",0.6],
+  ["A","exemplos"],["L","VOVO","A janela e os bloquinhos também são quadrados!"],["gap",1.6]]},
+ {"id":"triangulo","titulo":"O triângulo","itens":[
+  ["gap",1.4],["L","LIZ","Papai! Essa forma tem três pontinhas!"],["gap",0.3],
+  ["L","PAI","Muito bem! É o triângulo!"],["A","gira"],["gap",1.2],
+  ["L","TODOS","Um!"],["gap",0.6],["L","TODOS","Dois!"],["gap",0.6],["L","TODOS","Três!"],["gap",0.6],
+  ["A","exemplos"],["L","PAI","O telhado da casinha e a placa também são triângulos!"],["gap",1.6]]},
+ {"id":"retangulo","titulo":"O retângulo","itens":[
+  ["gap",1.4],["L","MAE","Liz, olha o formato deste livro!"],["gap",0.3],
+  ["L","LIZ","Ele é compridinho!"],["gap",0.3],
+  ["L","MAE","Isso mesmo! É um retângulo!"],["A","gira"],["gap",1.4],
+  ["A","exemplos"],["L","MAE","A porta, o livro e a televisão são retângulos!"],["gap",2.0]]},
+ {"id":"caca","titulo":"A grande caça às formas","itens":[
+  ["gap",1.0],["L","PAI","Agora vamos brincar de caça às formas!"],["gap",0.2],
+  ["L","LIZ","Vamos, Pipo!"],["L","PIPO","Au! Au!",1.0],["gap",1.2],
+  ["A","c1"],["L","LIZ","Achei um círculo! A almofada!"],["gap",1.4],
+  ["A","c2"],["L","LIZ","Achei um quadrado! O porta-retrato!"],["gap",1.4],
+  ["A","c3"],["L","PIPO","Au! Au! Au!",1.2],["L","LIZ","O Pipo achou um triângulo! A bandeirinha!"],["gap",1.4],
+  ["A","c4"],["L","LIZ","E o tapete é um retângulo!"],["gap",1.0],
+  ["A","c5"],["L","LIZ","E a bola do papai também é um círculo!"],["gap",0.8],
+  ["L","VOVO","Vamos contar quantas coisas a Liz encontrou?"],["gap",0.4],
+  ["L","TODOS","Um!"],["gap",0.5],["L","TODOS","Dois!"],["gap",0.5],["L","TODOS","Três!"],["gap",0.5],["L","TODOS","Quatro!"],["gap",0.5],["L","TODOS","Cinco!"],["gap",0.4],
+  ["L","VOVO","Cinco coisas! Parabéns, Liz!"],["gap",1.0]]},
+ {"id":"desafio","titulo":"Desafio dos amiguinhos","itens":[
+  ["gap",1.0],["L","LIZ","Agora é sua vez!"],["gap",0.6],
+  ["A","f1"],["L","LIZ","Que forma é essa?"],["P",3.5],["L","LIZ","Círculo!"],["gap",1.0],
+  ["A","f2"],["L","LIZ","Que forma é essa?"],["P",3.5],["L","LIZ","Quadrado!"],["gap",1.0],
+  ["A","f3"],["L","LIZ","Que forma é essa?"],["P",3.5],["L","LIZ","Triângulo!"],["gap",1.0],
+  ["A","f4"],["L","LIZ","Que forma é essa?"],["P",3.5],["L","LIZ","Retângulo!"],["gap",0.6],
+  ["L","LIZ","Você acertou tudo!"],["gap",1.0]]},
+ {"id":"musica","titulo":"Encerramento musical","itens":[
+  ["gap",0.6],["A","canta"],["gap",33.0],
+  ["L","LIZ","Aprender brincando é muito divertido! Até a próxima aventura!"],["A","titulo"],["gap",8.5]]}
+]}

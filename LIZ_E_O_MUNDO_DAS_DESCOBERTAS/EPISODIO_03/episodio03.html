@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Liz e o Mundo das Descobertas — Ep. 03: O Mistério das Formas Geométricas</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#1b1030;font-family:Fredoka,system-ui,sans-serif;color:#fff}
+.wrap{max-width:1280px;margin:0 auto;padding:20px 16px 40px}
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.top h1{font-size:24px;font-weight:600}.top h1 span{color:#FF7BC8}
+.vp{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden}
+.stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:#000}
+.stage svg{position:absolute;inset:0}
+.cap{position:absolute;left:50%;bottom:44px;transform:translateX(-50%);max-width:1500px;display:flex;align-items:center;gap:18px;padding:16px 30px 16px 16px;border-radius:999px;background:rgba(20,10,40,.72);box-shadow:0 8px 30px rgba(0,0,0,.35);opacity:0;white-space:nowrap}
+.cap b{font-weight:700;font-size:28px;padding:8px 20px;border-radius:999px;color:#fff;letter-spacing:.04em}
+.cap span{font-size:44px;font-weight:600;letter-spacing:.005em}
+.ctrl{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:12px}
+.ctrl button{font:600 15px Fredoka,sans-serif;background:#FF4FA0;color:#fff;border:0;border-radius:999px;padding:10px 20px;cursor:pointer}
+.ctrl input[type=range]{flex:1 1 260px;accent-color:#FF4FA0}
+.ctrl label{font-size:15px;display:flex;gap:6px;align-items:center}
+.ctrl .tm{font:500 14px ui-monospace,monospace;color:#cbb8e6;min-width:110px;text-align:right}
+body.render .top,body.render .ctrl{display:none}
+body.render .wrap{padding:0;max-width:none}
+body.render .vp{border-radius:0;width:1920px;height:1080px;aspect-ratio:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><h1>Liz e o Mundo das Descobertas · <span>Ep. 03 — O Mistério das Formas Geométricas</span></h1></div>
+  <div class="vp" id="vp"><div class="stage" id="stage"><svg id="svg" viewBox="0 0 1920 1080" width="1920" height="1080"></svg><div class="cap" id="cap"><b id="capWho"></b><span id="capTxt"></span></div></div></div>
+  <div class="ctrl">
+    <button id="play">▶ Assistir</button>
+    <input type="range" id="scrub" min="0" max="247" step="0.01" value="0">
+    <span class="tm" id="tm">0:00 / 4:06</span>
+    <label><input type="checkbox" id="snd" checked> Som</label>
+    <label><input type="checkbox" id="caps" checked> Legendas</label>
+  </div>
+</div>
+<script src="../PERSONAGENS/personagens.js"></script>
+<script src="../IDENTIDADE_VISUAL/logo.js"></script>
+<script>
+(() => {
+'use strict';
+const {defs,liz,lizLado,pipo,lumi,robi,COR}=LIZ;
+const {logoDefs,logoSVG,estrela}=LOGO;
+/* ---------------- utilidades ---------------- */
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const prog=(t,a,b)=>b<=a?(t>=b?1:0):clamp((t-a)/(b-a));
+const E={out:t=>1-Math.pow(1-t,3),inOut:t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2,back:t=>{const c=1.7;return 1+(c+1)*Math.pow(t-1,3)+c*Math.pow(t-1,2);},elastic:t=>t<=0?0:t>=1?1:Math.pow(2,-10*t)*Math.sin((t*10-.75)*2*Math.PI/3)+1};
+const lerp=(a,b,p)=>a+(b-a)*p;
+const r1=n=>Math.round(n*10)/10;
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const at=(x,y,s,inner,extra='')=>`<g transform="translate(${r1(x)} ${r1(y)}) scale(${s})" ${extra}>${inner}</g>`;
+
+/* ---------------- roteiro (gerado por FERRAMENTAS/montar_linha_do_tempo.py a partir de roteiro_ep03.json) ---------------- */
+const D=246.54;
+const SCENES=[["abertura", 0.0, 16.0], ["caixa", 16.0, 35.66], ["circulo", 35.66, 61.61], ["quadrado", 61.61, 84.63], ["triangulo", 84.63, 105.38], ["retangulo", 105.38, 121.53], ["caca", 121.53, 167.51], ["desafio", 167.51, 200.1], ["musica", 200.1, 246.54]];
+const LINES=[[17.6, 21.08, "MAE", "Liz, hoje temos uma surpresa especial!"], [21.38, 22.96, "LIZ", "O que será, mamãe?"], [25.56, 28.35, "LIZ", "Uaaaaau! O que são essas figuras?"], [28.65, 32.85, "MAE", "São formas geométricas! Vamos aprender juntas?"], [33.05, 33.86, "LIZ", "Vamos!"], [33.86, 34.86, "PIPO", "Au! Au!"], [37.26, 40.19, "PAI", "Liz, sabe qual é essa forma?"], [40.49, 42.03, "LIZ", "Não sei, papai!"], [42.33, 44.2, "PAI", "É um círculo!"], [45.6, 49.27, "PAI", "A bola é redondinha, assim como o relógio!"], [49.57, 51.64, "LIZ", "Círculo! Círculo!"], [51.94, 55.75, "LIZ", "Amiguinhos, vocês conseguem encontrar alguma coisa redonda?"], [59.75, 60.81, "LIZ", "Muito bem!"], [63.21, 66.02, "VOVO", "Olha, Liz! Esse é um quadrado!"], [66.32, 68.0, "LIZ", "Ele tem quatro lados!"], [68.3, 71.03, "VOVO", "Muito bem! Vamos contar?"], [71.53, 72.78, "TODOS", "Um!"], [73.38, 74.82, "TODOS", "Dois!"], [75.42, 76.79, "TODOS", "Três!"], [77.39, 78.76, "TODOS", "Quatro!"], [79.36, 83.03, "VOVO", "A janela e os bloquinhos também são quadrados!"], [86.03, 89.0, "LIZ", "Papai! Essa forma tem três pontinhas!"], [89.3, 92.76, "PAI", "Muito bem! É o triângulo!"], [93.96, 95.21, "TODOS", "Um!"], [95.81, 97.25, "TODOS", "Dois!"], [97.85, 99.22, "TODOS", "Três!"], [99.82, 103.78, "PAI", "O telhado da casinha e a placa também são triângulos!"], [106.78, 109.78, "MAE", "Liz, olha o formato deste livro!"], [110.08, 111.42, "LIZ", "Ele é compridinho!"], [111.72, 114.43, "MAE", "Isso mesmo! É um retângulo!"], [115.83, 119.53, "MAE", "A porta, o livro e a televisão são retângulos!"], [122.53, 125.84, "PAI", "Agora vamos brincar de caça às formas!"], [126.04, 127.41, "LIZ", "Vamos, Pipo!"], [127.41, 128.41, "PIPO", "Au! Au!"], [129.61, 132.63, "LIZ", "Achei um círculo! A almofada!"], [134.03, 137.1, "LIZ", "Achei um quadrado! O porta-retrato!"], [138.5, 139.7, "PIPO", "Au! Au! Au!"], [139.7, 142.7, "LIZ", "O Pipo achou um triângulo! A bandeirinha!"], [144.1, 145.78, "LIZ", "E o tapete é um retângulo!"], [146.78, 149.11, "LIZ", "E a bola do papai também é um círculo!"], [149.91, 153.34, "VOVO", "Vamos contar quantas coisas a Liz encontrou?"], [153.74, 154.99, "TODOS", "Um!"], [155.49, 156.93, "TODOS", "Dois!"], [157.43, 158.8, "TODOS", "Três!"], [159.3, 160.67, "TODOS", "Quatro!"], [161.17, 162.63, "TODOS", "Cinco!"], [163.03, 166.51, "VOVO", "Cinco coisas! Parabéns, Liz!"], [168.51, 169.95, "LIZ", "Agora é sua vez!"], [170.55, 171.8, "LIZ", "Que forma é essa?"], [175.3, 176.31, "LIZ", "Círculo!"], [177.31, 178.56, "LIZ", "Que forma é essa?"], [182.06, 183.02, "LIZ", "Quadrado!"], [184.02, 185.26, "LIZ", "Que forma é essa?"], [188.76, 190.01, "LIZ", "Triângulo!"], [191.01, 192.26, "LIZ", "Que forma é essa?"], [195.76, 196.86, "LIZ", "Retângulo!"], [197.46, 199.1, "LIZ", "Você acertou tudo!"], [233.7, 238.04, "LIZ", "Aprender brincando é muito divertido! Até a próxima aventura!"]];
+const PAUSES=[[55.75, 59.75], [171.8, 175.3], [178.56, 182.06], [185.26, 188.76], [192.26, 195.76]];
+const A={"abertura": {}, "caixa": {"abre": 22.96}, "circulo": {"gira": 44.2}, "quadrado": {"exemplos": 79.36}, "triangulo": {"gira": 92.76, "exemplos": 99.82}, "retangulo": {"gira": 114.43, "exemplos": 115.83}, "caca": {"c1": 129.61, "c2": 134.03, "c3": 138.5, "c4": 144.1, "c5": 146.78}, "desafio": {"f1": 170.55, "f2": 177.31, "f3": 184.02, "f4": 191.01}, "musica": {"canta": 200.7, "titulo": 238.04}};
+const LS={"abertura": [], "caixa": [17.6, 21.38, 25.56, 28.65, 33.05, 33.86], "circulo": [37.26, 40.49, 42.33, 45.6, 49.57, 51.94, 59.75], "quadrado": [63.21, 66.32, 68.3, 71.53, 73.38, 75.42, 77.39, 79.36], "triangulo": [86.03, 89.3, 93.96, 95.81, 97.85, 99.82], "retangulo": [106.78, 110.08, 111.72, 115.83], "caca": [122.53, 126.04, 127.41, 129.61, 134.03, 138.5, 139.7, 144.1, 146.78, 149.91, 153.74, 155.49, 157.43, 159.3, 161.17, 163.03], "desafio": [168.51, 170.55, 175.3, 177.31, 182.06, 184.02, 188.76, 191.01, 195.76, 197.46], "musica": [233.7]};
+const falando=(w,t)=>LINES.some(l=>(l[2]===w||(l[2]==='TODOS'&&['LIZ','MAE','PAI','VOVO'].includes(w)))&&t>=l[0]&&t<l[1]-.08);
+const boca=(w,t)=>falando(w,t)&&(Math.floor(t*9)%3!==2);
+const piscar=(t,off=0)=>((t+off)%3.7)<.13?1:0;
+const emPausa=t=>PAUSES.find(p=>t>=p[0]&&t<p[1]);
+const pulinho=(t,vel=1.6,alt=50)=>Math.abs(Math.sin(t*Math.PI*vel))*alt;
+const BURST={red:-99,yel:-99,blu:-99,all:-99};
+E.in=t=>t*t*t;
+/* ---------------- cenários ---------------- */
+function nuvem(x,y,s,op=1){return `<g transform="translate(${r1(x)} ${y}) scale(${s})" opacity="${op}"><ellipse cx="0" cy="0" rx="90" ry="38" fill="#fff"/><circle cx="-40" cy="-20" r="40" fill="#fff"/><circle cx="20" cy="-34" r="50" fill="#fff"/><circle cx="62" cy="-10" r="34" fill="#fff"/><ellipse cx="0" cy="18" rx="88" ry="14" fill="#E3F1FF"/></g>`;}
+function arvore(x,y,s,c1='#4FB54A',c2='#6FD167'){return `<g transform="translate(${x} ${y}) scale(${s})"><path d="M-22 0 Q -16 -110 -10 -170 L 10 -170 Q 16 -110 24 0 Z" fill="#8E5A2E"/><path d="M-6 -150 Q 4 -110 2 -40" stroke="#6E4220" stroke-width="5" fill="none"/><circle cx="0" cy="-230" r="90" fill="${c1}"/><circle cx="-70" cy="-190" r="62" fill="${c1}"/><circle cx="70" cy="-190" r="62" fill="${c1}"/><circle cx="-20" cy="-262" r="58" fill="${c2}"/><circle cx="44" cy="-226" r="40" fill="${c2}"/><circle cx="-60" cy="-206" r="30" fill="${c2}"/></g>`;}
+function flor(x,y,s,cor,t,miolo='#FFD23F'){const sw=Math.sin(t*2+x*.01)*6;return `<g transform="translate(${r1(x)} ${y}) rotate(${r1(sw)}) scale(${s})"><path d="M0 0 Q 4 -30 0 -60" stroke="#3E9C42" stroke-width="5" fill="none"/><ellipse cx="10" cy="-26" rx="12" ry="6" fill="#56B84F" transform="rotate(-30 10 -26)"/>${[0,72,144,216,288].map(a=>`<ellipse cx="0" cy="-74" rx="10" ry="15" fill="${cor}" transform="rotate(${a} 0 -62)"/>`).join('')}<circle cx="0" cy="-62" r="9" fill="${miolo}"/></g>`;}
+function casaArvore(x,y){return `<g transform="translate(${x} ${y})"><path d="M-40 0 Q -30 -240 -24 -360 L 24 -360 Q 30 -240 44 0 Z" fill="#8E5A2E"/><circle cx="0" cy="-470" r="150" fill="#43A845"/><circle cx="-110" cy="-400" r="100" fill="#43A845"/><circle cx="110" cy="-410" r="100" fill="#4FB54A"/><circle cx="-30" cy="-520" r="90" fill="#62C75C"/>
+  <rect x="-110" y="-360" width="220" height="16" rx="6" fill="#7B4A24"/><rect x="-90" y="-480" width="180" height="120" rx="10" fill="#D79A5B"/><path d="M-110 -476 L 0 -560 L 110 -476 Z" fill="#E2574C"/><rect x="-30" y="-450" width="60" height="90" rx="26" fill="#7B4A24"/><circle cx="-56" cy="-430" r="16" fill="#FFE79A"/><circle cx="56" cy="-430" r="16" fill="#FFE79A"/>
+  <path d="M60 -350 L 150 -60 M 90 -350 L 180 -60" stroke="#A9733E" stroke-width="6"/>${[0,1,2,3,4,5,6].map(i=>`<path d="M${66+i*13} ${-320+i*40} h 30" stroke="#A9733E" stroke-width="6"/>`).join('')}</g>`;}
+function fundoFloresta(t,extra=''){
+  let s=`<linearGradient id="ceu1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6EC6FF"/><stop offset=".7" stop-color="#CFEFFF"/><stop offset="1" stop-color="#F1FAFF"/></linearGradient>`;
+  s+=`<rect x="-400" y="-200" width="2720" height="1480" fill="url(#ceu1)"/>`;
+  s+=`<circle cx="1640" cy="150" r="90" fill="#FFF6B8" filter="url(#brilhoForte)" opacity=".9"/>`;
+  s+=nuvem(200+t*8%400,170,1.1,.95)+nuvem(900+t*5,110,.8,.9)+nuvem(1450-t*4,230,1,.9);
+  s+=`<path d="M-400 700 Q 200 560 700 660 Q 1200 760 1600 610 Q 1900 520 2300 640 L 2300 1300 L -400 1300 Z" fill="#A6E39A"/>`;
+  s+=`<path d="M-400 780 Q 400 680 900 760 Q 1400 840 2300 720 L 2300 1300 L -400 1300 Z" fill="#86D474"/>`;
+  s+=arvore(1500,760,.9,'#3E9F45','#5CC25A')+arvore(1760,780,1.1)+arvore(560,760,.8,'#3E9F45','#5CC25A');
+  s+=casaArvore(150,880);
+  s+=`<path d="M-400 900 Q 600 840 1100 880 Q 1600 920 2300 870 L 2300 1300 L -400 1300 Z" fill="#74C95F"/>`;
+  s+=`<path d="M700 1300 Q 820 980 980 900 Q 1080 860 1240 870 Q 1080 960 1060 1300 Z" fill="#F2D49B" opacity=".9"/>`;
+  const R=rng(5);for(let i=0;i<34;i++){const x=R()*2300-200,y=900+R()*170;s+=flor(x,y,.7+R()*.5,['#FF6FB5','#B667F2','#FFFFFF','#FFB13B'][i%4],t);}
+  return s+extra;
+}
+function porta(x,y,abrir,t){ /* porta azul no tronco gigante */
+  const a=E.inOut(abrir);
+  let s=`<g transform="translate(${x} ${y})">`;
+  s+=`<path d="M-260 0 Q -230 -300 -190 -620 L 190 -620 Q 230 -300 270 0 Q 120 30 0 10 Q -130 30 -260 0 Z" fill="#8A552B"/>`;
+  s+=`<path d="M-150 -560 Q -130 -300 -170 -40 M140 -580 Q 160 -300 130 -60 M-60 -600 Q -40 -500 -70 -420" stroke="#6D3F1D" stroke-width="8" fill="none" stroke-linecap="round"/>`;
+  s+=`<circle cx="0" cy="-760" r="250" fill="#3E9F45"/><circle cx="-220" cy="-660" r="170" fill="#4FB54A"/><circle cx="230" cy="-660" r="170" fill="#4FB54A"/><circle cx="-60" cy="-860" r="160" fill="#62C75C"/>`;
+  /* luz de dentro */
+  s+=`<radialGradient id="luzPorta"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".45" stop-color="#FFF2B0"/><stop offset="1" stop-color="#FF9ED8"/></radialGradient>`;
+  s+=`<path d="M-100 -20 L -100 -250 Q -100 -350 0 -350 Q 100 -350 100 -250 L 100 -20 Z" fill="url(#luzPorta)"/>`;
+  if(a>0){for(let i=0;i<9;i++){const ang=-90+(i-4)*16;const L=300+200*a;s+=`<path d="M0 -180 L ${r1(Math.cos((ang-5)*Math.PI/180)*L)} ${r1(-180+Math.sin((ang-5)*Math.PI/180)*L)} L ${r1(Math.cos((ang+5)*Math.PI/180)*L)} ${r1(-180+Math.sin((ang+5)*Math.PI/180)*L)} Z" fill="#FFF6C8" opacity="${r1(.35*a)}"/>`;}}
+  /* folha da porta (abre pela dobradiça esquerda) */
+  const sx=r1(1-a*.92);
+  s+=`<g transform="translate(-100 0) scale(${sx} 1)"><path d="M0 -20 L 0 -250 Q 0 -350 100 -350 Q 200 -350 200 -250 L 200 -20 Z" fill="#2F7DF6" stroke="#F7C744" stroke-width="10"/><path d="M30 -60 L 30 -240 Q 30 -316 100 -318 Q 170 -316 170 -240 L 170 -60 Z" fill="none" stroke="#1E5FC8" stroke-width="6"/>${estrela(100,-250,26,0)}<circle cx="168" cy="-160" r="12" fill="#F7C744"/></g>`;
+  s+=`<path d="M-112 -14 L -112 -252 Q -112 -362 0 -362 Q 112 -362 112 -252 L 112 -14" stroke="#F7C744" stroke-width="12" fill="none"/>`;
+  const gl=.25+.25*Math.sin(t*4);s+=`<path d="M-112 -14 L -112 -252 Q -112 -362 0 -362 Q 112 -362 112 -252 L 112 -14" stroke="#9FD0FF" stroke-width="24" fill="none" opacity="${r1(gl)}" filter="url(#brilhoForte)"/>`;
+  return s+`</g>`;
+}
+/* Mundo mágico: grupos com saturação independente */
+function mundo(t,sat){
+  const satF=(id,v)=>`<filter id="${id}"><feColorMatrix type="saturate" values="${v.toFixed(3)}"/><feComponentTransfer><feFuncR type="linear" slope="${(0.85+0.15*v).toFixed(3)}"/><feFuncG type="linear" slope="${(0.85+0.15*v).toFixed(3)}"/><feFuncB type="linear" slope="${(0.85+0.15*v).toFixed(3)}"/></feComponentTransfer></filter>`;
+  let s=satF('sBase',sat.base)+satF('sRed',sat.red)+satF('sYel',sat.yel)+satF('sBlu',sat.blu);
+  /* base */
+  s+=`<g filter="url(#sBase)"><linearGradient id="ceu2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FD0FF"/><stop offset=".65" stop-color="#FFD9F0"/><stop offset="1" stop-color="#FFF4E0"/></linearGradient><rect x="-400" y="-200" width="2720" height="1480" fill="url(#ceu2)"/>`;
+  s+=nuvem(300+t*6,150,1,.9)+nuvem(1200-t*5,110,.8,.85)+nuvem(1700,240,.9,.8);
+  /* castelo */
+  s+=`<g transform="translate(1120 640) scale(.9)"><rect x="-160" y="-220" width="320" height="220" fill="#C99BF0"/><rect x="-220" y="-300" width="80" height="300" fill="#B780E8"/><rect x="140" y="-300" width="80" height="300" fill="#B780E8"/><rect x="-40" y="-380" width="80" height="200" fill="#B780E8"/><path d="M-230 -300 L -180 -400 L -130 -300 Z M130 -300 L 180 -400 L 230 -300 Z M-50 -380 L 0 -490 L 50 -380 Z" fill="#FF6FB5"/><rect x="-36" y="-110" width="72" height="110" rx="36" fill="#7B4FC9"/><circle cx="-180" cy="-220" r="16" fill="#FFF2B0"/><circle cx="180" cy="-220" r="16" fill="#FFF2B0"/><circle cx="0" cy="-300" r="16" fill="#FFF2B0"/></g>`;
+  s+=`<path d="M-400 700 Q 300 580 800 660 Q 1300 740 1700 630 Q 2000 560 2320 640 L 2320 1300 L -400 1300 Z" fill="#9EE08E"/>`;
+  s+=`<path d="M-400 820 Q 500 730 1000 800 Q 1500 870 2320 780 L 2320 1300 L -400 1300 Z" fill="#7ACF68"/>`;
+  s+=arvore(1820,800,1,'#3E9F45','#5CC25A')+arvore(820,780,.7,'#3E9F45','#5CC25A');
+  s+=`<path d="M-400 920 Q 700 860 1200 900 Q 1700 940 2320 900 L 2320 1300 L -400 1300 Z" fill="#6BC45A"/>`;
+  /* porta azul deste lado */
+  s+=`<g transform="translate(150 930) scale(.55)"><path d="M-100 -20 L -100 -250 Q -100 -350 0 -350 Q 100 -350 100 -250 L 100 -20 Z" fill="#2F7DF6" stroke="#F7C744" stroke-width="12"/>${estrela(0,-250,26,0)}</g>`;
+  s+=`</g>`;
+  /* vermelho: macieira */
+  s+=`<g filter="url(#sRed)">${arvore(330,930,1.45,'#3FA34A','#5CC25A')}${[[300,560],[390,520],[250,630],[420,610],[340,470],[230,520]].map(([x,y],i)=>`<g><circle cx="${x}" cy="${y}" r="${i===1?30:20}" fill="#F0322F"/><circle cx="${x-6}" cy="${y-6}" r="${i===1?9:6}" fill="#FF9A8F"/><path d="M${x} ${y-(i===1?30:20)} q 4 -12 12 -14" stroke="#6E4220" stroke-width="4" fill="none"/></g>`).join('')}</g>`;
+  /* amarelo: campo de flores */
+  s+=`<g filter="url(#sYel)">`;const R=rng(9);for(let i=0;i<26;i++){s+=flor(700+R()*560,880+R()*110,.8+R()*.4,'#FFD21F',t,'#FF8A1F');}
+  s+=`<g transform="translate(960 900) rotate(${r1(Math.sin(t*1.6)*3)})"><path d="M0 0 Q 10 -100 0 -200" stroke="#3E9C42" stroke-width="12" fill="none"/><ellipse cx="34" cy="-90" rx="36" ry="16" fill="#56B84F" transform="rotate(-30 34 -90)"/>${[0,45,90,135,180,225,270,315].map(a=>`<ellipse cx="0" cy="-262" rx="28" ry="46" fill="#FFD21F" stroke="#F2B000" stroke-width="3" transform="rotate(${a} 0 -220)"/>`).join('')}<circle cx="0" cy="-220" r="32" fill="#FF9A1F"/><circle cx="-10" cy="-230" r="10" fill="#FFC56A"/></g></g>`;
+  /* azul: lago */
+  s+=`<g filter="url(#sBlu)"><ellipse cx="1500" cy="880" rx="330" ry="86" fill="#2E8CF0"/><ellipse cx="1500" cy="866" rx="300" ry="66" fill="#4FB2FF"/>${[0,1,2].map(i=>{const p=((t*.5+i/3)%1);return `<ellipse cx="1500" cy="870" rx="${r1(60+p*220)}" ry="${r1(14+p*50)}" fill="none" stroke="#C8E8FF" stroke-width="4" opacity="${r1(.7*(1-p))}"/>`;}).join('')}<path d="M1300 860 q 20 -8 40 0 M1600 880 q 20 -8 40 0 M1440 900 q 16 -6 32 0" stroke="#E6F5FF" stroke-width="4" fill="none"/>${[1240,1270,1730,1760].map((x,i)=>`<path d="M${x} 880 q -6 -50 4 -90" stroke="#3E9C42" stroke-width="6" fill="none"/><ellipse cx="${x+4}" cy="${790}" rx="6" ry="16" fill="#8A5A2E"/>`).join('')}</g>`;
+  return s;
+}
+
+/* ---------------- efeitos ---------------- */
+function brilhos(x,y,t,n=10,raio=60,cores=['#FFF3A8','#FF9ED8','#C9A2FF','#9FE6FF'],seed=1){const R=rng(seed);let s='';for(let i=0;i<n;i++){const a=R()*Math.PI*2,d=raio*(.3+R()*.7),tw=.5+.5*Math.sin(t*6+i*1.7);s+=estrelinha(x+Math.cos(a)*d,y+Math.sin(a)*d,4+R()*6,cores[i%cores.length],tw);}return s;}
+function estrelinha(x,y,r,cor,op=1){return `<path d="M${r1(x)} ${r1(y-r)} Q ${r1(x)} ${r1(y)} ${r1(x+r)} ${r1(y)} Q ${r1(x)} ${r1(y)} ${r1(x)} ${r1(y+r)} Q ${r1(x)} ${r1(y)} ${r1(x-r)} ${r1(y)} Q ${r1(x)} ${r1(y)} ${r1(x)} ${r1(y-r)} Z" fill="${cor}" opacity="${r1(op)}" filter="url(#brilho)"/>`;}
+function explosao(x,y,t,t0,cor){const p=prog(t,t0,t0+1.1);if(p<=0||p>=1)return '';let s=`<circle cx="${x}" cy="${y}" r="${r1(20+E.out(p)*260)}" fill="none" stroke="${cor}" stroke-width="${r1(22*(1-p))}" opacity="${r1(1-p)}"/>`;s+=`<circle cx="${x}" cy="${y}" r="${r1(10+E.out(p)*120)}" fill="${cor}" opacity="${r1(.5*(1-p))}" filter="url(#brilhoForte)"/>`;for(let i=0;i<14;i++){const a=i/14*Math.PI*2,d=40+E.out(p)*240;s+=estrelinha(x+Math.cos(a)*d,y+Math.sin(a)*d,14*(1-p)+4,i%2?'#fff':cor,1-p);}return s;}
+function confete(t,t0,t1){if(t<t0||t>t1+3)return '';const R=rng(77);let s='';for(let i=0;i<90;i++){const x=R()*1920,v=150+R()*220,ph=R()*6,c=['#FF4FA0','#FFD21F','#2E8CF0','#5CC25A','#B667F2','#FF8A1F'][i%6];const y=-40+((t-t0)*v+R()*400)%1200-200;if(t>t1&&y<0)continue;s+=`<rect x="${r1(x+Math.sin(t*3+ph)*30)}" y="${r1(y)}" width="14" height="22" rx="3" fill="${c}" transform="rotate(${r1((t*200+ph*60)%360)} ${r1(x)} ${r1(y)})"/>`;}return s;}
+function arcoIris(p){if(p<=0)return '';const cores=['#FF4D4D','#FF9A1F','#FFD21F','#5CC25A','#2E8CF0','#7B4FC9'];let s=`<g opacity="${r1(p)}">`;cores.forEach((c,i)=>{s+=`<path d="M${200+i*28} 760 A ${760-i*28} ${560-i*24} 0 0 1 ${1720-i*28} 760" stroke="${c}" stroke-width="28" fill="none" stroke-dasharray="2600" stroke-dashoffset="${r1(2600*(1-p))}"/>`;});return s+`</g>`;}
+/* HUD das cores */
+function hudCores(t){const ap=E.back(prog(t,63.6,64.2));if(ap<=0||t>=114.6)return '';const out=1-prog(t,114.2,114.6);let s=`<g transform="translate(960 92) scale(${r1(ap*out)})"><rect x="-230" y="-58" width="460" height="116" rx="58" fill="#fff" opacity=".92" filter="url(#sombraSuave)"/>`;
+  [['#F0322F',BURST.red+2.2,'maca'],['#FFD21F',BURST.yel+2.2,'flor'],['#2E8CF0',BURST.blu+2.0,'gota']].forEach(([c,tt,ic],i)=>{const x=-140+i*140;const f=E.back(prog(t,tt,tt+.5));
+   s+=`<circle cx="${x}" cy="0" r="40" fill="#EEE8F4" stroke="#CDBFE0" stroke-width="4"/>`;
+   if(f<=0)s+=`<text x="${x}" y="16" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="44" fill="#B9A9CF">?</text>`;
+   else{s+=`<g transform="translate(${x} 0) scale(${r1(f)})"><circle r="40" fill="${c}"/>${ic==='maca'?`<circle cx="0" cy="4" r="18" fill="#fff" opacity=".9"/><path d="M0 -14 q 4 -10 12 -10" stroke="#fff" stroke-width="4" fill="none"/>`:ic==='flor'?[0,72,144,216,288].map(a=>`<ellipse cx="0" cy="-14" rx="7" ry="11" fill="#fff" transform="rotate(${a})"/>`).join('')+`<circle r="7" fill="#FF9A1F"/>`:`<path d="M0 -22 Q 18 2 12 12 Q 0 26 -12 12 Q -18 2 0 -22 Z" fill="#fff"/>`}</g>`;}
+  });return s+`</g>`;}
+/* indicador "Sua vez!" nas pausas */
+function hudPausa(t){const p=emPausa(t);if(!p)return '';const [a,b]=p;const ap=E.back(prog(t,a,a+.35))*(1-prog(t,b-.25,b));const k=prog(t,a,b);
+  const R=54,C=2*Math.PI*R;let s=`<g transform="translate(1720 150) scale(${r1(ap)})"><circle r="78" fill="#fff" filter="url(#sombraSuave)"/><circle r="${R}" fill="none" stroke="#FFE1EF" stroke-width="12"/><circle r="${R}" fill="none" stroke="#FF4FA0" stroke-width="12" stroke-linecap="round" stroke-dasharray="${r1(C)}" stroke-dashoffset="${r1(C*k)}" transform="rotate(-90)"/>`;
+  s+=`<g transform="scale(${r1(1+.08*Math.sin(t*8))})"><path d="M-6 -26 C 18 -30 26 -4 14 8 C 6 16 8 24 0 26 C -10 28 -14 18 -10 12" stroke="#FF4FA0" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M-2 -10 C 8 -12 10 0 4 4" stroke="#FF4FA0" stroke-width="6" fill="none" stroke-linecap="round"/></g>`;
+  s+=`<g transform="translate(0 112)"><rect x="-96" y="-28" width="192" height="56" rx="28" fill="#FF4FA0"/><text y="12" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="32" fill="#fff">Sua vez!</text></g>`;
+  for(let i=0;i<3;i++){s+=`<circle cx="${-26+i*26}" cy="170" r="8" fill="#fff" opacity="${r1(.4+.6*Math.max(0,Math.sin(t*6-i)))}"/>`;}
+  return s+`</g>`;}
+function cam(cx,cy,z){return `translate(${r1(960-cx*z)} ${r1(540-cy*z)}) scale(${z.toFixed(4)})`;}
+function camK(t,keys){ /* keys: [[t,cx,cy,z],...] */
+  if(t<=keys[0][0])return keys[0].slice(1);for(let i=0;i<keys.length-1;i++){const [ta,...A]=keys[i],[tb,...B]=keys[i+1];if(t<=tb){const p=E.inOut(prog(t,ta,tb));return A.map((v,j)=>lerp(v,B[j],p));}}return keys[keys.length-1].slice(1);}
+/* poses da Liz conforme o momento */
+function lizPose(t,base={}){
+  const o=Object.assign({expr:'feliz',piscar:piscar(t),pulo:Math.max(0,Math.sin(t*2.2))*4},base);
+  if(boca('LIZ',t))o.falar=true;
+  const p=emPausa(t);
+  if(p){o.expr='sorriso';o.bracoD=150+Math.sin(t*3)*4;o.inclinar=-6;o.olharX=.4;o.falar=false;o.pulo=0;}
+  return o;}
+function comemora(t,t0,dur=1.6){const p=prog(t,t0,t0+dur);if(p<=0||p>=1)return null;return {expr:'rindo',bracoE:160,bracoD:160,pulo:Math.abs(Math.sin(p*Math.PI*3))*60};}
+function voandoLumi(t,x,y,falar){return at(x,y+Math.sin(t*3)*10,1,lumi({bater:(Math.sin(t*22)+1)/2,piscar:piscar(t,1.2),falar}));}
+function rastro(t,pts){let s='';pts.forEach(([x,y],i)=>{s+=estrelinha(x,y,3+(i%3)*2,['#FFF3A8','#FF9ED8','#C9A2FF'][i%3],.4+.6*Math.max(0,Math.sin(t*8+i)));});return s;}
+
+/* ================== EPISÓDIO 3 — O MISTÉRIO DAS FORMAS GEOMÉTRICAS ================== */
+const {mae,pai,vovo}=LIZ;
+const WHO={LIZ:['Liz','#FF4FA0'],MAE:['Mamãe Scarllet','#3FAE95'],PAI:['Papai Kennedy','#3D7BD9'],VOVO:['Vovó Rose','#9A6CC6'],TODOS:['Todos','#F2A93B'],PIPO:['Pipo','#C9773A']};
+const SC=Object.fromEntries(SCENES.map(s=>[s[0],[s[1],s[2]]]));
+/* cores oficiais das formas (iguais em toda a série) */
+const FORMA={circulo:{cor:'#F0322F',esc:'#C21F1C',nome:'CÍRCULO'},quadrado:{cor:'#FFD21F',esc:'#E0A800',nome:'QUADRADO'},triangulo:{cor:'#2E8CF0',esc:'#1E6FD0',nome:'TRIÂNGULO'},retangulo:{cor:'#3FB950',esc:'#2C9440',nome:'RETÂNGULO'}};
+function caminhoForma(tipo,s){ /* geometria correta, centrada em (0,0) */
+  if(tipo==='circulo')return {d:`M ${-s/2} 0 A ${s/2} ${s/2} 0 1 0 ${s/2} 0 A ${s/2} ${s/2} 0 1 0 ${-s/2} 0 Z`,lados:[]};
+  if(tipo==='quadrado'){const h=s/2;const P=[[-h,-h],[h,-h],[h,h],[-h,h]];return {d:`M${P.map(p=>p.join(' ')).join(' L')} Z`,lados:P.map((p,i)=>[p,P[(i+1)%4]])};}
+  if(tipo==='triangulo'){const h=s*Math.sqrt(3)/2;const P=[[0,-h*2/3],[s/2,h/3],[-s/2,h/3]];return {d:`M${P.map(p=>p.map(r1).join(' ')).join(' L')} Z`,lados:P.map((p,i)=>[p,P[(i+1)%3]])};}
+  const w=s*1.7/2,h=s*.95/2;const P=[[-w,-h],[w,-h],[w,h],[-w,h]];return {d:`M${P.map(p=>p.join(' ')).join(' L')} Z`,lados:P.map((p,i)=>[p,P[(i+1)%4]])};}
+function forma(tipo,x,y,s,rot=0,o={}){const F=FORMA[tipo],c=caminhoForma(tipo,s);
+  let g=`<g transform="translate(${r1(x)} ${r1(y)}) rotate(${r1(rot)})"><path d="${c.d}" fill="${F.cor}" stroke="${F.esc}" stroke-width="${o.borda||Math.max(4,s*.05)}" stroke-linejoin="round" ${o.sombra!==false?'filter="url(#sombraSuave)"':''}/>`;
+  if(tipo==='circulo')g+=`<circle cx="${r1(-s*.18)}" cy="${r1(-s*.18)}" r="${r1(s*.1)}" fill="#fff" opacity=".45"/><circle cx="${r1(s*.22)}" cy="${r1(s*.12)}" r="${r1(s*.05)}" fill="#fff" opacity=".35"/>`;
+  else g+=`<path d="${c.d}" fill="none" stroke="#fff" stroke-width="${r1(s*.03)}" opacity=".35" transform="scale(.82)"/>`;
+  if(o.rosto)g+=`<circle cx="${r1(-s*.12)}" cy="${r1(-s*.04)}" r="${r1(s*.045)}" fill="#2A1A14"/><circle cx="${r1(s*.12)}" cy="${r1(-s*.04)}" r="${r1(s*.045)}" fill="#2A1A14"/><path d="M${r1(-s*.1)} ${r1(s*.08)} Q 0 ${r1(s*.18)} ${r1(s*.1)} ${r1(s*.08)}" stroke="#2A1A14" stroke-width="${r1(s*.025)}" fill="none" stroke-linecap="round"/>`;
+  return g+`</g>`;}
+/* forma gigante girando + nome */
+function formaGrande(tipo,x,y,s,t,t0,t1){const p=E.back(prog(t,t0,t0+.6)),out=E.in(prog(t,t1-.4,t1));if(p<=0||out>=1)return '';const sc=p*(1-out);
+  const giro=tipo==='circulo'?(t-t0)*120:Math.sin((t-t0)*2.2)*14+(1-p)*-90;
+  let g=`<g transform="translate(${x} ${y}) scale(${r1(sc)})"><circle r="${r1(s*.78)}" fill="#fff" opacity=".85" filter="url(#sombraSuave)"/>`;
+  g+=forma(tipo,0,-s*.06,s,giro,{rosto:true});
+  if(tipo==='circulo')for(let i=0;i<8;i++){const a=(t-t0)*2.1+i*Math.PI/4;g+=`<circle cx="${r1(Math.cos(a)*s*.66)}" cy="${r1(-s*.06+Math.sin(a)*s*.66)}" r="5" fill="${FORMA.circulo.cor}" opacity=".5"/>`;}
+  const F=FORMA[tipo];g+=`<g transform="translate(0 ${r1(s*.7)})"><rect x="${-s*.62}" y="-34" width="${s*1.24}" height="68" rx="34" fill="${F.cor}" stroke="#fff" stroke-width="6"/><text y="15" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="44" fill="#fff" stroke="${F.esc}" stroke-width="3" paint-order="stroke">${F.nome}</text></g>`;
+  return g+`</g>`;}
+/* lados acendendo na contagem */
+function contaLados(tipo,x,y,s,t,tempos,giro=0){const c=caminhoForma(tipo,s);let g=`<g transform="translate(${x} ${y-s*.06})">`;
+  c.lados.forEach(([p1,p2],i)=>{const tc=tempos[i];if(tc===undefined||t<tc)return;const q=E.back(prog(t,tc,tc+.35));
+    g+=`<line x1="${r1(p1[0])}" y1="${r1(p1[1])}" x2="${r1(p2[0])}" y2="${r1(p2[1])}" stroke="#fff" stroke-width="${r1(14*Math.min(q,1))}" stroke-linecap="round" filter="url(#brilho)"/>`;
+    const mx=(p1[0]+p2[0])/2,my=(p1[1]+p2[1])/2,len=Math.hypot(mx,my)||1,nx=mx/len*58,ny=my/len*58;
+    g+=`<g transform="translate(${r1(mx+nx)} ${r1(my+ny)}) scale(${r1(q)})"><circle r="30" fill="#FF4FA0" stroke="#fff" stroke-width="5"/><text y="13" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="36" fill="#fff">${i+1}</text></g>`;});
+  return g+`</g>`;}
+/* realce de um objeto da sala com o contorno da forma */
+function realce(tipo,x,y,w,h,t,t0,t1,rotulo=true){if(t<t0||t>t1)return '';const p=E.out(prog(t,t0,t0+.6)),o=1-prog(t,t1-.35,t1);const F=FORMA[tipo];
+  let d;if(tipo==='circulo')d=`M ${x-w/2} ${y} A ${w/2} ${h/2} 0 1 0 ${x+w/2} ${y} A ${w/2} ${h/2} 0 1 0 ${x-w/2} ${y}`;
+  else if(tipo==='triangulo')d=`M${x} ${y-h/2} L ${x+w/2} ${y+h/2} L ${x-w/2} ${y+h/2} Z`;
+  else d=`M${x-w/2} ${y-h/2} L ${x+w/2} ${y-h/2} L ${x+w/2} ${y+h/2} L ${x-w/2} ${y+h/2} Z`;
+  let g=`<g opacity="${r1(o)}"><path d="${d}" fill="${F.cor}" opacity="${r1(.12+.08*Math.sin(t*6))}"/><path d="${d}" fill="none" stroke="${F.cor}" stroke-width="10" stroke-linejoin="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="${r1(100-100*p)}" filter="url(#brilho)"/>`;
+  if(rotulo){const q=E.back(prog(t,t0+.3,t0+.7));g+=`<g transform="translate(${x} ${r1(y-h/2-44)}) scale(${r1(q)})"><rect x="-96" y="-26" width="192" height="52" rx="26" fill="${F.cor}" stroke="#fff" stroke-width="4"/><text y="11" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="28" fill="#fff" stroke="${F.esc}" stroke-width="2" paint-order="stroke">${F.nome}</text></g>`;}
+  return g+`</g>`;}
+/* objetos que a família segura */
+const OBJ={
+  bola:`<circle r="34" fill="#F0322F" stroke="#C21F1C" stroke-width="4"/><path d="M-31 -4 Q 0 14 31 -4" stroke="#fff" stroke-width="5" fill="none"/><circle cx="-12" cy="-14" r="8" fill="#FF9A8F"/>`,
+  bloco:`<rect x="-36" y="-36" width="72" height="72" rx="6" fill="#FFD21F" stroke="#E0A800" stroke-width="5"/><rect x="-24" y="-24" width="48" height="48" rx="4" fill="none" stroke="#fff" stroke-width="3" opacity=".5"/>`,
+  tri:`<path d="M0 -50 L 44 26 L -44 26 Z" fill="#2E8CF0" stroke="#1E6FD0" stroke-width="5" stroke-linejoin="round"/><circle cx="0" cy="2" r="9" fill="#fff" opacity=".5"/>`,
+  livro:`<rect x="-62" y="-40" width="124" height="80" rx="6" fill="#3FB950" stroke="#2C9440" stroke-width="5"/><rect x="-62" y="-40" width="16" height="80" fill="#2C9440"/><rect x="-30" y="-20" width="70" height="10" rx="4" fill="#fff" opacity=".7"/><rect x="-30" y="0" width="50" height="8" rx="4" fill="#fff" opacity=".5"/>`
+};
+function maoLiz(lx,s,aD){const a=aD*Math.PI/180;return [lx+(57+80*Math.sin(a))*s,965+(-226+80*Math.cos(a))*s];}
+
+/* ---------- cenário: a sala da família ---------- */
+function sala(t,o={}){
+  let s=`<rect x="-700" y="-700" width="3320" height="1490" fill="#FFF1DC"/>`;
+  for(let y=-40;y<780;y+=70)for(let x=-660;x<2600;x+=70)s+=`<circle cx="${x+((y/70)%2?35:0)}" cy="${y}" r="5" fill="#FFE0BE"/>`;
+  s+=`<rect x="-700" y="760" width="3320" height="30" fill="#E7C49C"/><rect x="-700" y="786" width="3320" height="700" fill="#E9B987"/>`;
+  for(let i=0;i<14;i++)s+=`<path d="M${-700+i*260} 790 L ${-900+i*300} 1480" stroke="#D9A672" stroke-width="4"/>`;
+  s+=`<path d="M-700 900 H 2620 M-700 1040 H 2620 M-700 1220 H 2620" stroke="#D9A672" stroke-width="3" opacity=".7"/>`;
+  /* bandeirinhas triangulares (azuis) */
+  s+=`<path d="M60 64 Q 960 120 1860 64" stroke="#8C6D4F" stroke-width="4" fill="none"/>`;
+  for(let i=0;i<16;i++){const x=110+i*112,y=64+Math.sin(Math.PI*(x-60)/1800)*40+(i===10&&o.bandeira?-6:0);const sw=Math.sin(t*2+i)*4;
+    s+=`<path transform="rotate(${r1(sw)} ${x} ${r1(y)})" d="M${x-30} ${r1(y)} L ${x+30} ${r1(y)} L ${x} ${r1(y+56)} Z" fill="${i%2?'#2E8CF0':'#5FAAF6'}" stroke="#1E6FD0" stroke-width="2"/>`;}
+  /* relógio redondo */
+  const hh=t*.02,mm=t*.3;s+=`<g transform="translate(470 230)"><circle r="76" fill="#F0322F"/><circle r="62" fill="#fff"/>${Array.from({length:12},(_,i)=>`<rect x="-3" y="-56" width="6" height="12" rx="3" fill="#7A5A48" transform="rotate(${i*30})"/>`).join('')}<path d="M0 0 L 0 -34" stroke="#3A2A20" stroke-width="7" stroke-linecap="round" transform="rotate(${r1(hh*360)})"/><path d="M0 0 L 0 -48" stroke="#3A2A20" stroke-width="5" stroke-linecap="round" transform="rotate(${r1(mm*360)})"/><circle r="7" fill="#F0322F"/></g>`;
+  /* porta-retrato quadrado amarelo */
+  s+=`<g transform="translate(760 300)"><rect x="-66" y="-66" width="132" height="132" rx="6" fill="#FFD21F" stroke="#E0A800" stroke-width="4"/><rect x="-48" y="-48" width="96" height="96" fill="#FFF8E8"/><path d="M0 22 C -26 4 -22 -18 0 -8 C 22 -18 26 4 0 22 Z" fill="#FF5A8F"/></g>`;
+  /* desenho da casinha (telhado triangular azul) */
+  s+=`<g transform="translate(1060 300)"><rect x="-86" y="-80" width="172" height="160" rx="6" fill="#fff" stroke="#E2D2BE" stroke-width="3" transform="rotate(-3)"/><rect x="-44" y="-4" width="88" height="62" fill="#FFB86B"/><rect x="-12" y="20" width="24" height="38" fill="#B5733C"/><path d="M-60 -2 L 0 -60 L 60 -2 Z" fill="#2E8CF0" stroke="#1E6FD0" stroke-width="3" stroke-linejoin="round"/><circle cx="58" cy="-58" r="12" fill="#FFD21F"/></g>`;
+  /* janela quadrada */
+  s+=`<g><rect x="1240" y="170" width="300" height="300" rx="8" fill="#FFFFFF"/><rect x="1258" y="188" width="264" height="264" fill="#9ED8FF"/><ellipse cx="1350" cy="260" rx="50" ry="22" fill="#fff"/><circle cx="1320" cy="250" r="24" fill="#fff"/><path d="M1240 400 Q 1390 340 1540 410 L 1540 470 L 1240 470 Z" fill="#8FD474"/><rect x="1382" y="188" width="16" height="264" fill="#fff"/><rect x="1258" y="312" width="264" height="16" fill="#fff"/><rect x="1226" y="466" width="328" height="20" rx="6" fill="#F1E2CC"/></g>`;
+  /* porta retangular verde */
+  s+=`<g><rect x="1650" y="320" width="240" height="470" rx="6" fill="#E7C49C"/><rect x="1664" y="334" width="212" height="456" rx="4" fill="#3FB950"/><rect x="1690" y="364" width="160" height="170" rx="6" fill="#36A847"/><rect x="1690" y="566" width="160" height="190" rx="6" fill="#36A847"/><circle cx="1846" cy="560" r="12" fill="#F7C744"/></g>`;
+  /* TV retangular */
+  s+=`<g><rect x="90" y="650" width="360" height="130" rx="10" fill="#B5733C"/><rect x="104" y="666" width="150" height="100" rx="6" fill="#A0622F"/><rect x="286" y="666" width="150" height="100" rx="6" fill="#A0622F"/><rect x="120" y="460" width="300" height="180" rx="12" fill="#2B2F3A"/><rect x="134" y="474" width="272" height="152" rx="6" fill="#4A5266"/><path d="M150 490 L 230 490" stroke="#fff" stroke-width="6" opacity=".25" stroke-linecap="round"/><rect x="250" y="640" width="40" height="14" fill="#2B2F3A"/></g>`;
+  /* blocos quadrados no chão */
+  if(o.blocos!==false)s+=`<g transform="translate(520 880)">${[[0,0],[74,0],[37,-70]].map(([x,y])=>`<rect x="${x-34}" y="${y-34}" width="68" height="68" rx="6" fill="#FFD21F" stroke="#E0A800" stroke-width="4"/><rect x="${x-20}" y="${y-20}" width="40" height="40" rx="4" fill="none" stroke="#fff" stroke-width="3" opacity=".5"/>`).join('')}</g>`;
+  /* planta */
+  s+=`<g transform="translate(1560 780)"><path d="M-30 0 L 30 0 L 22 -60 L -22 -60 Z" fill="#E2725B"/><path d="M0 -60 Q -40 -130 -60 -160 M0 -60 Q 0 -150 10 -190 M0 -60 Q 40 -120 66 -150" stroke="#3E9C42" stroke-width="8" fill="none" stroke-linecap="round"/>${[[-60,-160],[10,-190],[66,-150],[-30,-110],[30,-100]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="22" ry="12" fill="#56B84F" transform="rotate(${x} ${x} ${y})"/>`).join('')}</g>`;
+  /* sofá com almofada redonda vermelha */
+  s+=`<g><rect x="690" y="560" width="540" height="150" rx="50" fill="#B98AE0"/><rect x="650" y="640" width="90" height="190" rx="40" fill="#A876D6"/><rect x="1180" y="640" width="90" height="190" rx="40" fill="#A876D6"/><rect x="720" y="680" width="500" height="120" rx="34" fill="#C9A0EC"/><rect x="740" y="820" width="22" height="30" fill="#8C6D4F"/><rect x="1160" y="820" width="22" height="30" fill="#8C6D4F"/>
+    <circle cx="810" cy="660" r="54" fill="#F0322F" stroke="#C21F1C" stroke-width="4"/><circle cx="810" cy="660" r="8" fill="#C21F1C"/>${[0,60,120,180,240,300].map(a=>`<path d="M810 660 L ${r1(810+Math.cos(a*Math.PI/180)*50)} ${r1(660+Math.sin(a*Math.PI/180)*50)}" stroke="#C21F1C" stroke-width="2" opacity=".6"/>`).join('')}<rect x="1060" y="620" width="96" height="80" rx="20" fill="#FFB3CF"/></g>`;
+  /* tapete retangular verde (em perspectiva) */
+  s+=`<path d="M640 900 L 1290 900 L 1370 1030 L 560 1030 Z" fill="#3FB950"/><path d="M670 916 L 1262 916 L 1328 1014 L 600 1014 Z" fill="none" stroke="#9BE3A8" stroke-width="6"/>`;
+  return s;}
+/* caixa mágica */
+function caixa(x,y,abrir,t){const a=E.out(abrir);let s=`<g transform="translate(${x} ${y})"><rect x="-90" y="-130" width="180" height="130" rx="10" fill="#FF6FB5" stroke="#E0408A" stroke-width="5"/><rect x="-16" y="-130" width="32" height="130" fill="#FFD23F"/>${[[-60,-90],[50,-60],[-40,-30],[60,-110]].map(([cx,cy],i)=>`<circle cx="${cx}" cy="${cy}" r="8" fill="${['#fff','#5FE1FF','#fff','#B667F2'][i]}"/>`).join('')}`;
+  s+=`<g transform="translate(0 ${r1(-130-a*220)}) rotate(${r1(a*-40)})"><rect x="-100" y="-34" width="200" height="38" rx="10" fill="#FF8BC6" stroke="#E0408A" stroke-width="5"/><rect x="-16" y="-34" width="32" height="38" fill="#FFD23F"/><path d="M0 -34 C -40 -80 -70 -40 0 -34 C 70 -40 40 -80 0 -34 Z" fill="#FFD23F" stroke="#E0A800" stroke-width="3"/></g>`;
+  if(a>0&&a<1)s+=`<g opacity="${r1(1-a)}">${Array.from({length:7},(_,i)=>`<path d="M0 -130 L ${r1(Math.cos((-90+(i-3)*22)*Math.PI/180)*400)} ${r1(-130+Math.sin((-90+(i-3)*22)*Math.PI/180)*400)}" stroke="#FFF3B0" stroke-width="18" opacity=".6"/>`).join('')}</g>`;
+  return s+`</g>`;}
+const ORBITA=['circulo','quadrado','triangulo','retangulo'];
+function formasFlutuando(t,t0,cx,cy,raio,sai=null){let s='';ORBITA.forEach((k,i)=>{const p=E.out(prog(t,t0+i*.18,t0+i*.18+1));if(p<=0)return;const a=(t*.5+i*Math.PI/2);let x=lerp(960,cx+Math.cos(a)*raio,p),y=lerp(860,cy+Math.sin(a)*raio*.45,p)+Math.sin(t*2+i)*14;
+  if(sai!==null&&t>sai){const q=E.in(prog(t,sai+i*.1,sai+i*.1+.8));y-=q*900;}
+  s+=forma(k,x,y,lerp(30,110,p),Math.sin(t*1.5+i)*18,{rosto:true});});return s;}
+/* transição: forma gigante que cobre e revela */
+function transForma(t,t0,tipo){const p=prog(t,t0-.45,t0+.45);if(p<=0||p>=1)return '';const k=p<.5?E.in(p*2):1-E.out((p-.5)*2);return forma(tipo,960,540,k*2600,p*180,{sombra:false,borda:1});}
+/* HUD da caça às formas */
+function hudCaca(t){const [a,b]=SC.caca;if(t<a+2||t>b-.3)return '';const ap=E.back(prog(t,a+2,a+2.6))*(1-prog(t,b-.7,b-.3));
+  const T={circulo:A.caca.c1,quadrado:A.caca.c2,triangulo:A.caca.c3,retangulo:A.caca.c4};
+  let s=`<g transform="translate(960 84) scale(${r1(ap)})"><rect x="-300" y="-54" width="600" height="108" rx="54" fill="#fff" opacity=".94" filter="url(#sombraSuave)"/>`;
+  ORBITA.forEach((k,i)=>{const x=-210+i*140,f=E.back(prog(t,T[k]+.2,T[k]+.7));s+=forma(k,x,0,62,0,{sombra:false,borda:3}).replace('<g ',`<g opacity="${f>0?1:.3}" `);
+    if(f>0)s+=`<g transform="translate(${x+30} 26) scale(${r1(f)})"><circle r="18" fill="#3FB950" stroke="#fff" stroke-width="4"/><path d="M-8 0 l 5 6 l 10 -12" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>`;});
+  return s+`</g>`;}
+const ITENS=[['circulo','Almofada'],['quadrado','Porta-retrato'],['triangulo','Bandeirinha'],['retangulo','Tapete'],['circulo','Bola']];
+function fileiraEncontrados(t){const [a,b]=SC.caca;const TT=[A.caca.c1,A.caca.c2,A.caca.c3,A.caca.c4,A.caca.c5];const cont=LS.caca.slice(10,15);if(t<TT[0]||t>b-.3)return '';const o=1-prog(t,b-.7,b-.3);
+  let s=`<g opacity="${r1(o)}"><rect x="24" y="902" width="540" height="116" rx="58" fill="#fff" opacity=".9" filter="url(#sombraSuave)"/>`;
+  ITENS.forEach(([k],i)=>{const x=104+i*96,f=E.back(prog(t,TT[i]+.2,TT[i]+.7));if(f<=0){s+=`<circle cx="${x}" cy="962" r="36" fill="#F1EADF"/>`;return;}
+    const ct=cont[i];const bump=ct&&t>=ct&&t<ct+.4?Math.sin(prog(t,ct,ct+.4)*Math.PI)*24:0;
+    s+=forma(k,x,962-bump,56*f,0,{sombra:false,borda:3});
+    if(ct&&t>=ct){const q=E.back(prog(t,ct,ct+.3));s+=`<g transform="translate(${x+30} 926) scale(${r1(q)})"><circle r="22" fill="#FF4FA0" stroke="#fff" stroke-width="4"/><text y="10" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="28" fill="#fff">${i+1}</text></g>`;}});
+  return s+`</g>`;}
+
+/* ---------- cenas ---------- */
+const S={};
+S.abertura=(t)=>{
+  let s=`<linearGradient id="abg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7CCBFF"/><stop offset=".6" stop-color="#FFC6E6"/><stop offset="1" stop-color="#FFE9B8"/></linearGradient><rect width="1920" height="1080" fill="url(#abg)"/>`;
+  for(let i=0;i<12;i++){const a=i*30+t*12;s+=`<path d="M960 560 L ${r1(960+Math.cos(a*Math.PI/180)*1600)} ${r1(560+Math.sin(a*Math.PI/180)*1600)} L ${r1(960+Math.cos((a+12)*Math.PI/180)*1600)} ${r1(560+Math.sin((a+12)*Math.PI/180)*1600)} Z" fill="#fff" opacity=".12"/>`;}
+  s+=nuvem(220,880,1.6)+nuvem(1700,900,1.8)+nuvem(960,990,2.2)+nuvem(500,170,.9,.9)+nuvem(1500,140,1,.9)+brilhos(960,520,t,26,700,undefined,3);
+  const pop=t0=>E.back(prog(t,t0,t0+.6));const lg=E.elastic(prog(t,8.5,10.5));
+  s+=at(960,lerp(-300,330,lg),lg>0?.78:0,logoSVG());
+  s+=at(330,985,1.0*pop(1.0),liz({expr:t>13?'rindo':'feliz',bracoD:t<6?150+Math.sin(t*10)*20:14,piscar:piscar(t),pulo:t>13?Math.abs(Math.sin(t*5))*30:0}));
+  s+=at(590,990,1.05*pop(3.0),pipo({rabo:Math.sin(t*14)*24,latir:t>3.2&&t<3.7,piscar:piscar(t,1)}));
+  s+=at(1600,990,1.0*pop(5.0),robi({expr:'feliz',bracoD:t>5.5&&t<8?150+Math.sin(t*9)*18:20,flutuar:Math.sin(t*3)*6+6}));
+  const lp=prog(t,6.5,8.2);s+=voandoLumi(t,lerp(2100,1360,E.out(lp)),lerp(200,560,E.out(lp)),false);
+  const tg=E.back(prog(t,11.6,12.2));
+  s+=`<g transform="translate(960 708) scale(${r1(tg)})"><rect x="-560" y="-58" width="1120" height="116" rx="58" fill="#7B3DB8" stroke="#fff" stroke-width="6"/><text y="-8" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="34" fill="#F1E2FF">EPISÓDIO 3</text><text y="38" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="48" fill="#fff">O Mistério das Formas Geométricas</text></g>`;
+  ORBITA.forEach((k,i)=>{const p=E.back(prog(t,12+i*.15,12.8+i*.15));if(p>0)s+=forma(k,[420,1500,560,1360][i],[620,610,800,800][i],70*p,t*40+i*30,{rosto:true});});
+  const ep=prog(t,14.2,14.6)*(1-prog(t,15.6,16));s+=`<rect width="1920" height="1080" fill="#fff" opacity="${r1(ep*.9)}"/>`;
+  return s;};
+S.caixa=(t)=>{
+  const [a,b]=SC.caixa,L=LS.caixa,ab=A.caixa.abre;
+  const [cx,cy,z]=camK(t,[[a,960,560,1.0],[L[0],960,580,1.04],[ab-.2,980,640,1.22],[L[2]+.6,960,560,1.0],[b,960,560,1.02]]);
+  let w=sala(t);
+  w+=caixa(1000,1000,prog(t,ab,ab+.6),t);
+  if(t>=ab)w+=brilhos(1000,820,t,14,220,undefined,5)+formasFlutuando(t,ab+.2,1000,420,330,b-1.2);
+  /* mamãe entra pela porta */
+  const mp=E.out(prog(t,a,a+1.6));let mo={expr:'feliz',falar:boca('MAE',t),piscar:piscar(t,.4),pulo:t<a+1.6?Math.abs(Math.sin(t*10))*8:0,olharX:-.6};
+  if(t>=L[0]&&t<L[1])Object.assign(mo,{bracoE:70});
+  if(t>=L[3]&&t<L[4])Object.assign(mo,{bracoE:120,bracoD:120});
+  w+=at(lerp(1760,1330,mp),990,.95,mae(mo));
+  /* Liz */
+  let lo=lizPose(t,{olharX:.5});
+  if(t<a+1.4)w+=at(lerp(300,760,E.out(prog(t,a,a+1.4))),965,1.05,lizLado({expr:'sorriso',passo:t*12,pulo:Math.abs(Math.sin(t*12))*8}));
+  else{if(t>=L[1]&&t<ab)Object.assign(lo,{expr:'pensativa',bracoD:160,olharX:.7,olharY:-.6});
+    if(t>=ab&&t<L[3])Object.assign(lo,{expr:'surpresa',bracoE:60,bracoD:60,olharY:-1,falar:boca('LIZ',t)});
+    const c=comemora(t,L[4],1.4);if(c)Object.assign(lo,c);
+    w+=at(760,965,1.05,liz(lo));}
+  w+=at(lerp(150,580,E.out(prog(t,a+.3,a+1.8))),968,.92,pipo({rabo:Math.sin(t*14)*24,latir:boca('PIPO',t),pulo:(falando('PIPO',t)?pulinho(t,3,26):0)+(t>=ab&&t<ab+1?pulinho(t,2,30):0),olharX:1,piscar:piscar(t,.8)}));
+  return `<g transform="${cam(cx,cy,z)}">${w}</g>`;};
+S.circulo=(t)=>{
+  const [a,b]=SC.circulo,L=LS.circulo,gi=A.circulo.gira;
+  const [cx,cy,z]=camK(t,[[a,1000,560,1.0],[L[3]-.2,980,560,1.0],[L[3]+.6,800,500,1.04],[L[4],960,560,1.0],[L[5],860,600,1.25],[b,860,600,1.25]]);
+  let w=sala(t);
+  const dp=E.out(prog(t,a,a+1.4));let po={expr:'feliz',falar:boca('PAI',t),piscar:piscar(t,.2),segura:OBJ.bola,bracoD:t>=a+1.2?105:40,pulo:t<a+1.4?Math.abs(Math.sin(t*10))*8:0,olharX:-.6};
+  if(t>=L[2]&&t<L[3])Object.assign(po,{bracoD:150});
+  w+=at(lerp(1780,1200,dp),990,.95,pai(po));
+  w+=at(1560,990,.86,mae({expr:'feliz',piscar:piscar(t,1.2),olharX:-.8}));
+  let lo=lizPose(t,{olharX:.6});
+  if(t>=L[1]&&t<L[2])Object.assign(lo,{expr:'pensativa',bracoD:160,olharX:.6,olharY:-.6});
+  if(t>=L[4]&&t<L[5]){Object.assign(lo,{expr:'rindo',bracoE:150,bracoD:150,pulo:pulinho(t,2,40),falar:boca('LIZ',t)});}
+  const c=comemora(t,L[6],1.4);if(c)Object.assign(lo,c);
+  w+=at(760,965,1.05,liz(lo));
+  w+=at(580,968,.92,pipo({rabo:Math.sin(t*14)*24,olharX:1,pulo:t>=L[4]&&t<L[5]?pulinho(t+.2,2,30):0,piscar:piscar(t,.6)}));
+  /* destaques: bola e relógio */
+  const hb=[1200+(70+166*Math.sin(105*Math.PI/180))*.95,990+(-452+166*Math.cos(105*Math.PI/180))*.95];
+  w+=realce('circulo',hb[0],hb[1],100,100,t,L[3],L[3]+3.2,false)+realce('circulo',470,230,180,180,t,L[3]+.9,L[4]+.2);
+  let s=`<g transform="${cam(cx,cy,z)}">${w}</g>`;
+  s+=formaGrande('circulo',990,270,210,t,gi-.1,L[3]);
+  /* dica na pausa: coisas redondas */
+  const dp2=E.back(prog(t,L[5]+2.2,L[5]+2.8))*(1-prog(t,L[6]-.2,L[6]));if(dp2>0){s+=`<g transform="translate(1440 470) scale(${r1(dp2)})"><circle r="170" fill="#fff" opacity=".94" filter="url(#sombraSuave)"/>${forma('circulo',-70,-50,70,t*60,{sombra:false})}<g transform="translate(70 -50)"><circle r="36" fill="#FF9A1F"/><path d="M0 -36 q 6 -12 14 -14" stroke="#3E9C42" stroke-width="5" fill="none"/></g><g transform="translate(-60 70)"><circle r="40" fill="#fff" stroke="#BFC7D5" stroke-width="6"/><circle r="26" fill="none" stroke="#DDE3EC" stroke-width="4"/></g><g transform="translate(70 70)"><circle r="30" fill="#FFD21F" stroke="#E0A800" stroke-width="4"/><circle cx="-8" cy="-6" r="4" fill="#E0A800"/><circle cx="8" cy="-6" r="4" fill="#E0A800"/><circle cx="-8" cy="8" r="4" fill="#E0A800"/><circle cx="8" cy="8" r="4" fill="#E0A800"/></g></g>`;}
+  return s;};
+S.quadrado=(t)=>{
+  const [a,b]=SC.quadrado,L=LS.quadrado,ex=A.quadrado.exemplos;
+  const [cx,cy,z]=camK(t,[[a,940,560,1.0],[L[2],960,560,1.0],[ex-.2,960,560,1.0],[ex+.8,1000,480,.96],[b,980,520,.98]]);
+  let w=sala(t);
+  const vp=E.out(prog(t,a,a+1.4));let vo={expr:'feliz',falar:boca('VOVO',t),piscar:piscar(t,.5),segura:OBJ.bloco,bracoD:t>=a+1?110:40,pulo:t<a+1.4?Math.abs(Math.sin(t*9))*6:0,olharX:-.6};
+  if(t>=L[3]&&t<L[7])Object.assign(vo,{expr:'rindo',pulo:0});
+  w+=at(lerp(1780,1200,vp),990,.92,vovo(vo));
+  let lo=lizPose(t,{olharX:.6});
+  if(t>=L[1]&&t<L[2])Object.assign(lo,{expr:'animada',bracoD:160,falar:boca('LIZ',t)});
+  [3,4,5,6].forEach(k=>{if(t>=L[k]&&t<L[k]+.7)Object.assign(lo,{expr:'animada',bracoD:165,pulo:20});});
+  w+=at(760,965,1.05,liz(lo));
+  w+=at(580,968,.92,pipo({rabo:Math.sin(t*14)*24,olharX:1,piscar:piscar(t,.6),latir:t>=L[6]&&t<L[6]+.5}));
+  w+=realce('quadrado',1390,320,320,320,t,ex,b-.2)+realce('quadrado',557,845,190,150,t,ex+.8,b-.2,false);
+  let s=`<g transform="${cam(cx,cy,z)}">${w}</g>`;
+  const t1=ex;s+=formaGrande('quadrado',985,270,200,t,L[0]+.6,t1)+(t<t1?contaLados('quadrado',985,270,200,t,[L[3],L[4],L[5],L[6]]):'');
+  return s;};
+S.triangulo=(t)=>{
+  const [a,b]=SC.triangulo,L=LS.triangulo,ex=A.triangulo.exemplos;
+  const [cx,cy,z]=camK(t,[[a,960,560,1.0],[ex-.2,960,560,1.0],[ex+.8,1000,460,.98],[b,1000,480,.98]]);
+  let w=sala(t);
+  w+=at(1200,990,.95,pai({expr:'feliz',falar:boca('PAI',t),piscar:piscar(t,.2),olharX:-.6,bracoD:t>=L[1]&&t<L[1]+2?140:20}));
+  w+=at(1560,990,.86,vovo({expr:'feliz',piscar:piscar(t,.9),olharX:-.8}));
+  const aD=t<a+.8?20:(t<ex?130:40);
+  let lo=lizPose(t,{olharX:.6});Object.assign(lo,{bracoD:aD});
+  if(t>=L[0]&&t<L[1])Object.assign(lo,{expr:'animada'});
+  [2,3,4].forEach(k=>{if(t>=L[k]&&t<L[k]+.7)Object.assign(lo,{expr:'animada',pulo:20});});
+  if(emPausa(t))lo.bracoD=130;
+  w+=at(760,965,1.05,liz(lo));
+  if(t<ex){const [hx,hy]=maoLiz(760,1.05,aD);w+=`<g transform="translate(${r1(hx)} ${r1(hy-10)})">${OBJ.tri}</g>`;}
+  w+=at(580,968,.92,pipo({rabo:Math.sin(t*14)*24,olharX:1,piscar:piscar(t,.6)}));
+  w+=realce('triangulo',1060,270,150,90,t,ex,b-.2);
+  let s=`<g transform="${cam(cx,cy,z)}">${w}</g>`;
+  s+=formaGrande('triangulo',985,275,210,t,A.triangulo.gira-.2,ex)+(t<ex?contaLados('triangulo',985,275,210,t,[L[2],L[3],L[4]]):'');
+  /* exemplo: placa triangular */
+  const pp=E.back(prog(t,ex+.9,ex+1.4))*(1-prog(t,b-.5,b-.1));if(pp>0)s+=`<g transform="translate(1520 640) scale(${r1(pp)})"><rect x="-8" y="0" width="16" height="200" fill="#9AA6B5"/>${forma('triangulo',0,-20,170,0,{sombra:true})}<path d="M0 -60 v 44" stroke="#fff" stroke-width="14" stroke-linecap="round"/><circle cx="0" cy="8" r="8" fill="#fff"/><g transform="translate(0 230)"><rect x="-80" y="-24" width="160" height="48" rx="24" fill="#2E8CF0"/><text y="10" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="28" fill="#fff">placa</text></g></g>`;
+  return s;};
+S.retangulo=(t)=>{
+  const [a,b]=SC.retangulo,L=LS.retangulo,ex=A.retangulo.exemplos;
+  const [cx,cy,z]=camK(t,[[a,960,560,1.0],[ex-.2,960,560,1.0],[ex+.4,980,520,.94],[b,980,520,.95]]);
+  let w=sala(t);
+  w+=at(1200,990,.95,mae({expr:'feliz',falar:boca('MAE',t),piscar:piscar(t,.4),segura:OBJ.livro,bracoD:105,olharX:-.6}));
+  let lo=lizPose(t,{olharX:.6});
+  if(t>=L[1]&&t<L[2]+.3)Object.assign(lo,{expr:'animada',bracoE:95,bracoD:95});
+  w+=at(760,965,1.05,liz(lo));
+  w+=at(580,968,.92,pipo({rabo:Math.sin(t*14)*24,olharX:1,piscar:piscar(t,.6)}));
+  const hb=[1200+(70+166*Math.sin(105*Math.PI/180))*.95,990+(-452+166*Math.cos(105*Math.PI/180))*.95];
+  w+=realce('retangulo',1770,555,230,460,t,ex,b-.2)+realce('retangulo',hb[0],hb[1],140,96,t,ex+.8,b-.2,false)+realce('retangulo',270,550,320,200,t,ex+1.6,b-.2);
+  let s=`<g transform="${cam(cx,cy,z)}">${w}</g>`;
+  s+=formaGrande('retangulo',985,265,170,t,A.retangulo.gira-.2,ex);
+  return s;};
+S.caca=(t)=>{
+  const [a,b]=SC.caca,L=LS.caca,C=A.caca;
+  const [cx,cy,z]=camK(t,[[a,960,560,.98],[C.c1-.6,900,600,1.12],[C.c2-.6,800,480,1.12],[C.c3-.6,1100,420,1.06],[C.c4-.6,960,620,1.0],[C.c5-.4,1060,580,1.0],[L[9],960,560,.98],[b,960,560,.98]]);
+  let w=sala(t,{bandeira:t>=C.c3});
+  /* família */
+  const torcida=(t0)=>t>=t0&&t<t0+1.2?Math.abs(Math.sin(t*9))*16:0;
+  const festa=[C.c1,C.c2,C.c3,C.c4,C.c5].reduce((m,x)=>m+torcida(x),0);
+  w+=at(1350,990,.9,pai({expr:festa?'rindo':'feliz',falar:boca('PAI',t),piscar:piscar(t,.2),olharX:-.6,segura:t>=C.c5-.4?OBJ.bola:null,bracoD:t>=C.c5-.4?120:(t<L[0]+3?120:20),bracoE:festa?150:12,pulo:festa}));
+  w+=at(1560,990,.86,mae({expr:festa?'rindo':'feliz',falar:boca('MAE',t),piscar:piscar(t,1.1),olharX:-.8,bracoE:festa?150:12,bracoD:festa?150:12,pulo:festa}));
+  w+=at(250,990,.88,vovo({expr:'feliz',falar:boca('VOVO',t),piscar:piscar(t,.7),olharX:.6,bracoD:t>=L[9]?120:12,bracoE:festa?150:12,pulo:festa*.6}));
+  /* Liz percorre a sala */
+  const pts=[[a,960],[C.c1-.8,960],[C.c1,1010],[C.c2-.8,1010],[C.c2,920],[C.c3-.8,920],[C.c3,1120],[C.c4-.8,1120],[C.c4,960]];
+  let lx=960;for(let i=0;i<pts.length-1;i++){if(t>=pts[i][0]&&t<pts[i+1][0]){lx=lerp(pts[i][1],pts[i+1][1],E.inOut(prog(t,pts[i][0],pts[i+1][0])));break;}if(t>=pts[pts.length-1][0])lx=960;}
+  let lo=lizPose(t,{olharX:.3});
+  if(t>=C.c1&&t<C.c1+1.2)Object.assign(lo,{expr:'animada',bracoE:100,apontarE:true,olharX:-.6});
+  if(t>=C.c2&&t<C.c2+1.4)Object.assign(lo,{expr:'animada',bracoE:150,apontarE:true,olharY:-1,olharX:-.4});
+  if(t>=C.c3&&t<C.c3+2.4)Object.assign(lo,{expr:'rindo',bracoD:150,olharY:-1});
+  if(t>=C.c4&&t<C.c4+1.4)Object.assign(lo,{expr:'animada',bracoE:60,bracoD:60,olharY:.6});
+  if(t>=C.c5&&t<C.c5+1.6)Object.assign(lo,{expr:'feliz',bracoD:100,apontarD:true,olharX:.8});
+  [10,11,12,13,14].forEach(k=>{if(t>=L[k]&&t<L[k]+.6)Object.assign(lo,{expr:'animada',bracoD:165,pulo:22});});
+  const c=comemora(t,L[15],1.6);if(c)Object.assign(lo,c);
+  w+=at(lx,965,1.0,liz(lo));
+  /* Pipo acompanha e acha a bandeirinha */
+  let px=lerp(lx-170,lx-170,1);if(t>=C.c3-1.4&&t<C.c3+1.6)px=lerp(lx-170,1190,E.inOut(prog(t,C.c3-1.4,C.c3-.4)));
+  w+=at(px,968,.9,pipo({rabo:Math.sin(t*16)*26,latir:boca('PIPO',t),pulo:(falando('PIPO',t)?pulinho(t,3,40):0),olharX:1,inclinar:t>=C.c3-.4&&t<C.c3+1.6?-16:0,piscar:piscar(t,.6)}));
+  /* descobertas */
+  const ach=[[C.c1,'circulo',810,660,130,130],[C.c2,'quadrado',760,300,160,160],[C.c3,'triangulo',1230,92,90,70],[C.c4,'retangulo',965,965,780,140],[C.c5,'circulo',1350+(70+166*Math.sin(120*Math.PI/180))*.9,990+(-452+166*Math.cos(120*Math.PI/180))*.9,100,100]];
+  ach.forEach(([t0,k,x,y,ww,hh])=>{w+=realce(k,x,y,ww,hh,t,t0,t0+2.4,k!=='retangulo')+explosao(x,y,t,t0+.15,FORMA[k].cor);});
+  let s=`<g transform="${cam(cx,cy,z)}">${w}</g>`;
+  [C.c1,C.c2,C.c3,C.c4,C.c5].forEach(t0=>{s+=confete(t,t0+.1,t0+1.2).replace(/<rect /g,'<rect opacity=".9" ');});
+  s+=hudCaca(t)+fileiraEncontrados(t);
+  return s;};
+S.desafio=(t)=>{
+  const [a,b]=SC.desafio,L=LS.desafio,F=[A.desafio.f1,A.desafio.f2,A.desafio.f3,A.desafio.f4];
+  let s=`<radialGradient id="palco" cx="50%" cy="40%" r="75%"><stop offset="0" stop-color="#FFF4FB"/><stop offset=".7" stop-color="#FFD3EA"/><stop offset="1" stop-color="#E7B8FF"/></radialGradient><rect width="1920" height="1080" fill="url(#palco)"/>`;
+  for(let i=0;i<14;i++){const ang=i*(360/14)+t*8;s+=`<path d="M1340 480 L ${r1(1340+Math.cos(ang*Math.PI/180)*1500)} ${r1(480+Math.sin(ang*Math.PI/180)*1500)} L ${r1(1340+Math.cos((ang+10)*Math.PI/180)*1500)} ${r1(480+Math.sin((ang+10)*Math.PI/180)*1500)} Z" fill="#fff" opacity=".22"/>`;}
+  s+=brilhos(1340,480,t,20,600,undefined,13);
+  const ordem=['circulo','quadrado','triangulo','retangulo'];
+  let atual=-1;F.forEach((tf,i)=>{if(t>=tf)atual=i;});
+  const fim=t>=L[9];
+  let lo=lizPose(t,{olharX:.6});
+  if(t<L[1])Object.assign(lo,{expr:'animada',bracoE:120,bracoD:120,olharX:0});
+  ordem.forEach((k,i)=>{const pq=L[1+i*2],rv=L[2+i*2];if(t>=pq&&t<pq+1.8)Object.assign(lo,{expr:'pensativa',bracoD:100,apontarD:true,olharX:.8});const c=comemora(t,rv,1.2);if(c)Object.assign(lo,c);});
+  if(fim)Object.assign(lo,{expr:'rindo',bracoE:150,bracoD:150,pulo:pulinho(t,1.6,40),falar:boca('LIZ',t)});
+  s+=at(520,1040,1.32,liz(lo))+at(250,1050,1.0,pipo({rabo:Math.sin(t*16)*26,pulo:fim?pulinho(t+.3,1.6,30):0,olharX:1,piscar:piscar(t,.4)}));
+  if(atual>=0&&!fim){const k=ordem[atual],tf=F[atual],rv=L[2+atual*2],nx=F[atual+1]||L[9];
+    const ap=E.back(prog(t,tf,tf+.6)),sa=E.in(prog(t,nx-.5,nx));const rev=t>=rv;const sc=ap*(1-sa);
+    s+=`<g transform="translate(1340 470) scale(${r1(sc)})"><circle r="250" fill="#fff" opacity=".9" filter="url(#sombraSuave)"/>${forma(k,0,-10,250,Math.sin(t*2)*6+(rev?Math.sin(prog(t,rv,rv+.6)*Math.PI)*20:0),{rosto:rev})}`;
+    if(!rev)s+=`<g transform="translate(150 -170) scale(${r1(1+.08*Math.sin(t*6))})"><circle r="52" fill="#7B3DB8" stroke="#fff" stroke-width="6"/><text y="24" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="70" fill="#fff">?</text></g>`;
+    else{const q=E.back(prog(t,rv,rv+.4));const FF=FORMA[k];s+=`<g transform="translate(0 220) scale(${r1(q)})"><rect x="-190" y="-44" width="380" height="88" rx="44" fill="${FF.cor}" stroke="#fff" stroke-width="7"/><text y="18" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="56" fill="#fff" stroke="${FF.esc}" stroke-width="3" paint-order="stroke">${FF.nome}</text></g>`;}
+    s+=`</g>`;if(rev)s+=explosao(1340,470,t,rv,FORMA[k].cor);}
+  if(fim){ordem.forEach((k,i)=>{const p=E.back(prog(t,L[9]+i*.12,L[9]+.6+i*.12));const ang=t*.8+i*Math.PI/2;s+=forma(k,1340+Math.cos(ang)*240,470+Math.sin(ang)*150+Math.sin(t*4+i)*20,130*p,Math.sin(t*3+i)*20,{rosto:true});});s+=confete(t,L[9],b);}
+  s+=`<g transform="translate(960 70)" opacity="${r1(prog(t,a+.3,a+.8))}"><rect x="-260" y="-36" width="520" height="72" rx="36" fill="#7B3DB8"/><text y="14" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="38" fill="#fff">Desafio dos amiguinhos</text></g>`;
+  return s;};
+const LETRA=['Círculo é redondinho,','Quadrado tem quatro ladinhos,','Triângulo tem três pontinhas,','Retângulo é compridinho!','Vamos juntos aprender,','Formas para reconhecer!','Na escola ou em casa também,','Aprender é muito bom, amém!'];
+function karaoke(t,t0){const k=Math.floor((t-t0)/4);if(t<t0-.5||k>=8)return '';const kk=Math.max(0,k);const p=clamp((t-t0-kk*4)/3.2);
+  const ap=prog(t,t0-.5,t0);let s=`<g opacity="${r1(ap)}"><rect x="360" y="850" width="1200" height="190" rx="40" fill="#2A1640" opacity=".78"/>`;
+  const ic=kk<4?ORBITA[kk]:null;if(ic)s+=forma(ic,450,922,64,Math.sin(t*4)*10,{sombra:false,borda:3});
+  s+=`<defs><linearGradient id="kfill" x1="0" x2="1"><stop offset="${r1(p)}" stop-color="#FFD23F"/><stop offset="${r1(p)}" stop-color="#FFFFFF"/></linearGradient></defs>`;
+  s+=`<text x="${ic?990:960}" y="940" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="58" fill="url(#kfill)" stroke="#2A1640" stroke-width="3" paint-order="stroke">${LETRA[kk]}</text>`;
+  if(kk<7)s+=`<text x="960" y="1004" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="38" fill="#fff" opacity=".55">${LETRA[kk+1]}</text>`;
+  for(let i=0;i<3;i++)s+=`<text x="${400+i*1100}" y="${1000-Math.abs(Math.sin(t*4+i))*20}" font-size="44" fill="#FFD23F" font-family="Fredoka">♪</text>`;
+  return s+`</g>`;}
+S.musica=(t)=>{
+  const [a,b]=SC.musica,L=LS.musica,c0=A.musica.canta,tt=A.musica.titulo;
+  const [cx,cy,z]=camK(t,[[a,960,540,.92],[L[0]-.4,960,540,.92],[L[0]+.3,860,560,1.2],[tt+.6,860,560,1.2],[tt+2.6,960,540,.9],[b,960,540,.9]]);
+  let w=sala(t);
+  const dancando=t>=c0&&t<c0+32.5;const bt=(t-c0)*2*Math.PI;
+  const dz=(ph,amp=26)=>dancando?Math.abs(Math.sin(bt/2+ph))*amp:0;
+  const br=(ph)=>dancando?150+Math.sin(bt/2+ph)*24:14;
+  w+=at(1230,990,.92,pai({expr:'rindo',piscar:piscar(t,.2),bracoE:br(0),bracoD:br(1),pulo:dz(0),inclinar:dancando?Math.sin(bt/4)*5:0}));
+  w+=at(1460,990,.86,mae({expr:'rindo',piscar:piscar(t,.6),bracoE:br(1),bracoD:br(0),pulo:dz(.5),inclinar:dancando?-Math.sin(bt/4)*5:0}));
+  w+=at(480,990,.86,vovo({expr:'rindo',piscar:piscar(t,.9),bracoE:dancando?120+Math.sin(bt/2)*20:12,bracoD:dancando?120-Math.sin(bt/2)*20:12,pulo:dz(1,12)}));
+  let lo=lizPose(t,{});
+  if(dancando)Object.assign(lo,{expr:'rindo',bracoE:br(.5),bracoD:br(1.5),pulo:dz(.3,40),inclinar:Math.sin(bt/4)*6,falar:false});
+  if(t>=L[0])Object.assign(lo,{expr:'feliz',bracoD:150+Math.sin(t*10)*22,falar:boca('LIZ',t)});
+  w+=at(860,965,1.05,liz(lo));
+  w+=at(680,968,.92,pipo({rabo:Math.sin(t*18)*28,pulo:dz(1.2,30),latir:dancando&&Math.floor((t-c0)*2)%8===7,piscar:piscar(t,.4)}));
+  if(dancando)ORBITA.forEach((k,i)=>{const ang=t*.9+i*Math.PI/2;w+=forma(k,960+Math.cos(ang)*620,360+Math.sin(ang)*110+dz(i,30)*-1,100,Math.sin(bt/2+i)*20,{rosto:true});});
+  let s=`<g transform="${cam(cx,cy,z)}">${w}</g>`;
+  s+=karaoke(t,c0);
+  const ti=E.back(prog(t,tt+1.6,tt+2.4));
+  if(ti>0){s+=`<rect width="1920" height="1080" fill="#3a1b4a" opacity="${r1(.4*prog(t,tt+1.4,tt+2.4))}"/>`+at(960,320,.62*ti,logoSVG());
+    s+=`<g transform="translate(960 650) scale(${r1(ti)})"><rect x="-580" y="-62" width="1160" height="124" rx="62" fill="#7B3DB8" stroke="#fff" stroke-width="6"/><text y="-10" text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="34" fill="#F1E2FF">EPISÓDIO 3</text><text y="40" text-anchor="middle" font-family="Fredoka" font-weight="700" font-size="50" fill="#fff">O Mistério das Formas Geométricas</text></g>`;
+    const nx=E.out(prog(t,tt+3.2,tt+3.8));s+=`<g transform="translate(960 790)" opacity="${r1(nx)}"><text text-anchor="middle" font-family="Fredoka" font-weight="600" font-size="38" fill="#fff" stroke="#6A2C9E" stroke-width="8" paint-order="stroke">Próximo episódio: O Jardim dos Números</text></g>`;
+    ORBITA.forEach((k,i)=>{s+=forma(k,[300,1620,420,1500][i],[300,300,800,800][i],110*ti,t*30+i*40,{rosto:true});});}
+  const fo=prog(t,b-.9,b);s+=`<rect width="1920" height="1080" fill="#1b1030" opacity="${r1(fo)}"/>`;
+  return s;};
+
+/* ---------------- quadro ---------------- */
+const svg=document.getElementById('svg'),cap=document.getElementById('cap'),capWho=document.getElementById('capWho'),capTxt=document.getElementById('capTxt');
+let showCaps=true,lastLine=-2;
+const DEFS=defs()+logoDefs();
+function renderAt(t){
+  t=clamp(t,0,D);
+  const sc=SCENES.find(s=>t>=s[1]&&t<s[2])||SCENES[SCENES.length-1];
+  let body=S[sc[0]](t);
+  /* transições: uma forma gigante cobre e revela a próxima cena */
+  SCENES.slice(2).forEach(([n,a],i)=>{body+=transForma(t,a,ORBITA[i%4]);});
+  body+=hudPausa(t);
+  svg.innerHTML=DEFS+body;
+  /* legenda */
+  let li=-1;LINES.forEach((l,i)=>{if(t>=l[0]-.05&&t<l[1]+.25)li=i;});
+  if(li!==lastLine){lastLine=li;if(li>=0){const [n,c]=WHO[LINES[li][2]];capWho.textContent=n;capWho.style.background=c;capTxt.textContent=LINES[li][3];}}
+  if(li>=0&&showCaps){const l=LINES[li];const p=Math.min(prog(t,l[0]-.05,l[0]+.15),1-prog(t,l[1]+.05,l[1]+.25));cap.style.opacity=p;cap.style.transform=`translateX(-50%) translateY(${(1-p)*14}px)`;}else cap.style.opacity=0;
+}
+
+/* ---------------- trilha e efeitos sonoros (sintetizados, originais) ---------------- */
+const mtof=m=>440*Math.pow(2,(m-69)/12);
+const N={C4:60,D4:62,E4:64,F4:65,G4:67,A4:69,B4:71,C5:72,D5:74,E5:76,F5:77,G5:79,A5:81,B5:83,C6:84};
+/* tema "Vem com a Liz" — 8 compassos, 120 bpm (0,5 s por tempo) */
+const TEMA=[[0,.5,'C5'],[.5,.5,'C5'],[1,.5,'D5'],[1.5,1.5,'E5'],[3,.5,'G4'],[3.5,.5,'G4'],
+ [4,.5,'A4'],[4.5,.5,'C5'],[5,.5,'D5'],[5.5,.5,'E5'],[6,1,'D5'],[7,1,'C5'],
+ [8,.5,'E5'],[8.5,.5,'E5'],[9,.5,'F5'],[9.5,1.5,'G5'],[11,.5,'E5'],[11.5,.5,'C5'],
+ [12,.5,'D5'],[12.5,.5,'E5'],[13,.5,'D5'],[13.5,.5,'C5'],[14,2,'D5'],
+ [16,.5,'A5'],[16.5,.5,'G5'],[17,.5,'E5'],[17.5,1.5,'G5'],[19,1,'E5'],
+ [20,.5,'F5'],[20.5,.5,'E5'],[21,.5,'D5'],[21.5,.5,'E5'],[22,1,'F5'],[23,1,'G5'],
+ [24,.5,'E5'],[24.5,.5,'G5'],[25,1,'C6'],[26,.5,'B5'],[26.5,.5,'A5'],[27,1,'G5'],
+ [28,.5,'A5'],[28.5,.5,'G5'],[29,.5,'E5'],[29.5,.5,'D5'],[30,2,'C5']];
+const ACORDES={C:[48,52,55,60],G:[43,47,50,55],F:[41,45,48,53],Am:[45,48,52,57],Dm:[38,45,50,53]};
+const TEMA_AC=['C','G','F','C','Am','F','Dm','G'];
+const LEITO_AC=['C','Am','F','G'];
+function impulso(ctx,dur,dec){const sr=ctx.sampleRate,n=Math.floor(sr*dur),b=ctx.createBuffer(2,n,sr),R=rng(42);for(let c=0;c<2;c++){const d=b.getChannelData(c);for(let i=0;i<n;i++)d[i]=(R()*2-1)*Math.pow(1-i/n,dec);}return b;}
+function trilha(ctx,dest,off,base){
+  const master=ctx.createGain();master.gain.value=.85;const comp=ctx.createDynamicsCompressor();comp.threshold.value=-14;comp.ratio.value=3;master.connect(comp);comp.connect(dest);
+  const rev=ctx.createConvolver();rev.buffer=impulso(ctx,2.2,3);const rg=ctx.createGain();rg.gain.value=.28;rev.connect(rg);rg.connect(master);
+  const mus=ctx.createGain();mus.gain.value=1;mus.connect(master);
+  const nb=ctx.createBuffer(1,ctx.sampleRate,ctx.sampleRate);{const d=nb.getChannelData(0),R=rng(8);for(let i=0;i<d.length;i++)d[i]=R()*2-1;}
+  const T=x=>base+(x-off);const ok=x=>x>=off&&x<=D;
+  const env=(g,x,a,pk,dur)=>{const t0=T(x);g.gain.setValueAtTime(.0001,t0);g.gain.linearRampToValueAtTime(pk,t0+a);g.gain.exponentialRampToValueAtTime(.0001,t0+a+dur);};
+  const out=(n,bus,dry=1,wet=0)=>{const g=ctx.createGain();g.gain.value=dry;n.connect(g);g.connect(bus);if(wet){const w=ctx.createGain();w.gain.value=wet;n.connect(w);w.connect(rev);}};
+  const osc=(type,f,x,dur)=>{const o=ctx.createOscillator();o.type=type;o.frequency.setValueAtTime(f,T(x));o.start(T(x));o.stop(T(x)+dur+.1);return o;};
+  const ruido=(x,dur)=>{const s=ctx.createBufferSource();s.buffer=nb;s.loop=true;s.start(T(x));s.stop(T(x)+dur+.05);return s;};
+  /* instrumentos */
+  const sino=(x,m,dur=.5,v=1)=>{if(!ok(x))return;const f=mtof(N[m]??m);const g=ctx.createGain();env(g,x,.005,.14*v,dur+.6);[[1,'sine',1],[2,'sine',.35],[3.01,'triangle',.12]].forEach(([k,ty,a])=>{const o=osc(ty,f*k,x,dur+.8);const gg=ctx.createGain();gg.gain.value=a;o.connect(gg);gg.connect(g);});out(g,mus,1,.5);};
+  const ukulele=(x,m,v=1)=>{if(!ok(x))return;const g=ctx.createGain();const fl=ctx.createBiquadFilter();fl.type='lowpass';fl.frequency.setValueAtTime(3200,T(x));fl.frequency.exponentialRampToValueAtTime(900,T(x)+.3);env(g,x,.003,.07*v,.35);const o=osc('triangle',mtof(m+12),x,.5);o.connect(fl);fl.connect(g);out(g,mus,1,.25);};
+  const baixo=(x,m,dur=.45,v=1)=>{if(!ok(x))return;const g=ctx.createGain();env(g,x,.008,.22*v,dur);const o=osc('triangle',mtof(m-12),x,dur);const o2=osc('sine',mtof(m-12),x,dur);o.connect(g);o2.connect(g);out(g,mus);};
+  const bumbo=(x,v=1)=>{if(!ok(x))return;const o=osc('sine',130,x,.3);o.frequency.exponentialRampToValueAtTime(48,T(x)+.12);const g=ctx.createGain();env(g,x,.002,.55*v,.22);o.connect(g);out(g,mus);};
+  const palma=(x,v=1)=>{if(!ok(x))return;const n=ruido(x,.2),f=ctx.createBiquadFilter(),g=ctx.createGain();f.type='bandpass';f.frequency.value=1500;f.Q.value=1;env(g,x,.002,.25*v,.12);n.connect(f);f.connect(g);out(g,mus,1,.3);};
+  const chocalho=(x,v=1)=>{if(!ok(x))return;const n=ruido(x,.08),f=ctx.createBiquadFilter(),g=ctx.createGain();f.type='highpass';f.frequency.value=6500;env(g,x,.01,.07*v,.05);n.connect(f);f.connect(g);out(g,mus);};
+  const brilho=(x,v=1,n=6,seed=1)=>{const R=rng(seed);for(let i=0;i<n;i++){const xx=x+i*.06;if(!ok(xx))continue;const g=ctx.createGain();env(g,xx,.003,.06*v,.35);const o=osc('sine',1600+R()*1800,xx,.4);o.connect(g);out(g,master,1,.8);}};
+  const harpa=(x,v=1)=>{[60,64,67,72,76,79,84,88].forEach((m,i)=>sino(x+i*.06,m,.25,.7*v));};
+  const pop=(x,v=1)=>{if(!ok(x))return;const o=osc('sine',500,x,.12);o.frequency.exponentialRampToValueAtTime(1100,T(x)+.08);const g=ctx.createGain();env(g,x,.003,.18*v,.08);o.connect(g);out(g,master,1,.2);};
+  const whoosh=(x,dur=.5,v=1)=>{if(!ok(x))return;const n=ruido(x,dur),f=ctx.createBiquadFilter(),g=ctx.createGain();f.type='bandpass';f.Q.value=1.5;f.frequency.setValueAtTime(500,T(x));f.frequency.exponentialRampToValueAtTime(3500,T(x)+dur*.6);f.frequency.exponentialRampToValueAtTime(900,T(x)+dur);g.gain.setValueAtTime(.0001,T(x));g.gain.linearRampToValueAtTime(.22*v,T(x)+dur*.5);g.gain.linearRampToValueAtTime(.0001,T(x)+dur);n.connect(f);f.connect(g);out(g,master,1,.3);};
+  const latido=(x,v=1)=>{if(!ok(x))return;const o=osc('sawtooth',620,x,.18);o.frequency.exponentialRampToValueAtTime(330,T(x)+.14);const f=ctx.createBiquadFilter();f.type='bandpass';f.frequency.value=1100;f.Q.value=2.2;const g=ctx.createGain();env(g,x,.006,.32*v,.13);o.connect(f);f.connect(g);out(g,master,1,.15);
+    const n=ruido(x,.12),f2=ctx.createBiquadFilter(),g2=ctx.createGain();f2.type='bandpass';f2.frequency.value=900;env(g2,x,.004,.12*v,.09);n.connect(f2);f2.connect(g2);out(g2,master);};
+  const bip=(x,m=84,dur=.08,v=1)=>{if(!ok(x))return;const o=osc('square',mtof(m),x,dur);const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=3000;const g=ctx.createGain();env(g,x,.003,.08*v,dur);o.connect(f);f.connect(g);out(g,master,1,.15);};
+  const bola=(x,v=1)=>{if(!ok(x))return;const o=osc('sine',220,x,.15);o.frequency.exponentialRampToValueAtTime(90,T(x)+.1);const g=ctx.createGain();env(g,x,.002,.3*v,.1);o.connect(g);out(g,master);};
+  const rangido=(x,dur=1.1)=>{if(!ok(x))return;const o=osc('sawtooth',95,x,dur);const lfo=osc('sine',7,x,dur);const lg=ctx.createGain();lg.gain.value=25;lfo.connect(lg);lg.connect(o.frequency);o.frequency.linearRampToValueAtTime(140,T(x)+dur);const f=ctx.createBiquadFilter();f.type='bandpass';f.frequency.value=900;f.Q.value=4;const g=ctx.createGain();g.gain.setValueAtTime(.0001,T(x));g.gain.linearRampToValueAtTime(.12,T(x)+.15);g.gain.linearRampToValueAtTime(.0001,T(x)+dur);o.connect(f);f.connect(g);out(g,master,1,.4);};
+  const vinheta=(x)=>{[72,76,79,84].forEach((m,i)=>sino(x+i*.11,m,.3,1.1));sino(x+.44,88,.9,1);brilho(x+.3,1.2,8,Math.floor(x));};
+  const corneta=(x)=>{if(!ok(x))return;const o=osc('sawtooth',300,x,.7);o.frequency.exponentialRampToValueAtTime(700,T(x)+.5);const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=1800;const g=ctx.createGain();env(g,x,.02,.12,.6);o.connect(f);f.connect(g);out(g,master,1,.3);};
+  /* arranjos */
+  function tema(x0,compassos=8,bateria=true,melodia=true,v=1){
+    for(let b=0;b<compassos;b++){const ac=ACORDES[TEMA_AC[b%8]],x=x0+b*2;
+      for(let k=0;k<8;k++){const xx=x+k*.25;ukulele(xx,ac[[0,2,1,3,2,1,3,2][k]],.9*v);}
+      baixo(x,ac[0],.45,v);baixo(x+1,ac[0],.45,v);baixo(x+1.5,ac[2],.3,.7*v);
+      if(bateria){for(let k=0;k<4;k++){bumbo(x+k*.5,k%2?.6:.9);chocalho(x+k*.5+.25);}palma(x+.5);palma(x+1.5);}}
+    if(melodia)TEMA.forEach(([b,d,m])=>{if(b<compassos*4)sino(x0+b*.5,m,d*.5,1.05*v);});
+  }
+  function leito(x0,x1,v=.55){for(let x=x0;x<x1-.01;x+=2){const ac=ACORDES[LEITO_AC[Math.floor((x-x0)/2)%4]];
+      for(let k=0;k<8;k++){const xx=x+k*.25;if(xx<x1)ukulele(xx,ac[[0,2,1,3,2,1,3,2][k]],v);}baixo(x,ac[0],.45,v);if(x+1<x1)baixo(x+1,ac[2],.45,v*.8);}}
+  /* ---------- episódio 3: instrumentos e música original "Formas para Reconhecer" ---------- */
+  const marimba=(x,m,v=1)=>{if(!ok(x))return;const f=mtof(m);const g=ctx.createGain();env(g,x,.002,.11*v,.3);[[1,'sine',1],[4,'sine',.18]].forEach(([k,ty,a])=>{const o=osc(ty,f*k,x,.38);const gg=ctx.createGain();gg.gain.value=a;o.connect(gg);gg.connect(g);});out(g,mus,1,.3);};
+  const xilo=(x,m,v=1)=>{if(!ok(x))return;const f=mtof(m);const g=ctx.createGain();env(g,x,.002,.16*v,.45);[[1,'sine',1],[3,'sine',.3],[6.2,'sine',.08]].forEach(([k,ty,a])=>{const o=osc(ty,f*k,x,.5);const gg=ctx.createGain();gg.gain.value=a;o.connect(gg);gg.connect(g);});out(g,master,1,.35);};
+  const giro=(x,v=1)=>{if(!ok(x))return;const o=osc('sine',500,x,.9);o.frequency.exponentialRampToValueAtTime(1400,T(x)+.45);o.frequency.exponentialRampToValueAtTime(700,T(x)+.9);const lfo=osc('sine',12,x,.9),lg=ctx.createGain();lg.gain.value=40;lfo.connect(lg);lg.connect(o.frequency);const g=ctx.createGain();env(g,x,.05,.08*v,.8);o.connect(g);out(g,master,1,.4);};
+  const ding=(x,v=1)=>{sino(x,88,.5,.8*v);sino(x+.08,93,.6,.6*v);};
+  /* música: 16 compassos (8 versos x 2 compassos), Dó maior, 120 bpm */
+  const CANCAO_AC=['C','G','C','C','F','C','G','C','F','C','F','G','C','Am','F','G'];
+  const CANCAO_MEL=[
+    [67,67,64,67,69,69,67,64,62],[67,67,64,67,69,69,67,64,67],[69,69,65,69,71,71,69,65,64],[67,67,64,62,64,65,64,62,60],
+    [72,72,71,69,67,69,67,64,67],[72,72,71,69,67,69,71,72,74],[76,74,72,74,76,74,72,69,67],[69,72,72,71,69,71,72,74,72]];
+  function cancao(x0,v=1){
+    for(let b=0;b<16;b++){const ac=ACORDES[CANCAO_AC[b]],x=x0+b*2;
+      for(let k=0;k<8;k++)ukulele(x+k*.25,ac[[0,2,1,3,2,1,3,2][k]],.9*v);
+      baixo(x,ac[0],.45,v);baixo(x+1,ac[0],.45,v);baixo(x+1.5,ac[2],.3,.7*v);
+      for(let k=0;k<4;k++){bumbo(x+k*.5,k%2?.6:.95);chocalho(x+k*.5+.25);}palma(x+.5);palma(x+1.5);}
+    CANCAO_MEL.forEach((ns,l)=>{const x=x0+l*4;ns.slice(0,8).forEach((m,i)=>{sino(x+i*.25,m,.22,1.1*v);marimba(x+i*.25,m-12,.5*v);});sino(x+2,ns[8],.9,1.1*v);marimba(x+2,ns[8]-12,.6*v);});
+    [60,64,67,72].forEach(m=>sino(x0+32,m,1.6,.9));baixo(x0+32,48,1.4);bumbo(x0+32,1);corneta(x0+32.1);
+  }
+  /* ---------- arranjo do episódio 3 ---------- */
+  const sc=Object.fromEntries(SCENES.map(s=>[s[0],[s[1],s[2]]]));
+  tema(0,8,true,true,1);pop(1.0);latido(3.2);latido(3.45);bip(5.0,88);bip(5.12,84);harpa(6.5,.8);brilho(9.5,1.2,10,9);whoosh(8.4,.6);sino(10.4,'C6',1.2,1);vinheta(11.6);[12,12.15,12.3,12.45].forEach(x=>pop(x,.6));whoosh(15.5,.5);
+  /* leito da sala, suave, até a música final */
+  leito(16,sc.musica[0],.4);
+  /* transições com formas */
+  SCENES.slice(2).forEach(([n,a])=>whoosh(a-.45,.8,.8));
+  /* caixa mágica */
+  {const ab=A.caixa.abre;rangido(ab-.2,.6);harpa(ab,1.1);brilho(ab+.1,1.4,14,5);[0,.18,.36,.54].forEach((d,i)=>{pop(ab+.25+d,.8);sino(ab+.25+d,[72,76,79,84][i],.3,.7);});latido(LS.caixa[5]+.05);latido(LS.caixa[5]+.45);vinheta(LS.caixa[4]);}
+  /* formas gigantes: aparecem girando */
+  [['circulo',A.circulo.gira],['quadrado',LS.quadrado[0]+.6],['triangulo',A.triangulo.gira],['retangulo',A.retangulo.gira]].forEach(([k,x])=>{whoosh(x-.2,.5,.7);giro(x);vinheta(x+.3);});
+  /* realces de objetos da sala */
+  [LS.circulo[3],LS.circulo[3]+.9,A.quadrado.exemplos,A.quadrado.exemplos+.8,A.triangulo.exemplos,A.triangulo.exemplos+.9,A.retangulo.exemplos,A.retangulo.exemplos+.8,A.retangulo.exemplos+1.6].forEach(x=>ding(x));
+  /* contagens: xilofone subindo */
+  [[LS.quadrado,[3,4,5,6]],[LS.triangulo,[2,3,4]],[LS.caca,[10,11,12,13,14]]].forEach(([Ls,ks])=>ks.forEach((k,i)=>{xilo(Ls[k],[72,74,76,77,79][i]);pop(Ls[k]+.05,.6);}));
+  vinheta(LS.circulo[6]);vinheta(LS.caca[15]);
+  /* caça às formas */
+  latido(LS.caca[2]+.05);latido(LS.caca[2]+.45);
+  [A.caca.c1,A.caca.c2,A.caca.c3,A.caca.c4,A.caca.c5].forEach(x=>{vinheta(x+.1);for(let i=0;i<6;i++)pop(x+.2+i*.12,.5);});
+  latido(A.caca.c3+.05);latido(A.caca.c3+.4);latido(A.caca.c3+.75);
+  /* desafio: revelação com fanfarra */
+  [2,4,6,8].forEach(k=>{const x=LS.desafio[k];vinheta(x);corneta(x+.05);});
+  [A.desafio.f1,A.desafio.f2,A.desafio.f3,A.desafio.f4].forEach(x=>{whoosh(x-.1,.5,.7);pop(x+.3);});
+  harpa(LS.desafio[9],1);brilho(LS.desafio[9]+.2,1.4,14,77);
+  /* pausas: tique-taque suave */
+  PAUSES.forEach(([p0,p1])=>{for(let x=p0+.2;x<p1-.2;x+=.5)sino(x,(Math.round((x-p0)*2)%2)?'G5':'E5',.12,.35);});
+  /* encerramento musical */
+  cancao(A.musica.canta,1);harpa(A.musica.titulo+1.6,.9);[60,64,67,72].forEach(m=>sino(A.musica.titulo+1.8,m,1.6,.7));
+  const fo=ctx.createGain();
+  master.gain.setValueAtTime(.85,Math.max(T(off),T(D-1.4)));master.gain.linearRampToValueAtTime(.0001,T(D));
+  return master;
+}
+async function renderAudioWav(){
+  const sr=48000,ctx=new OfflineAudioContext(2,sr*D,sr);trilha(ctx,ctx.destination,0,0);const buf=await ctx.startRendering();
+  return wav(buf);}
+async function renderTemaWav(){ /* música de abertura isolada (16 s) */
+  const sr=48000,ctx=new OfflineAudioContext(2,sr*17,sr);trilha(ctx,ctx.destination,0,0);const buf=await ctx.startRendering();return wav(buf);}
+function wav(buf){const L=buf.getChannelData(0),R=buf.getChannelData(1),n=buf.length;const ab=new ArrayBuffer(44+n*4),dv=new DataView(ab);const ws=(o,s)=>{for(let i=0;i<s.length;i++)dv.setUint8(o+i,s.charCodeAt(i));};
+  ws(0,'RIFF');dv.setUint32(4,36+n*4,true);ws(8,'WAVE');ws(12,'fmt ');dv.setUint32(16,16,true);dv.setUint16(20,1,true);dv.setUint16(22,2,true);dv.setUint32(24,buf.sampleRate,true);dv.setUint32(28,buf.sampleRate*4,true);dv.setUint16(32,4,true);dv.setUint16(34,16,true);ws(36,'data');dv.setUint32(40,n*4,true);
+  let o=44;for(let i=0;i<n;i++){dv.setInt16(o,clamp(L[i],-1,1)*32767,true);dv.setInt16(o+2,clamp(R[i],-1,1)*32767,true);o+=4;}
+  const u=new Uint8Array(ab);let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s);}
+function srt(){const f=s=>{const h=Math.floor(s/3600),m=Math.floor(s%3600/60),ss=Math.floor(s%60),ms=Math.round((s%1)*1000);return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')},${String(ms).padStart(3,'0')}`;};
+  return LINES.map((l,i)=>`${i+1}\n${f(l[0])} --> ${f(l[1]+.2)}\n${WHO[l[2]][0]}: ${l[3]}\n`).join('\n');}
+
+/* ---------------- player ---------------- */
+const params=new URLSearchParams(location.search),render=params.has('render');
+if(params.get('caps')==='0')showCaps=false;
+let T0=0,playing=false,actx=null,aStart=0,aNode=null,perf=0,raf=0;
+const stage=document.getElementById('stage');
+function fit(){if(render){stage.style.transform='none';return;}const vp=document.getElementById('vp');stage.style.transform=`scale(${vp.clientWidth/1920})`;}
+function now(){if(!playing)return T0;if(actx&&aNode)return T0+(actx.currentTime-aStart);return T0+(performance.now()-perf)/1000;}
+function stopA(){if(aNode){try{aNode.disconnect();}catch(e){}aNode=null;}}
+function startA(){stopA();if(!document.getElementById('snd').checked)return;if(!actx)actx=new AudioContext();actx.resume();aStart=actx.currentTime+.05;aNode=trilha(actx,actx.destination,T0,aStart);T0-=.05;}
+const fmt=s=>`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+function loop(){let t=now();if(t>=D){t=D;T0=D;playing=false;stopA();document.getElementById('play').textContent='↺ Ver de novo';}renderAt(t);document.getElementById('scrub').value=t;document.getElementById('tm').textContent=`${fmt(t)} / ${fmt(D)}`;if(playing)raf=requestAnimationFrame(loop);}
+function play(){if(T0>=D-.05)T0=0;playing=true;perf=performance.now();startA();document.getElementById('play').textContent='❚❚ Pausar';loop();}
+function pause(){T0=now();playing=false;stopA();document.getElementById('play').textContent='▶ Assistir';}
+if(render)document.body.classList.add('render');
+else{document.getElementById('play').onclick=()=>playing?pause():play();
+  document.getElementById('scrub').oninput=e=>{const w=playing;if(w){playing=false;stopA();}T0=+e.target.value;renderAt(T0);if(w)play();};
+  document.getElementById('caps').onchange=e=>{showCaps=e.target.checked;renderAt(now());};
+  document.getElementById('snd').onchange=()=>{if(playing){T0=now();perf=performance.now();startA();}};
+  addEventListener('resize',fit);addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();playing?pause():play();}});}
+const ready=document.fonts.ready.then(()=>{fit();renderAt(0);});
+window.EP={D,renderAt,renderAudioWav,renderTemaWav,srt,ready,LINES,PAUSES};
+})();
+</script>
+</body>
+</html>

@@ -7,7 +7,7 @@ DUR = float(re.search(r'const D=([\d.]+)', src).group(1))
 bloco = src[src.index('const LINES=['):src.index('];', src.index('const LINES=['))]
 L = re.findall(r"\[([\d.]+),\s*([\d.]+),\s*['\"](\w+)['\"],\s*['\"]([^'\"]+)['\"]\]", bloco)
 meta = json.load(open(f'{pasta}/falas.json', encoding='utf-8'))
-FX = {'PIPO': 'anull', 'LEAO': 'anull', 'MACACO': 'anull', 'ELEFANTE': 'anull','LIZ': 'highpass=f=90,equalizer=f=3000:t=q:w=1:g=2',
+FX = {'MAE': 'highpass=f=80', 'PAI': 'highpass=f=60', 'VOVO': 'highpass=f=80', 'TODOS': 'highpass=f=80', 'PIPO': 'anull', 'LEAO': 'anull', 'MACACO': 'anull', 'ELEFANTE': 'anull','LIZ': 'highpass=f=90,equalizer=f=3000:t=q:w=1:g=2',
       'LUMI': 'highpass=f=120,aecho=0.8:0.6:70|140:0.22|0.12',
       'ROBI': 'highpass=f=100,flanger=delay=2:depth=2:speed=0.6,aecho=0.8:0.5:14:0.35,acrusher=bits=12:mix=0.15'}
 ins, fil, labs = ['-i', video, '-i', trilha], [], []
@@ -15,10 +15,12 @@ n = 2
 for m in meta:
     i = int(re.search(r'_L(\d+)_', m['arquivo']).group(1))
     a, b, who, _ = L[i - 1]; a, b = float(a), float(b)
+    fxkey = who if who != 'TODOS' else 'TODOS'
+    vol = ',volume=0.62' if who == 'TODOS' else ''
     dur = float(subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', f"{pasta}/{m['arquivo']}"]))
     tp = m.get('tempo') or min(1.18, max(1.0, dur / ((b - a) + 0.25)))
     ins += ['-i', f"{pasta}/{m['arquivo']}"]
-    fil.append(f"[{n}:a]aresample=48000,aformat=channel_layouts=stereo,atempo={tp:.3f},{FX[who]},loudnorm=I=-16:TP=-2,adelay={int(a*1000)}|{int(a*1000)}[v{n}]")
+    fil.append(f"[{n}:a]aresample=48000,aformat=channel_layouts=stereo,atempo={tp:.3f},{FX[fxkey]},loudnorm=I=-16:TP=-2{vol},adelay={int(a*1000)}|{int(a*1000)}[v{n}]")
     labs.append(f"[v{n}]"); n += 1
 fil.append(f"{''.join(labs)}amix=inputs={len(labs)}:normalize=0,apad=whole_dur={DUR}[voz]")
 fil.append("[voz]asplit=2[voz1][voz2]")

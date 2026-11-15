@@ -459,5 +459,89 @@ function elefante(o = {}) {
   return s + `</g>`;
 }
 
-root.LIZ = { COR, defs, liz, lizLado, lizCostas, pipo, lumi, robi, coelho, leao, macaco, girafa, elefante };
+/* =====================================================================
+   FAMÍLIA DA LIZ (Episódio 3) — Scarllet (mamãe), Kennedy (papai), Rose (vovó)
+   Mesmo estilo da turma: cabeça grande, olhos brilhantes, cores suaves.
+   o: {expr, falar, piscar, olharX, bracoE, bracoD, segura (svg na mão direita), seguraE, pulo, inclinar, sombra}
+   ===================================================================== */
+Object.assign(COR, {
+  maeCabelo: '#B9532A', maeCabeloLuz: '#D9733F', maeVestido: '#5FC9B0', maeVestidoEsc: '#3FAE95', maeSapato: '#FF7A6B',
+  paiCabelo: '#4A2E1F', paiCamisa: '#3D7BD9', paiCamisaEsc: '#2C62B8', paiCalca: '#C9A46A', paiSapato: '#6E4220',
+  vovoCabelo: '#E4E2EA', vovoCabeloSombra: '#C9C6D3', vovoCasaco: '#B98AE0', vovoCasacoEsc: '#9A6CC6', vovoSaia: '#7B5AA6', vovoChinelo: '#FF9EC4',
+  olhoAdulto: '#6B4426'
+});
+function adulto(o, F) {
+  const expr = o.expr || 'feliz', falar = !!o.falar, pis = o.piscar || 0, ox = (o.olharX || 0) * 4;
+  const aE = o.bracoE ?? 12, aD = o.bracoD ?? 12, pulo = o.pulo || 0, incl = o.inclinar || 0, H = -560;
+  const braco = (x, a, lado, cor, obj) => `<g transform="translate(${x} -452) rotate(${r1(a * lado)})"><rect x="-13" y="0" width="26" height="150" rx="13" fill="${cor}"/><rect x="-11" y="118" width="22" height="40" rx="11" fill="${COR.pele}"/><circle cx="0" cy="162" r="17" fill="${COR.pele}"/>${obj ? `<g transform="translate(0 166) rotate(${r1(-a * lado)})">${obj}</g>` : ''}</g>`;
+  let s = `<g class="adulto">`;
+  if (o.sombra !== false) s += `<ellipse cx="0" cy="0" rx="${r1(110 - pulo * .15)}" ry="14" fill="#000" opacity=".16"/>`;
+  s += `<g transform="translate(0 ${-pulo})">`;
+  s += `<g transform="rotate(${incl} 0 -470)">${F.cabeloTras || ''}</g>`;
+  s += F.pernas;
+  s += braco(-70, aE, 1, F.manga, o.seguraE);
+  s += F.tronco;
+  s += braco(70, aD, -1, F.manga, o.segura);
+  /* cabeça */
+  s += `<g transform="rotate(${incl} 0 -470)">`;
+  s += `<rect x="-20" y="-500" width="40" height="44" rx="12" fill="${COR.peleSombra}"/>`;
+  s += `<ellipse cx="-78" cy="-552" rx="14" ry="20" fill="${COR.pele}"/><ellipse cx="78" cy="-552" rx="14" ry="20" fill="${COR.pele}"/>`;
+  s += `<ellipse cx="0" cy="${H}" rx="80" ry="88" fill="url(#lz-face)"/>`;
+  s += F.cabeloFrente || '';
+  const yB = expr === 'surpresa' ? -606 : -598;
+  s += `<path d="M-46 ${yB} q 16 -10 32 -2 M14 ${yB - 2} q 16 -8 32 2" stroke="${F.sobrancelha}" stroke-width="6" fill="none" stroke-linecap="round"/>`;
+  [-28, 28].forEach((x, i) => {
+    if (pis > .5 || expr === 'rindo') s += `<path d="M${x - 15} -566 Q ${x} -580 ${x + 15} -566" stroke="${COR.contorno}" stroke-width="4.5" fill="none" stroke-linecap="round"/>`;
+    else { const ry = expr === 'surpresa' ? 20 : 17; s += `<ellipse cx="${x}" cy="-566" rx="15" ry="${ry}" fill="#fff" stroke="${COR.contorno}" stroke-width="2.5"/><circle cx="${x + ox}" cy="-563" r="11" fill="${F.olho || COR.olhoAdulto}"/><circle cx="${x + ox}" cy="-563" r="5.5" fill="#1E0F08"/><circle cx="${x + ox - 4}" cy="-568" r="4" fill="#fff"/>`;
+      if (F.cilios) s += `<path d="M${x + (i ? 11 : -11)} -580 l ${i ? 7 : -7} -7" stroke="${COR.contorno}" stroke-width="3" stroke-linecap="round"/>`; }
+  });
+  if (F.oculos) s += `<circle cx="-28" cy="-566" r="24" fill="none" stroke="#8C6D4F" stroke-width="4"/><circle cx="28" cy="-566" r="24" fill="none" stroke="#8C6D4F" stroke-width="4"/><path d="M-4 -568 h8 M-52 -570 l -22 -6 M52 -570 l 22 -6" stroke="#8C6D4F" stroke-width="4"/>`;
+  s += `<ellipse cx="-50" cy="-528" rx="15" ry="9" fill="${COR.bochecha}" opacity="${F.blush || .45}"/><ellipse cx="50" cy="-528" rx="15" ry="9" fill="${COR.bochecha}" opacity="${F.blush || .45}"/>`;
+  s += `<path d="M-3 -548 q 7 10 0 14" stroke="${COR.peleSombra}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
+  s += F.barba || '';
+  const bc = F.batom || COR.boca;
+  if (falar) s += `<path d="M-16 -514 Q 0 -492 16 -514 Q 0 -508 -16 -514 Z" fill="${COR.boca}"/><ellipse cx="0" cy="-504" rx="6" ry="3.5" fill="${COR.lingua}"/>`;
+  else if (expr === 'surpresa') s += `<ellipse cx="0" cy="-508" rx="9" ry="11" fill="${COR.boca}"/>`;
+  else if (expr === 'rindo' || expr === 'feliz') s += `<path d="M-22 -516 Q 0 -488 22 -516 Q 0 -508 -22 -516 Z" fill="${COR.boca}"/><path d="M-17 -514 Q 0 -509 17 -514 L 15 -510 Q 0 -506 -15 -510 Z" fill="#fff"/>`;
+  else s += `<path d="M-18 -514 Q 0 -500 18 -514" stroke="${bc}" stroke-width="4.5" fill="none" stroke-linecap="round"/>`;
+  if (F.extra) s += F.extra;
+  s += `</g></g></g>`;
+  return s;
+}
+/* SCARLLET — a mamãe: cabelo ruivo longo e ondulado (a Liz puxou dela), vestido verde-água */
+function mae(o = {}) {
+  const C = COR;
+  return adulto(o, {
+    cabeloTras: `<path d="M-92 -580 Q -110 -470 -96 -380 Q -80 -350 -60 -372 Q -40 -340 -16 -370 L 16 -370 Q 40 -340 60 -372 Q 80 -350 96 -380 Q 110 -470 92 -580 Q 80 -660 0 -662 Q -80 -660 -92 -580 Z" fill="${C.maeCabelo}"/><path d="M-80 -520 Q -90 -450 -76 -400 M80 -520 Q 92 -450 78 -400" stroke="${C.maeCabeloLuz}" stroke-width="7" fill="none" stroke-linecap="round"/>`,
+    cabeloFrente: `<path d="M-84 -580 Q -80 -656 0 -656 Q 84 -656 86 -580 Q 70 -628 20 -620 Q -20 -640 -60 -600 Q -74 -590 -84 -580 Z" fill="${C.maeCabelo}"/><path d="M-30 -640 Q 10 -652 50 -636" stroke="${C.maeCabeloLuz}" stroke-width="6" fill="none" stroke-linecap="round"/>`,
+    pernas: `<rect x="-36" y="-200" width="26" height="186" rx="13" fill="${C.pele}"/><rect x="10" y="-200" width="26" height="186" rx="13" fill="${C.pele}"/><ellipse cx="-26" cy="-12" rx="26" ry="13" fill="${C.maeSapato}"/><ellipse cx="26" cy="-12" rx="26" ry="13" fill="${C.maeSapato}"/>`,
+    tronco: `<path d="M-64 -470 Q -70 -330 -100 -190 Q 0 -168 100 -190 Q 70 -330 64 -470 Q 0 -488 -64 -470 Z" fill="${C.maeVestido}"/><path d="M-66 -340 Q 0 -326 66 -340" stroke="${C.maeVestidoEsc}" stroke-width="10" fill="none"/><path d="M-30 -474 Q 0 -440 30 -474 Q 14 -458 0 -456 Q -14 -458 -30 -474 Z" fill="#fff"/>${[0, 1, 2].map(i => `<circle cx="${-50 + i * 50}" cy="${-240 + (i % 2) * 20}" r="7" fill="#fff" opacity=".7"/>`).join('')}`,
+    manga: C.maeVestido, sobrancelha: '#8E3E1F', cilios: true, batom: '#E2557A', blush: .55,
+    extra: `<circle cx="-80" cy="-532" r="6" fill="#F7C744"/><circle cx="80" cy="-532" r="6" fill="#F7C744"/>`
+  });
+}
+/* KENNEDY — o papai: cabelo castanho curto com topete, barba curtinha, camisa polo azul */
+function pai(o = {}) {
+  const C = COR;
+  return adulto(o, {
+    cabeloFrente: `<path d="M-86 -556 Q -94 -670 0 -672 Q 94 -670 86 -556 Q 80 -606 50 -620 Q 14 -632 -24 -624 Q -66 -612 -86 -556 Z" fill="${C.paiCabelo}"/><path d="M-40 -652 Q 0 -706 56 -664 Q 30 -672 10 -660 Q -16 -668 -40 -652 Z" fill="${C.paiCabelo}"/><path d="M-30 -654 Q 0 -676 34 -662" stroke="#6B4632" stroke-width="5" fill="none" stroke-linecap="round"/>`,
+    barba: `<path d="M-76 -540 Q -72 -470 0 -466 Q 72 -470 76 -540 Q 62 -496 30 -494 Q 0 -488 -30 -494 Q -62 -496 -76 -540 Z" fill="${C.paiCabelo}" opacity=".85"/><path d="M-26 -524 Q 0 -532 26 -524" stroke="${C.paiCabelo}" stroke-width="8" fill="none" stroke-linecap="round" opacity=".9"/>`,
+    pernas: `<rect x="-44" y="-260" width="40" height="246" rx="16" fill="${C.paiCalca}"/><rect x="4" y="-260" width="40" height="246" rx="16" fill="${C.paiCalca}"/><ellipse cx="-26" cy="-12" rx="30" ry="14" fill="${C.paiSapato}"/><ellipse cx="26" cy="-12" rx="30" ry="14" fill="${C.paiSapato}"/>`,
+    tronco: `<rect x="-74" y="-478" width="148" height="236" rx="40" fill="${C.paiCamisa}"/><path d="M-34 -478 L 0 -440 L 34 -478 L 20 -486 L 0 -466 L -20 -486 Z" fill="#fff"/><path d="M0 -440 v 50" stroke="${C.paiCamisaEsc}" stroke-width="4"/><circle cx="0" cy="-420" r="4" fill="#fff"/><circle cx="0" cy="-400" r="4" fill="#fff"/><rect x="-74" y="-262" width="148" height="18" rx="8" fill="#6E4220"/><rect x="-10" y="-264" width="20" height="22" rx="4" fill="#F7C744"/>`,
+    manga: C.paiCamisa, sobrancelha: C.paiCabelo, olho: '#5A3A22'
+  });
+}
+/* ROSE — a vovó: cabelo grisalho com coque, óculos redondos, casaquinho lilás, colar de pérolas */
+function vovo(o = {}) {
+  const C = COR;
+  return adulto(o, {
+    cabeloTras: `<circle cx="0" cy="-660" r="40" fill="${C.vovoCabeloSombra}"/><circle cx="0" cy="-664" r="34" fill="${C.vovoCabelo}"/><path d="M-20 -676 q 20 -12 40 0" stroke="${C.vovoCabeloSombra}" stroke-width="4" fill="none"/>`,
+    cabeloFrente: `<path d="M-84 -560 Q -92 -650 0 -652 Q 92 -650 84 -560 Q 80 -600 50 -612 Q 20 -628 -10 -616 Q -50 -620 -70 -596 Q -80 -580 -84 -560 Z" fill="${C.vovoCabelo}"/>${[[-80, -560], [-84, -530], [80, -560], [84, -530]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="16" fill="${C.vovoCabelo}"/>`).join('')}<path d="M-50 -626 q 20 -14 40 -4 M10 -628 q 20 -10 40 4" stroke="${C.vovoCabeloSombra}" stroke-width="4" fill="none" stroke-linecap="round"/>`,
+    pernas: `<path d="M-70 -260 L 70 -260 L 84 -30 Q 0 -18 -84 -30 Z" fill="${C.vovoSaia}"/><ellipse cx="-30" cy="-14" rx="28" ry="12" fill="${C.vovoChinelo}"/><ellipse cx="30" cy="-14" rx="28" ry="12" fill="${C.vovoChinelo}"/><path d="M-60 -150 Q 0 -140 60 -150" stroke="#6A4A94" stroke-width="5" fill="none" opacity=".6"/>`,
+    tronco: `<rect x="-72" y="-476" width="144" height="230" rx="40" fill="${C.vovoCasaco}"/><path d="M-26 -476 L 26 -476 L 22 -250 L -22 -250 Z" fill="#FFFFFF"/><path d="M-26 -476 L -22 -250 M26 -476 L 22 -250" stroke="${C.vovoCasacoEsc}" stroke-width="5"/>${[0, 1, 2, 3].map(i => `<circle cx="30" cy="${-430 + i * 46}" r="5" fill="${C.vovoCasacoEsc}"/>`).join('')}${Array.from({ length: 11 }, (_, i) => { const a = Math.PI * (.15 + .7 * i / 10); return `<circle cx="${r1(-Math.cos(a) * 34)}" cy="${r1(-470 + Math.sin(a) * 30)}" r="5" fill="#FFF8F0" stroke="#E6D9CC" stroke-width="1.2"/>`; }).join('')}`,
+    manga: C.vovoCasaco, sobrancelha: '#A9A4B5', cilios: true, oculos: true, blush: .6, batom: '#D86A8A'
+  });
+}
+
+root.LIZ = { COR, defs, liz, lizLado, lizCostas, pipo, lumi, robi, coelho, leao, macaco, girafa, elefante, mae, pai, vovo };
 })(typeof window !== 'undefined' ? window : globalThis);
