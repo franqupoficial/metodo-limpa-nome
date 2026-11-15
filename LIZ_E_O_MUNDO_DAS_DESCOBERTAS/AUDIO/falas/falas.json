@@ -1,0 +1,250 @@
+[
+ {
+  "arquivo": "EP01_L01_LIZ.mp3",
+  "inicio": 16.6,
+  "fim": 19.28,
+  "personagem": "LIZ",
+  "fala": "Oi, amiguinho! Eu sou a Liz!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP01_L02_LIZ.mp3",
+  "inicio": 19.8,
+  "fim": 20.97,
+  "personagem": "LIZ",
+  "fala": "E esse é o Pipo!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP01_L04_LIZ.mp3",
+  "inicio": 22.5,
+  "fim": 25.64,
+  "personagem": "LIZ",
+  "fala": "Hoje vai ter aventura! Você vem comigo?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP01_L05_LIZ.mp3",
+  "inicio": 28.38,
+  "fim": 30.15,
+  "personagem": "LIZ",
+  "fala": "Ebaaa! Então vamos!",
+  "tempo": 1.18
+ },
+ {
+  "arquivo": "EP01_L06_LIZ.mp3",
+  "inicio": 30.8,
+  "fim": 33.53,
+  "personagem": "LIZ",
+  "fala": "Olha, Pipo! Uma porta azul!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP01_L07_LIZ.mp3",
+  "inicio": 33.65,
+  "fim": 36.16,
+  "personagem": "LIZ",
+  "fala": "Vamos contar juntos até três pra abrir?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP01_L08_LIZ.mp3",
+  "inicio": 36.4,
+  "fim": 37.04,
+  "personagem": "LIZ",
+  "fala": "Um…",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP01_L09_LIZ.mp3",
+  "inicio": 38.0,
+  "fim": 38.86,
+  "personagem": "LIZ",
+  "fala": "Dois…",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP01_L10_LIZ.mp3",
+  "inicio": 39.6,
+  "fim": 40.31,
+  "personagem": "LIZ",
+  "fala": "Três!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP01_L11_LIZ.mp3",
+  "inicio": 44.6,
+  "fim": 46.49,
+  "personagem": "LIZ",
+  "fala": "Ué… cadê as cores?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP01_L12_LUMI.mp3",
+  "inicio": 47.4,
+  "fim": 51.88,
+  "personagem": "LUMI",
+  "fala": "Olá, Liz! Eu sou a Lumi. As cores do nosso mundo sumiram!",
+  "tempo": 1.18
+ },
+ {
+  "arquivo": "EP01_L13_LIZ.mp3",
+  "inicio": 52.0,
+  "fim": 55.37,
+  "personagem": "LIZ",
+  "fala": "Oh, não! Amiguinhos, vocês conseguem me ajudar?",
+  "tempo": 1.071
+ },
+ {
+  "arquivo": "EP01_L14_LIZ.mp3",
+  "inicio": 58.22,
+  "fim": 59.99,
+  "personagem": "LIZ",
+  "fala": "Oba! Eu sabia!",
+  "tempo": 1.09
+ },
+ {
+  "arquivo": "EP01_L15_ROBI.mp3",
+  "inicio": 60.6,
+  "fim": 63.51,
+  "personagem": "ROBI",
+  "fala": "Bip-bop! Eu sou o Robi!",
+  "tempo": 1.18
+ },
+ {
+  "arquivo": "EP01_L16_ROBI.mp3",
+  "inicio": 63.63,
+  "fim": 67.82,
+  "personagem": "ROBI",
+  "fala": "Para a magia voltar, precisamos encontrar três cores!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP01_L17_LIZ.mp3",
+  "inicio": 67.94,
+  "fim": 70.48,
+  "personagem": "LIZ",
+  "fala": "Três cores! Vamos procurar!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP01_L18_LUMI.mp3",
+  "inicio": 70.6,
+  "fim": 72.77,
+  "personagem": "LUMI",
+  "fala": "Olhem ali: uma maçã!",
+  "tempo": 1.131
+ },
+ {
+  "arquivo": "EP01_L19_LIZ.mp3",
+  "inicio": 72.89,
+  "fim": 74.49,
+  "personagem": "LIZ",
+  "fala": "Que cor será essa maçã?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP01_L20_LIZ.mp3",
+  "inicio": 78.82,
+  "fim": 80.9,
+  "personagem": "LIZ",
+  "fala": "Vermelho! Muito bem!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP01_L21_ROBI.mp3",
+  "inicio": 81.2,
+  "fim": 83.5,
+  "personagem": "ROBI",
+  "fala": "Primeira cor: encontrada!",
+  "tempo": 1.18
+ },
+ {
+  "arquivo": "EP01_L23_LIZ.mp3",
+  "inicio": 86.6,
+  "fim": 89.18,
+  "personagem": "LIZ",
+  "fala": "E essa florzinha? Que cor ela é?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP01_L24_LIZ.mp3",
+  "inicio": 92.62,
+  "fim": 94.94,
+  "personagem": "LIZ",
+  "fala": "Amarelo! Você é demais!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP01_L25_ROBI.mp3",
+  "inicio": 95.06,
+  "fim": 97.46,
+  "personagem": "ROBI",
+  "fala": "Segunda cor: encontrada!",
+  "tempo": 1.18
+ },
+ {
+  "arquivo": "EP01_L26_LIZ.mp3",
+  "inicio": 97.58,
+  "fim": 98.92,
+  "personagem": "LIZ",
+  "fala": "Falta só uma!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP01_L27_LIZ.mp3",
+  "inicio": 100.6,
+  "fim": 103.04,
+  "personagem": "LIZ",
+  "fala": "E o lago? Qual é a cor da água?",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP01_L28_LIZ.mp3",
+  "inicio": 106.82,
+  "fim": 109.04,
+  "personagem": "LIZ",
+  "fala": "Azul! Conseguimos!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP01_L29_LUMI.mp3",
+  "inicio": 109.2,
+  "fim": 112.77,
+  "personagem": "LUMI",
+  "fala": "As três cores voltaram! Agora, a magia!",
+  "tempo": 1.092
+ },
+ {
+  "arquivo": "EP01_L30_LIZ.mp3",
+  "inicio": 117.4,
+  "fim": 121.81,
+  "personagem": "LIZ",
+  "fala": "As cores voltaram! Obrigada, amiguinho! Você me ajudou muito!",
+  "tempo": 1.18
+ },
+ {
+  "arquivo": "EP01_L31_LIZ.mp3",
+  "inicio": 121.93,
+  "fim": 125.91,
+  "personagem": "LIZ",
+  "fala": "Agora, um desafio: procure uma coisa azul aí na sua casa!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP01_L32_LIZ.mp3",
+  "inicio": 129.82,
+  "fim": 131.59,
+  "personagem": "LIZ",
+  "fala": "Achou? Que demais!",
+  "tempo": 1.0
+ },
+ {
+  "arquivo": "EP01_L33_LIZ.mp3",
+  "inicio": 132.6,
+  "fim": 135.38,
+  "personagem": "LIZ",
+  "fala": "Até a próxima aventura! Tchau, tchau!",
+  "tempo": 1.0
+ }
+]
