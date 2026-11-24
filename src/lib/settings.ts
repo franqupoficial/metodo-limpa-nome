@@ -15,6 +15,7 @@ export interface Settings {
   /** Bloco de "congelamento por 12 meses": só é exibido quando habilitado E com base jurídica/operacional preenchida. */
   "service.consumidor.freeze": { enabled: boolean; title: string; description: string; legalBasis: string };
   "service.cnpj": { priceCents: number };
+  "payment.pix": { key: string; receiverName: string; city: string; instructions: string };
   "service.emprestimo": { minCents: number; maxCents: number };
   "lvb.plans": { termAdjustments: TermAdjustments; kmPackages: KmPackage[]; priceNotice: string };
   "lvb.inclusions": { maintenance: InclusionStatus; ipva: InclusionStatus; insurance: InclusionStatus; assistance: InclusionStatus; notes: string };
@@ -41,6 +42,12 @@ export const DEFAULT_SETTINGS: Settings = {
   },
   "service.consumidor.freeze": { enabled: false, title: "Congelamento de apontamentos por 12 meses", description: "", legalBasis: "" },
   "service.cnpj": { priceCents: 19900 },
+  "payment.pix": {
+    key: "58d93626-10e0-4972-bb10-eb116d2a8a22",
+    receiverName: "Portal Consumidor",
+    city: "BRASIL",
+    instructions: "Após o pagamento, a confirmação é feita pela nossa equipe em até 1 dia útil e o status do seu protocolo é atualizado.",
+  },
   "service.emprestimo": { minCents: 30000, maxCents: 300000 },
   "lvb.plans": {
     termAdjustments: { "12": 0, "24": 0, "36": 0 },

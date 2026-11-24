@@ -14,7 +14,7 @@ export const FAQ_CONSUMIDOR: FaqItem[] = [
   { q: "Quais registros podem ser excluídos?", a: "Registros incluídos sem a comunicação prévia exigida pelo art. 43, §2º, do CDC, com mais de 5 anos, de dívidas já pagas, com valor divergente, duplicados ou originados de cobrança indevida. Para esses, pedimos a exclusão com a fundamentação legal de cada caso." },
   { q: "E as dívidas que eu reconheço?", a: "Dívidas legítimas continuam devidas. Para elas, intermediamos um acordo com o credor. Após o pagamento, o credor é obrigado a pedir a baixa do registro em até 5 dias úteis (Súmula 548 do STJ). O valor do acordo é pago diretamente ao credor e não está incluído no preço do serviço." },
   { q: "Meu score vai aumentar?", a: "O score é calculado por cada birô com critérios próprios. A retirada de registros irregulares e a quitação de dívidas costumam refletir na pontuação, mas o cálculo não é controlado por nós." },
-  { q: "Quanto custa e como pago?", a: "R$ 299,90 à vista via Pix ou R$ 390,00 em até 12 parcelas. As instruções de pagamento são enviadas pelos canais oficiais do portal logo após a contratação." },
+  { q: "Quanto custa e como pago?", a: "R$ 299,90 à vista via Pix. O QR Code e o Pix copia e cola aparecem ao final do formulário e também na página de acompanhamento." },
   { q: "Posso fazer isso sozinho, sem pagar?", a: "Sim. A consulta e a contestação podem ser feitas gratuitamente nos birôs, com o credor, no Procon ou em consumidor.gov.br. Nosso serviço executa todo o processo por você, nos três birôs, com acompanhamento." },
 ];
 
@@ -28,16 +28,16 @@ export const FAQ_CNPJ: FaqItem[] = [
 export const FAQ_EMPRESTIMO: FaqItem[] = [
   { q: "Negativado pode contratar?", a: "Sim. O produto é voltado a quem tem restrições no CPF. A proposta passa pela aprovação de crédito da instituição concedente, que define o valor aprovado e as condições." },
   { q: "Qual o valor máximo?", a: "Até R$ 3.000,00. Você escolhe o valor desejado no cadastro; o valor aprovado consta das condições enviadas a você." },
-  { q: "Como pago as parcelas?", a: "Por débito automático no cartão de crédito ou em conta corrente, no dia do mês que você escolher. A autorização é feita no ambiente seguro do processador de pagamentos, junto com o contrato." },
+  { q: "Como pago as parcelas?", a: "Antes de cada vencimento, você recebe por e-mail o Pix ou o boleto da parcela, conforme escolheu no cadastro, sempre em nome de Portal Consumidor." },
   { q: "Quando recebo o contrato?", a: "Aceitas as condições, o contrato é enviado ao seu e-mail em até 24 horas, conforme o fluxo operacional." },
-  { q: "Quando o dinheiro é liberado?", a: "Após a assinatura do contrato e a autorização do débito automático. Solicitação, aprovação e liberação são etapas diferentes." },
+  { q: "Quando o dinheiro é liberado?", a: "Após a assinatura do contrato. Solicitação, aprovação e liberação são etapas diferentes." },
   { q: "Preciso pagar algo para liberar o empréstimo?", a: "Não. Nunca cobramos valores antecipados para liberar crédito. Se alguém pedir depósito antecipado em nosso nome, não pague." },
   { q: "O que acontece se eu atrasar?", a: "Podem incidir juros de mora, multa (limitada a 2% da parcela, conforme o CDC), cobrança dos valores devidos e, após notificação prévia, inclusão em cadastros de crédito. As condições exatas constam do contrato." },
 ];
 
 export const FAQ_LVB: FaqItem[] = [
   { q: "A LVB é um programa do governo?", a: "Não. A LVB é uma operação privada de locação de veículos, sem relação com programas governamentais, subsídios públicos ou veículos arrendados pelo governo." },
-  { q: "Quais planos estão disponíveis?", a: "Planos de 12, 24 ou 36 meses, com valor mensal fixo no contrato. A primeira parcela é paga na contratação e as demais são cobradas automaticamente no dia que você escolher." },
+  { q: "Quais planos estão disponíveis?", a: "Planos de 12, 24 ou 36 meses, com valor mensal fixo no contrato. A primeira parcela é paga via Pix ao concluir o formulário e as demais chegam ao seu e-mail (Pix ou boleto) antes do dia que você escolher." },
   { q: "O que preciso para alugar?", a: "CNH válida (com a observação EAR quando exigida pela plataforma ou pelo plano), comprovante de endereço, dados pessoais e aprovação cadastral. O formulário de locação reúne tudo isso." },
   { q: "O carro da foto é o que vou receber?", a: "As fotos ilustram cada categoria. O veículo do seu contrato — o modelo indicado ou similar da mesma categoria — é confirmado na contratação." },
   { q: "Manutenção, seguro e IPVA estão incluídos?", a: "Depende do plano. O que está incluído aparece no simulador e consta do contrato." },

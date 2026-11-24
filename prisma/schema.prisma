@@ -316,6 +316,14 @@ model Payment {
   paidAt           DateTime?
   cardBrand        String?
   cardLast4        String?
+  /// Descrição exibida ao cliente (ex.: "Parcela 2 de 24")
+  description      String?
+  installment      Int?
+  /// Código Pix copia e cola gerado para esta cobrança
+  pixPayload       String?
+  /// Data do envio da cobrança/boleto por e-mail
+  sentAt           DateTime?
+  confirmedBy      String?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   events           PaymentEvent[]

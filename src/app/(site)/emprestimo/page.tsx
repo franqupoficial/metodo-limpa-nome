@@ -8,7 +8,7 @@ import { FAQ_EMPRESTIMO } from "@/content/faq";
 
 export const metadata: Metadata = {
   title: "Empréstimo para negativados — até R$ 3.000,00",
-  description: "Empréstimo para negativados de até R$ 3.000,00: cadastro digital, contrato por e-mail em até 24 horas e parcelas em débito automático na data que você escolher.",
+  description: "Empréstimo para negativados de até R$ 3.000,00: cadastro digital, contrato por e-mail em até 24 horas e parcelas por Pix ou boleto enviados ao seu e-mail na data que você escolher.",
   alternates: { canonical: "/emprestimo" },
 };
 
@@ -28,7 +28,7 @@ export default async function EmprestimoPage() {
           <InfoCard icon="doc" title="Cadastro online">Seus dados, endereço, valor e data de vencimento em poucos minutos.</InfoCard>
           <InfoCard icon="wallet" title={`De ${formatMoney(cfg.minCents)} a ${formatMoney(cfg.maxCents)}`}>Você escolhe o valor que precisa dentro do limite do produto.</InfoCard>
           <InfoCard icon="mail" title="Contrato em até 24 h">Aprovada a proposta, o contrato chega ao seu e-mail em até 24 horas.</InfoCard>
-          <InfoCard icon="calendar" title="Débito automático">Parcelas debitadas automaticamente no dia do mês que você escolher.</InfoCard>
+          <InfoCard icon="calendar" title="Pix ou boleto">Parcelas por Pix ou boleto enviados ao seu e-mail, no dia do mês que você escolher.</InfoCard>
         </div>
       </Section>
 
@@ -41,8 +41,8 @@ export default async function EmprestimoPage() {
               ["Aprovação", "A proposta passa pela aprovação de crédito da instituição concedente, que define o valor aprovado e as condições."],
               ["Condições contratuais", "Você recebe valor liberado, número e valor das parcelas, taxa de juros, Custo Efetivo Total (CET) e vencimentos."],
               ["Contrato por e-mail", "Aceitas as condições, o contrato é enviado ao seu e-mail em até 24 horas, conforme o fluxo operacional."],
-              ["Autorização do débito automático", "Você autoriza o débito das parcelas no cartão de crédito ou em conta corrente, em ambiente seguro do processador de pagamentos."],
-              ["Liberação do crédito", "Com o contrato assinado e a autorização registrada, o valor é liberado na sua conta."],
+              ["Liberação do crédito", "Com o contrato assinado, o valor é liberado na sua conta."],
+              ["Cobrança das parcelas", "Antes de cada vencimento, você recebe por e-mail o Pix ou o boleto da parcela, em nome de Portal Consumidor."],
             ].map(([t, d], i) => (
               <li key={t} className="flex gap-4">
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-700 text-sm font-bold text-white">{i + 1}</span>
@@ -61,7 +61,7 @@ export default async function EmprestimoPage() {
             </div>
             <div className="card p-6">
               <h3 className="font-bold">Solicitação, aprovação e liberação</h3>
-              <p className="mt-2 text-sm text-muted">São três momentos diferentes: a <strong>solicitação</strong> é o seu cadastro; a <strong>aprovação</strong> é a decisão de crédito com as condições definidas; a <strong>liberação</strong> é o depósito do valor, que ocorre após a assinatura do contrato e a autorização do débito automático.</p>
+              <p className="mt-2 text-sm text-muted">São três momentos diferentes: a <strong>solicitação</strong> é o seu cadastro; a <strong>aprovação</strong> é a decisão de crédito com as condições definidas; a <strong>liberação</strong> é o depósito do valor, que ocorre após a assinatura do contrato.</p>
             </div>
           </div>
         </div>

@@ -69,8 +69,8 @@ export function Simulator({ vehicles, settings, initialVehicleId }: { vehicles: 
         <dl className="divide-y divide-line text-sm">
           {[
             ["Prazo", `${sim.termMonths} meses`],
-            ["Primeira parcela (no ato da contratação)", formatMoney(sim.firstInstallmentCents)],
-            ["Demais parcelas", `${sim.remainingInstallments}× de ${formatMoney(sim.monthlyCents)} (recorrente)`],
+            ["Primeira parcela (via Pix ao concluir o pedido)", formatMoney(sim.firstInstallmentCents)],
+            ["Demais parcelas", `${sim.remainingInstallments}× de ${formatMoney(sim.monthlyCents)} (Pix ou boleto mensal)`],
             ["Quilometragem", kmPackage ? kmPackage.label : `${vehicle.kmPerMonth.toLocaleString("pt-BR")} km/mês`],
           ].map(([k, v]) => (
             <div key={k} className="flex justify-between gap-4 px-5 py-3"><dt className="text-muted">{k}</dt><dd className="text-right font-semibold">{v}</dd></div>

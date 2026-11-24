@@ -36,7 +36,7 @@ export default async function ConsumidorPage() {
         <div className="flex flex-wrap items-center gap-3">
           <Link href="/consumidor/solicitar" className="btn-primary">Contratar regularização <Icon name="arrow" className="h-4 w-4" /></Link>
           <a href="#procedimentos" className="btn-secondary">Como funciona</a>
-          <span className="text-sm text-muted">{formatMoney(cfg.pixCents)} no Pix ou {formatMoney(cfg.installmentCents)} em até {cfg.maxInstallments}x</span>
+          <span className="text-sm text-muted">{formatMoney(cfg.pixCents)} à vista no Pix</span>
         </div>
       </PageHero>
 
@@ -61,8 +61,8 @@ export default async function ConsumidorPage() {
             <h2 className="mb-5 text-2xl font-bold">Como funciona a contratação</h2>
             <Steps steps={[
               { title: "Preencha o formulário", text: "Informe seus dados, endereço e o que você sabe sobre os apontamentos. Leva cerca de 5 minutos." },
-              { title: "Escolha a forma de pagamento", text: `${formatMoney(cfg.pixCents)} via Pix ou ${formatMoney(cfg.installmentCents)} em até ${cfg.maxInstallments} parcelas.` },
-              { title: "Receba seu protocolo", text: "Você recebe protocolo e código de acesso. Enviamos as instruções de pagamento pelos canais oficiais do portal." },
+              { title: "Pague via Pix", text: `${formatMoney(cfg.pixCents)} à vista. O QR Code e o Pix copia e cola aparecem ao final do formulário.` },
+              { title: "Receba seu protocolo", text: "Você recebe protocolo e código de acesso para acompanhar tudo pelo portal." },
               { title: "Início da execução", text: "Confirmado o pagamento, iniciamos o levantamento e os procedimentos nos três birôs." },
               { title: "Acompanhe cada etapa", text: "Todas as ações e respostas ficam registradas no acompanhamento do protocolo." },
               { title: "Conclusão", text: "Você recebe o relatório final com o resultado de cada registro tratado." },
@@ -117,18 +117,13 @@ export default async function ConsumidorPage() {
 
           <section id="valores" className="scroll-mt-36">
             <h2 className="mb-5 text-2xl font-bold">Valores e condições</h2>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="card border-brand-300 p-6">
-                <p className="eyebrow">À vista via Pix</p>
-                <p className="mt-2 text-4xl font-extrabold text-brand-800">{formatMoney(cfg.pixCents)}</p>
-                <Link href="/consumidor/solicitar" className="btn-primary mt-4 w-full">Contratar no Pix</Link>
+            <div className="card flex flex-col gap-4 border-emerald-300 p-6 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="eyebrow text-emerald-700">Pagamento único via Pix</p>
+                <p className="mt-2 text-4xl font-extrabold text-emerald-800">{formatMoney(cfg.pixCents)}</p>
+                <p className="mt-1 text-sm text-muted">À vista. QR Code e Pix copia e cola gerados ao final da contratação.</p>
               </div>
-              <div className="card p-6">
-                <p className="eyebrow">Parcelado</p>
-                <p className="mt-2 text-4xl font-extrabold text-ink">{formatMoney(cfg.installmentCents)}</p>
-                <p className="mt-1 text-sm text-muted">Em até {cfg.maxInstallments} vezes.</p>
-                <Link href="/consumidor/solicitar" className="btn-secondary mt-4 w-full">Contratar parcelado</Link>
-              </div>
+              <Link href="/consumidor/solicitar" className="btn-primary">Contratar agora</Link>
             </div>
             <div className="mt-5 rounded-xl border border-line p-5 text-sm">
               <p className="font-bold">O que está incluído</p>
@@ -172,7 +167,7 @@ export default async function ConsumidorPage() {
           <div className="card flex flex-col items-start gap-4 bg-brand-50 p-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h2 className="text-lg font-bold">Comece a regularização hoje</h2>
-              <p className="text-sm text-muted">{formatMoney(cfg.pixCents)} no Pix ou {formatMoney(cfg.installmentCents)} em até {cfg.maxInstallments}x.</p>
+              <p className="text-sm text-muted">{formatMoney(cfg.pixCents)} à vista no Pix.</p>
             </div>
             <Link href="/consumidor/solicitar" className="btn-primary">Contratar regularização</Link>
           </div>

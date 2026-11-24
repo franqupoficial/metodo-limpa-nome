@@ -26,7 +26,7 @@ interface CreateInput {
   documents?: { kind: string; originalName: string; mime: string; buf: Buffer; dataEnc: Buffer; sha256: string }[];
 }
 
-export async function createServiceRequest(input: CreateInput): Promise<{ protocol: string; accessCode: string }> {
+export async function createServiceRequest(input: CreateInput): Promise<{ id: string; protocol: string; accessCode: string }> {
   const cpfHash = keyedHash(`cpf:${input.personal.cpf}`);
   const customer = await prisma.customer.upsert({
     where: { cpfHash },
@@ -47,7 +47,7 @@ export async function createServiceRequest(input: CreateInput): Promise<{ protoc
   for (let attempt = 0; attempt < 5; attempt++) {
     const protocol = generateProtocol(input.service);
     try {
-      await prisma.serviceRequest.create({
+      const created = await prisma.serviceRequest.create({
         data: {
           protocol,
           service: input.service,
@@ -73,7 +73,7 @@ export async function createServiceRequest(input: CreateInput): Promise<{ protoc
         `Solicitação recebida — protocolo ${protocol}`,
         `Olá,\n\nRecebemos sua solicitação de "${serviceMeta(input.service).name}".\n\nProtocolo: ${protocol}\n\nPara acompanhar, acesse ${appUrl()}/acompanhar e informe o protocolo e o código de acesso exibido na tela de confirmação.\n\nAcompanhe cada etapa pelo portal. Nunca solicitamos senhas ou pagamentos por canais não oficiais.\n\nPortal Consumidor`,
       ).catch((e) => console.error("Falha ao enviar e-mail de confirmação", e));
-      return { protocol, accessCode };
+      return { id: created.id, protocol, accessCode };
     } catch (e) {
       if ((e as { code?: string }).code === "P2002") continue; // colisão de protocolo
       throw e;

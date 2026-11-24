@@ -1,16 +1,15 @@
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { getSetting } from "@/lib/settings";
-import { checkoutEnabled } from "@/lib/payments";
 import { AdminHeader, Panel } from "@/components/admin/ui";
 import { ActionForm, Submit } from "@/components/admin/ActionForm";
-import { saveContactAction, savePageAction } from "../../_actions/settings";
+import { saveContactAction, savePageAction, savePixAction } from "../../_actions/settings";
 
 export const metadata = { title: "Configurações" };
 
 export default async function Configuracoes() {
   await requireAdmin("ADMIN");
-  const [c, retention, pages] = await Promise.all([getSetting("site.contact"), getSetting("privacy.retention"), prisma.page.findMany({ orderBy: { slug: "asc" } })]);
+  const [c, retention, pages, pix] = await Promise.all([getSetting("site.contact"), getSetting("privacy.retention"), prisma.page.findMany({ orderBy: { slug: "asc" } }), getSetting("payment.pix")]);
   return (
     <>
       <AdminHeader title="Configurações" subtitle="Dados institucionais, privacidade e páginas editáveis." />
@@ -30,10 +29,17 @@ export default async function Configuracoes() {
         </ActionForm>
       </Panel>
 
-      <Panel title="Pagamentos (checkout futuro)" className="mb-6">
-        <p className="text-sm text-muted">
-          Situação: <strong>{checkoutEnabled() ? "fornecedor configurado" : "checkout não habilitado"}</strong>. A estrutura de pagamentos (Pix, cartão, cobrança recorrente, autorização, identificador de cobrança e histórico) está preparada em <code>src/lib/payments</code>. Dados completos de cartão e CVV nunca são armazenados.
-        </p>
+      <Panel title="Recebimento via Pix" className="mb-6">
+        <ActionForm action={savePixAction} className="space-y-3">
+          <div className="grid gap-3 sm:grid-cols-3">
+            <label className="sm:col-span-2"><span className="label text-xs">Chave Pix</span><input name="key" defaultValue={pix.key} className="input font-mono" /></label>
+            <label><span className="label text-xs">Cidade (até 15 caracteres)</span><input name="city" defaultValue={pix.city} maxLength={15} className="input" /></label>
+            <label><span className="label text-xs">Nome do recebedor (até 25)</span><input name="receiverName" defaultValue={pix.receiverName} maxLength={25} className="input" /></label>
+            <label className="sm:col-span-2"><span className="label text-xs">Instruções exibidas ao cliente</span><input name="instructions" defaultValue={pix.instructions} className="input" /></label>
+          </div>
+          <p className="text-xs text-muted">O QR Code e o “Pix copia e cola” são gerados com esta chave. O banco do cliente mostra o titular real da conta. Cada pagamento é confirmado manualmente na solicitação, após conferência no extrato. Nenhum dado de cartão é coletado.</p>
+          <Submit>Salvar Pix</Submit>
+        </ActionForm>
       </Panel>
 
       {pages.map((p) => (

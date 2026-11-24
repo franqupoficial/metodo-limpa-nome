@@ -37,8 +37,8 @@ test("validadores", () => {
 
 test("empréstimo respeita o limite de R$ 3.000", () => {
   const s = emprestimoSchema(300000, 30000).shape.loan;
-  assert.equal(s.safeParse({ amount: 3000, dueDay: 10, paymentMethod: "CARTAO_CREDITO" }).success, true);
-  assert.equal(s.safeParse({ amount: 3000.01, dueDay: 10, paymentMethod: "CARTAO_CREDITO" }).success, false);
+  assert.equal(s.safeParse({ amount: 3000, dueDay: 10, paymentMethod: "PIX" }).success, true);
+  assert.equal(s.safeParse({ amount: 3000.01, dueDay: 10, paymentMethod: "PIX" }).success, false);
 });
 
 test("acompanhamento exige protocolo + código", () => {
@@ -54,4 +54,18 @@ test("status por serviço", () => {
 test("empréstimo exige forma de débito automático", () => {
   const s = emprestimoSchema(300000, 30000).shape.loan;
   assert.equal(s.safeParse({ amount: 1000, dueDay: 10 }).success, false);
+});
+
+import { buildPixPayload, crc16 } from "../src/lib/pix";
+test("Pix: CRC16 do exemplo oficial do Banco Central", () => {
+  const ex = "00020126580014br.gov.bcb.pix0136123e4567-e12b-12d1-a456-4266554400005204000053039865802BR5913Fulano de Tal6008BRASILIA62070503***6304";
+  assert.equal(crc16(ex), "1D3D");
+});
+test("Pix: payload com valor e chave aleatória", () => {
+  const p = buildPixPayload({ key: "58d93626-10e0-4972-bb10-eb116d2a8a22", receiverName: "Portal Consumidor", city: "São Paulo", amountCents: 29990, txid: "PC-CON-20261124-ABCDE" });
+  assert.ok(p.includes("0136" + "58d93626-10e0-4972-bb10-eb116d2a8a22"));
+  assert.ok(p.includes("5406299.90"));
+  assert.ok(p.includes("5917PORTAL CONSUMIDOR"));
+  assert.ok(p.includes("6009SAO PAULO"));
+  assert.equal(p.slice(-4), crc16(p.slice(0, -4)));
 });

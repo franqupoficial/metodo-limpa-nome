@@ -7,6 +7,7 @@ import { hashAccessCode } from "@/lib/requests";
 import { safeEqual } from "@/lib/crypto";
 import { statusDef } from "@/lib/status";
 import { serviceMeta } from "@/lib/services";
+import { pixView } from "@/lib/charges";
 
 export async function POST(req: Request) {
   if (!sameOrigin(req)) return NextResponse.json({ error: "Origem não autorizada." }, { status: 403 });
@@ -20,7 +21,7 @@ export async function POST(req: Request) {
 
   const r = await prisma.serviceRequest.findUnique({
     where: { protocol },
-    select: { protocol: true, service: true, status: true, createdAt: true, updatedAt: true, accessCodeHash: true, anonymizedAt: true, summary: true,
+    select: { id: true, protocol: true, service: true, status: true, createdAt: true, updatedAt: true, accessCodeHash: true, anonymizedAt: true, summary: true,
       history: { orderBy: { createdAt: "asc" }, select: { toStatus: true, createdAt: true, publicNote: true } } },
   });
   // Mensagem genérica: não revela se o protocolo existe
@@ -28,6 +29,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Não encontramos uma solicitação com esses dados. Confira o protocolo e o código de acesso." }, { status: 404 });
 
   const st = statusDef(r.status);
+  const pending = await prisma.payment.findMany({ where: { requestId: r.id, status: "PENDING", method: "PIX", pixPayload: { not: null } }, orderBy: { createdAt: "asc" } });
+  const pix = await Promise.all(pending.map((p) => pixView(p)));
+  const boletos = await prisma.payment.findMany({ where: { requestId: r.id, status: "PENDING", method: "BOLETO" }, select: { description: true, amountCents: true, dueDate: true } });
   const summary = (r.summary ?? {}) as Record<string, unknown>;
   return NextResponse.json({
     protocol: r.protocol,
@@ -39,6 +43,8 @@ export async function POST(req: Request) {
     updatedAt: r.updatedAt,
     // apenas informações não sensíveis
     info: r.service === "LVB" && summary.vehicle ? `${summary.vehicle} · ${summary.termMonths} meses` : null,
+    pix,
+    boletos,
     history: r.history.map((h) => ({ status: statusDef(h.toStatus).label, date: h.createdAt, note: h.publicNote })),
   });
 }

@@ -102,7 +102,7 @@ export default async function LvbHome() {
             {[12, 24, 36].map((t) => (
               <div key={t} className="card p-6">
                 <p className="text-4xl font-extrabold text-lvb-700">{t}<span className="text-lg font-semibold text-muted"> meses</span></p>
-                <p className="mt-2 text-sm text-muted">Primeira parcela no ato da contratação e {t - 1} parcelas mensais recorrentes na data escolhida.</p>
+                <p className="mt-2 text-sm text-muted">Primeira parcela via Pix ao concluir o pedido e {t - 1} parcelas mensais por Pix ou boleto no dia escolhido.</p>
                 {Number(settings.termAdjustments[String(t)] ?? 0) !== 0 && <p className="mt-2 text-xs font-semibold text-lvb-700">Ajuste sobre o valor base: {settings.termAdjustments[String(t)]}%</p>}
               </div>
             ))}

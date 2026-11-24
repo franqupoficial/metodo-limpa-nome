@@ -1,5 +1,6 @@
 "use client";
 
+import type { PixData } from "@/components/PixPayment";
 import { useMemo, useState } from "react";
 import { emprestimoSchema, personalSchema, addressSchema, DUE_DAYS, LOAN_PAYMENT_LABEL, LOAN_PAYMENT_METHODS } from "@/lib/schemas";
 import { formatMoney } from "@/lib/format";
@@ -17,12 +18,12 @@ export function EmprestimoForm({ minCents, maxCents }: { minCents: number; maxCe
   const [address, setAddress] = useState(emptyAddress);
   const [loan, setLoan] = useState({ amount: Math.min(150000, maxCents) / 100, dueDay: "", purpose: "", monthlyIncome: "", paymentMethod: "" as "" | (typeof LOAN_PAYMENT_METHODS)[number] });
   const [consents, setConsents] = useState({ ...emptyConsents, creditAnalysis: false, autoDebit: false, noGuarantee: false });
-  const [done, setDone] = useState<{ protocol: string; accessCode: string } | null>(null);
+  const [done, setDone] = useState<{ protocol: string; accessCode: string; pix: PixData | null } | null>(null);
 
   if (done)
     return (
       <Confirmation {...done} title="Pedido de empréstimo recebido.">
-        <p>Próximos passos: aprovação da proposta, envio das condições e do contrato ao seu e-mail em até 24 horas, autorização do débito automático em ambiente seguro e liberação do valor. <strong>Nunca solicitamos pagamento antecipado para liberar crédito.</strong></p>
+        <p>Próximos passos: aprovação da proposta, envio das condições e do contrato ao seu e-mail em até 24 horas e liberação do valor. As parcelas chegam por e-mail (Pix ou boleto) antes de cada vencimento. <strong>Nunca solicitamos pagamento antecipado para liberar crédito.</strong></p>
       </Confirmation>
     );
 
@@ -37,7 +38,7 @@ export function EmprestimoForm({ minCents, maxCents }: { minCents: number; maxCe
     w.setSubmitting(true);
     const r = await submitRequest("emprestimo", payload);
     w.setSubmitting(false);
-    if (r.ok) setDone({ protocol: r.protocol, accessCode: r.accessCode });
+    if (r.ok) setDone({ protocol: r.protocol, accessCode: r.accessCode, pix: r.pix });
     else { w.setFormError(r.error); if (r.fieldErrors) w.setErrors(r.fieldErrors); }
   }
 
@@ -63,8 +64,8 @@ export function EmprestimoForm({ minCents, maxCents }: { minCents: number; maxCe
             <TextField label="Finalidade do crédito" required={false} value={loan.purpose} onChange={(v) => setLoan({ ...loan, purpose: v })} maxLength={300} />
           </div>
           <RadioCards legend="Forma de pagamento das parcelas" value={loan.paymentMethod} onChange={(v) => setLoan({ ...loan, paymentMethod: v })} error={w.errors["loan.paymentMethod"]}
-            options={LOAN_PAYMENT_METHODS.map((m) => ({ value: m, label: LOAN_PAYMENT_LABEL[m], description: "Débito automático no dia de vencimento escolhido." }))} />
-          <Notice tone="info">Os dados do cartão ou da conta são informados somente no ambiente seguro do processador de pagamentos, enviado junto com o contrato. Nunca digite dados de cartão neste formulário, em e-mails ou mensagens.</Notice>
+            options={LOAN_PAYMENT_METHODS.map((m) => ({ value: m, label: LOAN_PAYMENT_LABEL[m], description: "Enviado ao seu e-mail antes do dia de vencimento escolhido." }))} />
+          <Notice tone="info">Nenhum pagamento é feito agora. Depois da liberação do crédito, cada parcela é cobrada por Pix ou boleto enviado ao e-mail cadastrado, sempre em nome de <strong>Portal Consumidor</strong>.</Notice>
         </div>
       )}
       {w.step === 3 && (
@@ -73,7 +74,7 @@ export function EmprestimoForm({ minCents, maxCents }: { minCents: number; maxCe
           <ReviewSection title="Endereço" onEdit={() => w.go(1)} rows={[["CEP", address.cep], ["Endereço", `${address.street}, ${address.number} ${address.complement}`], ["Bairro", address.district], ["Cidade/UF", `${address.city}/${address.state}`]]} />
           <ReviewSection title="Proposta" onEdit={() => w.go(2)} rows={[["Valor solicitado", formatMoney(Math.round(loan.amount * 100))], ["Vencimento", loan.dueDay ? `Dia ${loan.dueDay}` : ""], ["Pagamento", loan.paymentMethod ? LOAN_PAYMENT_LABEL[loan.paymentMethod] : ""], ["Renda informada", loan.monthlyIncome ? `R$ ${loan.monthlyIncome}` : ""], ["Finalidade", loan.purpose]]} />
           <Notice tone="warn" title="Leia antes de enviar">
-            O valor final, as parcelas e o CET são definidos na aprovação e constam do contrato enviado por e-mail. O crédito é liberado após a assinatura do contrato e a autorização do débito automático. Em caso de inadimplemento, podem incidir juros de mora, multa contratual (limitada a 2% conforme o CDC), cobrança dos valores devidos e, após notificação prévia, inclusão em cadastros de proteção ao crédito, conforme a legislação e o contrato.
+            O valor final, as parcelas e o CET são definidos na aprovação e constam do contrato enviado por e-mail. O crédito é liberado após a assinatura do contrato. Em caso de inadimplemento, podem incidir juros de mora, multa contratual (limitada a 2% conforme o CDC), cobrança dos valores devidos e, após notificação prévia, inclusão em cadastros de proteção ao crédito, conforme a legislação e o contrato.
           </Notice>
           <div className="space-y-2">
             <BaseConsentFields value={consents} onChange={setConsents} errors={w.errors} />
@@ -81,7 +82,7 @@ export function EmprestimoForm({ minCents, maxCents }: { minCents: number; maxCe
               Autorizo a consulta das minhas informações de crédito, inclusive em birôs de crédito e no Sistema de Informações de Crédito (SCR) do Banco Central, para aprovação desta proposta.
             </Checkbox>
             <Checkbox required checked={consents.autoDebit} onChange={(v) => setConsents({ ...consents, autoDebit: v })} error={w.errors["consents.autoDebit"]}>
-              Autorizo, após a assinatura do contrato, o débito automático das parcelas na forma de pagamento escolhida, no dia de vencimento indicado.
+              Autorizo, após a assinatura do contrato, o envio mensal das cobranças das parcelas ao meu e-mail, na forma de pagamento escolhida, para pagamento até o dia de vencimento indicado.
             </Checkbox>
             <Checkbox required checked={consents.noGuarantee} onChange={(v) => setConsents({ ...consents, noGuarantee: v })} error={w.errors["consents.noGuarantee"]}>
               Compreendo que solicitação, aprovação e liberação são etapas distintas, e que nenhum valor deve ser pago antecipadamente para liberação de crédito.

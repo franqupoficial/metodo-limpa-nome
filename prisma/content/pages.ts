@@ -58,7 +58,7 @@ O Portal Consumidor é uma **plataforma privada**. Não é órgão público, nã
 
 - **Regularização de apontamentos:** serviço de levantamento, contestação e pedido de exclusão de registros irregulares e intermediação de acordos para dívidas reconhecidas nos cadastros Serasa, SPC e Boa Vista. Dívidas legítimas permanecem devidas até pagamento ou acordo; o resultado de cada registro depende da resposta do birô e do credor.
 - **Abra seu CNPJ:** serviço privado de assistência e condução da abertura e formalização empresarial. O valor cobrado não é taxa governamental. A abertura de MEI pelos canais oficiais é gratuita.
-- **Empréstimo para negativados:** intermediação da contratação de crédito de até R$ 3.000,00 junto à instituição concedente. Solicitação, aprovação e liberação são etapas distintas; a liberação ocorre após a assinatura do contrato e a autorização do débito automático.
+- **Empréstimo para negativados:** intermediação da contratação de crédito de até R$ 3.000,00 junto à instituição concedente. Solicitação, aprovação e liberação são etapas distintas; a liberação ocorre após a assinatura do contrato. As parcelas são cobradas por Pix ou boleto enviados ao e-mail do cliente.
 - **LVB — Locação de veículos:** locação de veículos para motoristas de aplicativo, formalizada por contrato após aprovação cadastral, com primeira parcela no ato da contratação e parcelas recorrentes.
 
 ## 4. Responsabilidades do usuário
@@ -101,8 +101,8 @@ A retirada ocorre após aprovação, assinatura do contrato, pagamento da primei
 
 ## Informações sobre cobrança
 
-- A primeira parcela é paga no ato da contratação.
-- As demais parcelas são cobradas de forma recorrente, na data escolhida, mediante autorização prévia do locatário e por meio de fornecedor de pagamentos seguro.
+- A primeira parcela é paga via Pix ao final do formulário de locação.
+- As demais parcelas são cobradas de forma recorrente, na data escolhida e mediante autorização do locatário, por Pix ou boleto enviados ao e-mail cadastrado.
 - O Portal Consumidor não armazena número completo de cartão nem código de segurança.
 
 ## Uso do veículo

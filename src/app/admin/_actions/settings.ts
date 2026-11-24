@@ -36,15 +36,15 @@ export async function saveCategoryAction(_: ActionState, fd: FormData): Promise<
 export async function saveServicePricesAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const admin = await requireAdmin("ADMIN");
   const pix = moneyToCents(str(fd, "pix"));
-  const inst = moneyToCents(str(fd, "installment"));
-  const maxInst = Number(str(fd, "maxInstallments"));
+  const cons0 = await getSetting("service.consumidor");
+  const inst = cons0.installmentCents;
+  const maxInst = cons0.maxInstallments;
   const cnpj = moneyToCents(str(fd, "cnpj"));
   const loanMin = moneyToCents(str(fd, "loanMin"));
   const loanMax = moneyToCents(str(fd, "loanMax"));
-  if ([pix, inst, cnpj, loanMin, loanMax].some((v) => v == null) || !(maxInst >= 1 && maxInst <= 24)) return fail("Revise os valores informados.");
+  if ([pix, cnpj, loanMin, loanMax].some((v) => v == null)) return fail("Revise os valores informados.");
   if (loanMin! >= loanMax!) return fail("O valor mínimo do empréstimo deve ser menor que o máximo.");
-  const cons = await getSetting("service.consumidor");
-  await setSetting("service.consumidor", { ...cons, pixCents: pix!, installmentCents: inst!, maxInstallments: maxInst, scope: str(fd, "scope") || cons.scope });
+  await setSetting("service.consumidor", { ...cons0, pixCents: pix!, installmentCents: inst, maxInstallments: maxInst, scope: str(fd, "scope") || cons0.scope });
   await setSetting("service.cnpj", { priceCents: cnpj! });
   await setSetting("service.emprestimo", { minCents: loanMin!, maxCents: loanMax! });
   await audit(admin.id, "settings.service_prices", "Setting", "service.*", { pix, inst, maxInst, cnpj, loanMin, loanMax });
@@ -97,6 +97,23 @@ export async function saveContactAction(_: ActionState, fd: FormData): Promise<A
   await audit(admin.id, "settings.contact", "Setting", "site.contact");
   revalidateAll();
   return ok("Configurações salvas.");
+}
+
+export async function savePixAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const admin = await requireAdmin("ADMIN");
+  const key = str(fd, "key");
+  const receiverName = str(fd, "receiverName");
+  const city = str(fd, "city");
+  const validKey =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(key) || // aleatória
+    /^\+55\d{10,11}$/.test(key) || /^\d{11}$|^\d{14}$/.test(key) || z.string().email().safeParse(key).success;
+  if (!validKey) return fail("Chave Pix inválida. Use a chave aleatória (formato 00000000-0000-0000-0000-000000000000), CPF/CNPJ só números, e-mail ou +55DDDNÚMERO.");
+  if (receiverName.length < 3 || receiverName.length > 25) return fail("Nome do recebedor: 3 a 25 caracteres.");
+  if (city.length < 2 || city.length > 15) return fail("Cidade: 2 a 15 caracteres.");
+  await setSetting("payment.pix", { key, receiverName, city, instructions: str(fd, "instructions").slice(0, 300) });
+  await audit(admin.id, "settings.pix", "Setting", "payment.pix", { keyEnd: key.slice(-6) });
+  revalidateAll();
+  return ok("Dados do Pix salvos. Novas cobranças usarão esta chave.");
 }
 
 export async function savePageAction(_: ActionState, fd: FormData): Promise<ActionState> {

@@ -5,12 +5,12 @@ import { Notice, PageHero, Section } from "@/components/ui";
 export const metadata: Metadata = { title: "Como funciona o empréstimo para negativados", description: "Do cadastro à liberação: cada etapa do empréstimo de até R$ 3.000,00 no Portal Consumidor.", alternates: { canonical: "/emprestimo/como-funciona" } };
 
 const STEPS = [
-  { t: "Cadastro", d: "Preencha seus dados pessoais, endereço, valor desejado (até R$ 3.000,00), dia de vencimento e a forma de débito automático preferida." },
+  { t: "Cadastro", d: "Preencha seus dados pessoais, endereço, valor desejado (até R$ 3.000,00), dia de vencimento e como prefere receber as cobranças (Pix ou boleto)." },
   { t: "Aprovação da proposta", d: "A instituição concedente avalia a proposta e define o valor aprovado e as condições. Ter restrições no CPF não impede a contratação deste produto." },
   { t: "Condições contratuais", d: "Você recebe valor liberado, número e valor das parcelas, taxa de juros, Custo Efetivo Total (CET), encargos e datas de vencimento." },
   { t: "Contrato por e-mail em até 24 horas", d: "Com o aceite das condições, o contrato é enviado ao e-mail cadastrado em até 24 horas, conforme o fluxo operacional." },
-  { t: "Autorização do débito automático", d: "As parcelas são debitadas automaticamente no dia que você escolheu, no cartão de crédito ou em conta corrente. Os dados de pagamento são informados apenas no ambiente seguro do processador de pagamentos." },
-  { t: "Liberação do valor", d: "Contrato assinado e débito autorizado: o crédito é liberado na sua conta." },
+  { t: "Liberação do valor", d: "Com o contrato assinado, o crédito é liberado na sua conta." },
+  { t: "Cobrança das parcelas", d: "Antes de cada vencimento, você recebe por e-mail o Pix ou o boleto da parcela, sempre em nome de Portal Consumidor." },
 ];
 
 export default function Page() {

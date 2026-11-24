@@ -11,9 +11,9 @@ const STEPS = [
   ["Preencha o formulário de locação", "Dados pessoais, endereço, CNH (com EAR, quando exigido), perfil de motorista, veículo, plano e dia de vencimento."],
   ["Aprovação cadastral", "Verificamos seus dados e sua habilitação e confirmamos o veículo da frota para o seu contrato."],
   ["Assinatura do contrato", "Você recebe o contrato com valores, obrigações, regras de uso, coberturas, quilometragem e demais cláusulas, e assina digitalmente."],
-  ["Primeira parcela", "A primeira parcela é paga no ato da contratação. Caução ou outros valores aplicáveis constam do contrato."],
+  ["Primeira parcela via Pix", "Ao concluir o formulário você recebe o QR Code e o Pix copia e cola da primeira parcela. Caução ou outros valores aplicáveis constam do contrato."],
   ["Retirada do veículo", "Pagamento confirmado, agendamos a retirada. Leve documento de identificação e a CNH original."],
-  ["Parcelas recorrentes", "As demais parcelas são cobradas automaticamente no dia que você escolheu, mediante sua autorização."],
+  ["Parcelas recorrentes", "As demais parcelas chegam ao seu e-mail, por Pix ou boleto, antes do dia de vencimento que você escolheu, conforme sua autorização."],
 ];
 
 export default function Page() {

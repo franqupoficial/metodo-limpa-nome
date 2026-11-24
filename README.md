@@ -64,9 +64,18 @@ Os valores iniciais do catálogo (R$ 1.440 a R$ 2.640/mês) são **ilustrativos*
 
 Em **Tarifas → Regularização**, o administrador pode publicar esse bloco na página de Regularização. Ele só aparece se estiver ativado **e** com a descrição do procedimento e a base jurídica/operacional que o comprova. Sem isso, a página mostra as hipóteses legais de suspensão de registros.
 
-### Dados de cartão
+### Pagamentos via Pix
 
-Dados completos de cartão e CVV **não** são coletados nem armazenados (PCI DSS). O débito automático é autorizado pelo cliente no ambiente seguro do processador de pagamentos; o portal guarda apenas a forma de pagamento escolhida e, no futuro, token, bandeira e 4 últimos dígitos.
+Todos os serviços são cobrados por Pix com a chave aleatória do portal (configurável em **Configurações → Recebimento via Pix**). O portal gera o QR Code e o “Pix copia e cola” (padrão BR Code do Banco Central) com o valor exato:
+
+| Serviço | Cobrança gerada automaticamente |
+| --- | --- |
+| Regularização de apontamentos | Pix à vista (R$ 299,90) ao final do formulário |
+| Abra seu CNPJ | Pix (R$ 199,00) ao final do formulário |
+| LVB — Locação | Pix da 1ª parcela ao final do formulário + aceite de cobrança recorrente |
+| Empréstimo | Nenhuma cobrança antecipada; parcelas após a liberação |
+
+No painel, em cada solicitação, a equipe **confirma o pagamento** (após conferir o extrato), gera novas cobranças Pix das parcelas (com envio por e-mail) e **envia boletos por e-mail** anexando o PDF gerado no banco. O cliente vê os Pix pendentes na página de acompanhamento. Nenhum dado de cartão é coletado.
 
 ## Segurança e LGPD
 

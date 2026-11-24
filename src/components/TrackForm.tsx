@@ -4,10 +4,12 @@ import { useState } from "react";
 import { formatDate } from "@/lib/format";
 import { StatusBadge, Notice } from "./ui";
 import { Icon } from "./Icon";
+import { PixPayment, type PixData } from "./PixPayment";
+import { formatMoney } from "@/lib/format";
 
 interface Result {
   protocol: string; service: string; status: string; tone: "gray" | "blue" | "amber" | "green" | "red"; nextSteps: string;
-  createdAt: string; updatedAt: string; info: string | null; history: { status: string; date: string; note: string | null }[];
+  createdAt: string; updatedAt: string; info: string | null; pix: PixData[]; boletos: { description: string | null; amountCents: number; dueDate: string | null }[]; history: { status: string; date: string; note: string | null }[];
 }
 
 export function TrackForm({ initialProtocol }: { initialProtocol: string }) {
@@ -64,6 +66,15 @@ export function TrackForm({ initialProtocol }: { initialProtocol: string }) {
             </dl>
             <div className="mt-6"><Notice tone="info" title="Próximos passos">{result.nextSteps}</Notice></div>
             {lastNote && <div className="mt-3"><Notice tone="warn" title="Informações necessárias">{lastNote}</Notice></div>}
+            {result.pix.length > 0 && (
+              <div className="mt-6 space-y-4">
+                <h2 className="text-sm font-bold uppercase tracking-wide text-muted">Pagamentos pendentes</h2>
+                {result.pix.map((p, i) => <PixPayment key={i} pix={p} title={p.description || "Pague com Pix"} />)}
+              </div>
+            )}
+            {result.boletos.length > 0 && (
+              <div className="mt-4"><Notice tone="info" title="Boletos enviados ao seu e-mail">{result.boletos.map((b, i) => <span key={i} className="block">{b.description}: {formatMoney(b.amountCents)}{b.dueDate ? ` — vence em ${formatDate(b.dueDate)}` : ""}</span>)}</Notice></div>
+            )}
             <h2 className="mt-8 text-sm font-bold uppercase tracking-wide text-muted">Histórico</h2>
             <ol className="mt-3 space-y-3 border-l-2 border-brand-100 pl-5">
               {result.history.map((h, i) => (

@@ -6,6 +6,7 @@ import { maskCepInput, maskCpfInput, maskPhoneInput } from "./masks";
 import { UFS } from "@/lib/validators";
 import { Icon } from "@/components/Icon";
 import Link from "next/link";
+import { PixPayment, type PixData } from "@/components/PixPayment";
 
 export interface PersonalState { fullName: string; cpf: string; birthDate: string; phone: string; email: string }
 export interface AddressState { cep: string; street: string; number: string; complement: string; district: string; city: string; state: string }
@@ -96,7 +97,7 @@ export function BaseConsentFields<T extends BaseConsents>({ value, onChange, err
   );
 }
 
-export function Confirmation({ protocol, accessCode, title = "Sua solicitação foi recebida.", children }: { protocol: string; accessCode: string; title?: string; children?: React.ReactNode }) {
+export function Confirmation({ protocol, accessCode, title = "Sua solicitação foi recebida.", children, pix, pixTitle }: { protocol: string; accessCode: string; title?: string; children?: React.ReactNode; pix?: PixData | null; pixTitle?: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <div className="animate-fade-up text-center">
@@ -119,6 +120,7 @@ export function Confirmation({ protocol, accessCode, title = "Sua solicitação 
       >
         {copied ? "Copiado!" : "Copiar protocolo e código"}
       </button>
+      {pix && <div className="mx-auto mt-6 max-w-2xl"><PixPayment pix={pix} title={pixTitle} /></div>}
       <div className="mx-auto mt-4 max-w-lg text-left">
         <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950">
           <p className="font-semibold">Guarde o código de acesso.</p>
@@ -134,7 +136,7 @@ export function Confirmation({ protocol, accessCode, title = "Sua solicitação 
   );
 }
 
-export async function submitRequest(service: string, body: unknown | FormData): Promise<{ ok: true; protocol: string; accessCode: string } | { ok: false; error: string; fieldErrors?: Errors }> {
+export async function submitRequest(service: string, body: unknown | FormData): Promise<{ ok: true; protocol: string; accessCode: string; pix: PixData | null } | { ok: false; error: string; fieldErrors?: Errors }> {
   try {
     const isForm = body instanceof FormData;
     const res = await fetch(`/api/solicitacoes/${service}`, {
@@ -143,7 +145,7 @@ export async function submitRequest(service: string, body: unknown | FormData): 
       body: isForm ? body : JSON.stringify(body),
     });
     const json = await res.json().catch(() => ({}));
-    if (res.ok) return { ok: true, protocol: json.protocol, accessCode: json.accessCode };
+    if (res.ok) return { ok: true, protocol: json.protocol, accessCode: json.accessCode, pix: json.pix ?? null };
     return { ok: false, error: json.error ?? "Não foi possível enviar sua solicitação.", fieldErrors: json.fieldErrors };
   } catch {
     return { ok: false, error: "Falha de conexão. Verifique sua internet e tente novamente." };

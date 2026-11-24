@@ -1,7 +1,8 @@
 "use client";
 
+import type { PixData } from "@/components/PixPayment";
 import { useState } from "react";
-import { lvbSchema, personalSchema, addressSchema, CNH_CATEGORIES, EXPERIENCE, EXPERIENCE_LABEL, PAYMENT_DAYS } from "@/lib/schemas";
+import { lvbSchema, personalSchema, addressSchema, CNH_CATEGORIES, EXPERIENCE, EXPERIENCE_LABEL, PAYMENT_DAYS, RECURRING_LABEL, RECURRING_METHODS } from "@/lib/schemas";
 import { simulate } from "@/lib/pricing";
 import { formatMoney } from "@/lib/format";
 import { Checkbox, FormAlert, RadioCards, ReviewSection, SelectField, Stepper, TextArea, TextField, WizardNav } from "@/components/forms/kit";
@@ -12,7 +13,7 @@ import { Notice } from "@/components/ui";
 import type { ClientPlanSettings, ClientVehicle } from "./types";
 import { VehicleImage } from "./VehicleImage";
 
-const STEPS = ["Dados pessoais", "Endereço", "Documentação", "Perfil de motorista", "Veículo e plano", "Revisão", "Confirmação"];
+const STEPS = ["Dados pessoais", "Endereço", "Documentação", "Perfil de motorista", "Veículo e plano", "Revisão", "Pagamento"];
 
 export function LvbForm({ vehicles, settings, initial }: { vehicles: ClientVehicle[]; settings: ClientPlanSettings; initial: { vehicleId?: string; term?: number; km?: string } }) {
   const w = useWizard(STEPS.length);
@@ -21,9 +22,9 @@ export function LvbForm({ vehicles, settings, initial }: { vehicles: ClientVehic
   const [license, setLicense] = useState({ cnhNumber: "", cnhCategory: "", cnhExpiry: "", ear: "" as "" | "SIM" | "NAO", notes: "" });
   const [cnhFile, setCnhFile] = useState<File | null>(null);
   const [driver, setDriver] = useState({ uber: false, app99: false, others: false, othersText: "", experience: "" as "" | (typeof EXPERIENCE)[number], mainPlatform: "", notes: "" });
-  const [plan, setPlan] = useState({ vehicleId: initial.vehicleId ?? "", termMonths: String(initial.term ?? ""), kmPackage: initial.km ?? settings.kmPackages[0]?.id ?? "", paymentDay: "" });
-  const [consents, setConsents] = useState({ ...emptyConsents, analysis: false, conditions: false });
-  const [done, setDone] = useState<{ protocol: string; accessCode: string } | null>(null);
+  const [plan, setPlan] = useState({ vehicleId: initial.vehicleId ?? "", termMonths: String(initial.term ?? ""), kmPackage: initial.km ?? settings.kmPackages[0]?.id ?? "", paymentDay: "", recurringMethod: "" as "" | (typeof RECURRING_METHODS)[number] });
+  const [consents, setConsents] = useState({ ...emptyConsents, analysis: false, conditions: false, recurring: false });
+  const [done, setDone] = useState<{ protocol: string; accessCode: string; pix: PixData | null } | null>(null);
 
   const vehicle = vehicles.find((v) => v.id === plan.vehicleId);
   const kmPkg = settings.kmPackages.find((k) => k.id === plan.kmPackage) ?? null;
@@ -31,8 +32,8 @@ export function LvbForm({ vehicles, settings, initial }: { vehicles: ClientVehic
 
   if (done)
     return (
-      <Confirmation {...done} title="Pedido de locação recebido.">
-        <p>Próximos passos: aprovação cadastral, envio do contrato para assinatura, pagamento da primeira parcela e agendamento da retirada. As demais parcelas serão cobradas no dia escolhido.</p>
+      <Confirmation {...done} title="Pedido de locação recebido." pixTitle="Pague a 1ª parcela via Pix">
+        <p>Próximos passos: confirmação do pagamento da 1ª parcela, aprovação cadastral, envio do contrato e agendamento da retirada. As demais parcelas chegam ao seu e-mail antes de cada vencimento.</p>
       </Confirmation>
     );
 
@@ -53,7 +54,7 @@ export function LvbForm({ vehicles, settings, initial }: { vehicles: ClientVehic
       if (vehicle && !vehicle.terms.includes(Number(plan.termMonths))) errs["plan.termMonths"] = "Prazo indisponível para este veículo.";
       return w.advance(errs);
     }
-    if (w.step === 5) return w.advance(validateWith(shape.consents, consents, "consents"));
+    if (w.step === 5) return w.advance(validateWith(shape.consents.omit({ recurring: true }), consents, "consents"));
     const payload = { personal, address, license, driver, plan: planPayload(), consents };
     if (!w.advance(validateWith(lvbSchema, payload, ""))) return;
     const fd = new FormData();
@@ -62,7 +63,7 @@ export function LvbForm({ vehicles, settings, initial }: { vehicles: ClientVehic
     w.setSubmitting(true);
     const r = await submitRequest("lvb", fd);
     w.setSubmitting(false);
-    if (r.ok) setDone({ protocol: r.protocol, accessCode: r.accessCode });
+    if (r.ok) setDone({ protocol: r.protocol, accessCode: r.accessCode, pix: r.pix });
     else { w.setFormError(r.error); if (r.fieldErrors) w.setErrors(r.fieldErrors); }
   }
 
@@ -129,12 +130,14 @@ export function LvbForm({ vehicles, settings, initial }: { vehicles: ClientVehic
           )}
           <RadioCards legend="Data de pagamento desejada (dia do mês)" value={plan.paymentDay} onChange={(v) => setPlan({ ...plan, paymentDay: v })} error={w.errors["plan.paymentDay"]} columns={3}
             options={PAYMENT_DAYS.map((d) => ({ value: String(d), label: `Dia ${d}` }))} />
+          <RadioCards legend="Como deseja receber as cobranças das demais parcelas?" value={plan.recurringMethod} onChange={(v) => setPlan({ ...plan, recurringMethod: v })} error={w.errors["plan.recurringMethod"]}
+            options={RECURRING_METHODS.map((m) => ({ value: m, label: RECURRING_LABEL[m], description: "Enviado ao seu e-mail antes do dia de vencimento escolhido." }))} />
           {sim && (
             <div className="rounded-xl border border-lvb-100 bg-lvb-50 p-4 text-sm">
               <p className="font-semibold text-lvb-900">Informações do plano</p>
               <ul className="mt-2 grid gap-1 sm:grid-cols-2">
                 <li>Valor mensal: <strong>{formatMoney(sim.monthlyCents)}</strong></li>
-                <li>Primeira parcela: <strong>{formatMoney(sim.firstInstallmentCents)}</strong> (na contratação)</li>
+                <li>Primeira parcela: <strong>{formatMoney(sim.firstInstallmentCents)}</strong> (via Pix ao concluir)</li>
                 <li>Demais: <strong>{sim.remainingInstallments}× {formatMoney(sim.monthlyCents)}</strong> (recorrente)</li>
                 <li>Total estimado: <strong>{formatMoney(sim.totalCents)}</strong></li>
               </ul>
@@ -148,7 +151,7 @@ export function LvbForm({ vehicles, settings, initial }: { vehicles: ClientVehic
           <ReviewSection title="Endereço" onEdit={() => w.go(1)} rows={[["CEP", address.cep], ["Endereço", `${address.street}, ${address.number} ${address.complement}`], ["Bairro", address.district], ["Cidade/UF", `${address.city}/${address.state}`]]} />
           <ReviewSection title="Documentação" onEdit={() => w.go(2)} rows={[["CNH", license.cnhNumber], ["Categoria", license.cnhCategory], ["Validade", license.cnhExpiry.split("-").reverse().join("/")], ["EAR", license.ear === "SIM" ? "Sim" : "Não"], ["Arquivo", cnhFile?.name ?? "Não enviado"]]} />
           <ReviewSection title="Perfil de motorista" onEdit={() => w.go(3)} rows={[["Uber", yesNo(driver.uber)], ["99", yesNo(driver.app99)], ["Outros", driver.others ? driver.othersText || "Sim" : "Não"], ["Experiência", driver.experience ? EXPERIENCE_LABEL[driver.experience] : ""], ["Plataforma principal", driver.mainPlatform]]} />
-          <ReviewSection title="Veículo e plano" onEdit={() => w.go(4)} rows={[["Veículo", vehicle ? `${vehicle.brand} ${vehicle.name}` : ""], ["Categoria", vehicle?.categoryName ?? ""], ["Prazo", `${plan.termMonths} meses`], ["Valor mensal", formatMoney(sim?.monthlyCents)], ["Total estimado", formatMoney(sim?.totalCents)], ["Quilometragem", kmPkg?.label ?? (vehicle ? `${vehicle.kmPerMonth.toLocaleString("pt-BR")} km/mês` : "")], ["Pagamento", plan.paymentDay ? `Todo dia ${plan.paymentDay}` : ""]]} />
+          <ReviewSection title="Veículo e plano" onEdit={() => w.go(4)} rows={[["Veículo", vehicle ? `${vehicle.brand} ${vehicle.name}` : ""], ["Categoria", vehicle?.categoryName ?? ""], ["Prazo", `${plan.termMonths} meses`], ["Valor mensal", formatMoney(sim?.monthlyCents)], ["Total estimado", formatMoney(sim?.totalCents)], ["Quilometragem", kmPkg?.label ?? (vehicle ? `${vehicle.kmPerMonth.toLocaleString("pt-BR")} km/mês` : "")], ["Vencimento", plan.paymentDay ? `Todo dia ${plan.paymentDay}` : ""], ["Demais parcelas", plan.recurringMethod ? RECURRING_LABEL[plan.recurringMethod] : ""]]} />
           <Notice tone="warn" title="Condições">
             {settings.priceNotice} A primeira parcela é paga no ato da contratação e as demais de forma recorrente, mediante autorização. Coberturas, manutenção, IPVA e assistência: {settings.inclusionNotes} {settings.costs.map((c) => c.label).join(", ")} podem ser aplicáveis e serão detalhados na proposta.
           </Notice>
@@ -164,13 +167,19 @@ export function LvbForm({ vehicles, settings, initial }: { vehicles: ClientVehic
         </div>
       )}
       {w.step === 6 && (
-        <div className="space-y-4 text-center">
-          <h2 className="text-xl font-bold">Tudo pronto para a sua locação</h2>
-          <p className="mx-auto max-w-xl text-muted">Ao enviar, você recebe o protocolo do seu pedido de locação. Em seguida: aprovação cadastral, contrato, primeira parcela e retirada do veículo.</p>
-          {sim && vehicle && <p className="text-sm"><strong>{vehicle.brand} {vehicle.name}</strong> · {sim.termMonths} meses · {formatMoney(sim.monthlyCents)}/mês</p>}
+        <div className="space-y-5">
+          <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+            <p className="text-sm text-emerald-900">Primeira parcela — paga via Pix ao concluir</p>
+            <p className="text-3xl font-extrabold text-emerald-800">{formatMoney(sim?.monthlyCents)}</p>
+            {sim && vehicle && <p className="mt-1 text-sm text-emerald-900">{vehicle.brand} {vehicle.name} · {sim.termMonths} meses · demais {sim.remainingInstallments} parcelas de {formatMoney(sim.monthlyCents)} todo dia {plan.paymentDay} ({plan.recurringMethod ? RECURRING_LABEL[plan.recurringMethod] : ""})</p>}
+          </div>
+          <Checkbox required checked={consents.recurring} onChange={(v) => setConsents({ ...consents, recurring: v })} error={w.errors["consents.recurring"]}>
+            Aceito o pagamento recorrente: autorizo o envio das cobranças das demais {sim?.remainingInstallments ?? ""} parcelas de {formatMoney(sim?.monthlyCents)} ao meu e-mail, por {plan.recurringMethod === "BOLETO" ? "boleto" : "Pix"}, para pagamento até todo dia {plan.paymentDay}, conforme o contrato de locação.
+          </Checkbox>
+          <p className="text-sm text-muted">Ao concluir, você recebe o QR Code e o Pix copia e cola da primeira parcela. Com o pagamento confirmado e o cadastro aprovado, enviamos o contrato e agendamos a retirada do veículo.</p>
         </div>
       )}
-      <WizardNav step={w.step} total={STEPS.length} onBack={w.back} onNext={next} submitting={w.submitting} submitLabel="Enviar pedido de locação" />
+      <WizardNav step={w.step} total={STEPS.length} onBack={w.back} onNext={next} submitting={w.submitting} submitLabel="Concluir e gerar Pix da 1ª parcela" />
     </div>
   );
 }

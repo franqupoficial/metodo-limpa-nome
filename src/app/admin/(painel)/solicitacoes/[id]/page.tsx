@@ -8,7 +8,9 @@ import { serviceMeta } from "@/lib/services";
 import { statusDef, statusesFor } from "@/lib/status";
 import { formatCep, formatCpf, formatDate, formatMoney, formatPhone, maskCpf } from "@/lib/format";
 import { EXPERIENCE_LABEL, LOAN_PAYMENT_LABEL } from "@/lib/schemas";
-import { checkoutEnabled } from "@/lib/payments";
+import { RECURRING_LABEL } from "@/lib/schemas";
+import { centsToInput } from "@/lib/action";
+import { createPixChargeAction, sendBoletoAction, sendPixChargeAction, setPaymentStatusAction } from "../../../_actions/payments";
 import { AdminHeader, DefList, Panel, Empty } from "@/components/admin/ui";
 import { ActionForm, Submit } from "@/components/admin/ActionForm";
 import { StatusBadge, Notice } from "@/components/ui";
@@ -16,6 +18,7 @@ import { addNoteAction, anonymizeRequestAction, changeStatusAction, regenerateAc
 
 export const metadata = { title: "Solicitação" };
 
+const STATUS_MAP = { PENDING: ["Aguardando", "bg-amber-100 text-amber-900"], PAID: ["Pago", "bg-emerald-100 text-emerald-800"], CANCELED: ["Cancelado", "bg-slate-100 text-slate-700"], AUTHORIZED: ["Autorizado", "bg-brand-100 text-brand-800"], FAILED: ["Falhou", "bg-red-100 text-red-800"], REFUNDED: ["Estornado", "bg-slate-100 text-slate-700"] };
 type AnyRec = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 const yn = (b: unknown) => (b ? "Sim" : "Não");
 const dmy = (s?: string) => (s ? s.split("-").reverse().join("/") : "");
@@ -88,7 +91,7 @@ export default async function RequestDetail({ params, searchParams }: { params: 
 
           {r.service === "EMPRESTIMO" && !r.anonymizedAt && (
             <Panel title="Proposta de crédito">
-              <DefList rows={[["Valor solicitado", formatMoney(r.amountCents)], ["Vencimento desejado", `Dia ${d.loan?.dueDay}`], ["Débito automático", LOAN_PAYMENT_LABEL[d.loan?.paymentMethod as keyof typeof LOAN_PAYMENT_LABEL] ?? "—"], ["Renda informada", d.loan?.monthlyIncome ? formatMoney(Math.round(d.loan.monthlyIncome * 100)) : ""], ["Finalidade", d.loan?.purpose]]} />
+              <DefList rows={[["Valor solicitado", formatMoney(r.amountCents)], ["Vencimento desejado", `Dia ${d.loan?.dueDay}`], ["Pagamento das parcelas", LOAN_PAYMENT_LABEL[d.loan?.paymentMethod as keyof typeof LOAN_PAYMENT_LABEL] ?? "—"], ["Renda informada", d.loan?.monthlyIncome ? formatMoney(Math.round(d.loan.monthlyIncome * 100)) : ""], ["Finalidade", d.loan?.purpose]]} />
             </Panel>
           )}
 
@@ -108,7 +111,7 @@ export default async function RequestDetail({ params, searchParams }: { params: 
                 <DefList cols={3} rows={[
                   ["Veículo escolhido", r.vehicle ? <Link key="v" href={`/admin/veiculos/${r.vehicle.id}`}>{r.vehicle.brand} {r.vehicle.name}</Link> : s.vehicle],
                   ["Categoria", s.category], ["Prazo", `${r.termMonths} meses`], ["Quilometragem", s.km],
-                  ["Valor mensal", formatMoney(r.monthlyCents)], ["Total estimado", formatMoney(r.amountCents)], ["Data de pagamento", s.paymentDay ? `Dia ${s.paymentDay}` : ""],
+                  ["Valor mensal", formatMoney(r.monthlyCents)], ["Total estimado", formatMoney(r.amountCents)], ["Data de pagamento", s.paymentDay ? `Dia ${s.paymentDay}` : ""], ["Demais parcelas", s.recurringMethod ? RECURRING_LABEL[s.recurringMethod as keyof typeof RECURRING_LABEL] : ""],
                   ["Primeira parcela", formatMoney(r.monthlyCents)],
                 ]} />
                 <p className="mt-3 text-xs text-muted">Valores calculados no servidor no momento da solicitação, com base no preço validado do veículo.</p>
@@ -130,14 +133,69 @@ export default async function RequestDetail({ params, searchParams }: { params: 
             <p className="mt-2 text-xs text-muted">Arquivos armazenados criptografados. Todo download é registrado em auditoria.</p>
           </Panel>
 
-          <Panel title="Pagamentos e informações contratuais">
+          <Panel title="Pagamentos (Pix e boleto)">
+            {(() => {
+              const paid = r.payments.filter((x) => x.status === "PAID").reduce((t, x) => t + x.amountCents, 0);
+              const pend = r.payments.filter((x) => x.status === "PENDING").reduce((t, x) => t + x.amountCents, 0);
+              return <p className="mb-3 text-sm">Recebido: <strong className="text-emerald-700">{formatMoney(paid)}</strong> · Em aberto: <strong className="text-amber-700">{formatMoney(pend)}</strong>{s.recurringMethod ? <> · Parcelas recorrentes: <strong>{RECURRING_LABEL[s.recurringMethod as keyof typeof RECURRING_LABEL]}</strong></> : null}</p>;
+            })()}
             {r.payments.length ? (
-              <table className="table-portal"><thead><tr><th>Data</th><th>Método</th><th>Valor</th><th>Status</th><th>ID cobrança</th></tr></thead>
-                <tbody>{r.payments.map((pay) => <tr key={pay.id}><td>{formatDate(pay.createdAt)}</td><td>{pay.method}</td><td>{formatMoney(pay.amountCents)}</td><td>{pay.status}</td><td className="font-mono text-xs">{pay.providerChargeId}</td></tr>)}</tbody>
-              </table>
-            ) : <Empty>{checkoutEnabled() ? "Nenhum pagamento registrado." : "Checkout ainda não habilitado. A estrutura de pagamentos (Pix, cartão, recorrência) está preparada para integração futura."}</Empty>}
-            <div className="mt-3 text-xs text-muted">
-              <p>Consentimentos registrados em {formatDate((r.consents as AnyRec).acceptedAt, true)} (versão {(r.consents as AnyRec).policyVersion}): {Object.entries(r.consents as AnyRec).filter(([, v]) => v === true).map(([k]) => k).join(", ")}.</p>
+              <div className="overflow-x-auto">
+                <table className="table-portal min-w-[640px]">
+                  <thead><tr><th>Descrição</th><th>Forma</th><th>Valor</th><th>Vencimento</th><th>Status</th><th>Ações</th></tr></thead>
+                  <tbody>{r.payments.map((pay) => {
+                    const [label, cls] = (STATUS_MAP as Record<string, string[]>)[pay.status] ?? [pay.status, ""];
+                    return (
+                      <tr key={pay.id}>
+                        <td className="text-xs">{pay.description ?? "—"}<span className="block text-muted">criada {formatDate(pay.createdAt, true)}{pay.sentAt ? ` · enviada ${formatDate(pay.sentAt, true)}` : ""}</span>{pay.method === "PIX" && pay.providerChargeId && <span className="block font-mono text-[10px] text-muted">txid {pay.providerChargeId}</span>}</td>
+                        <td className="text-xs">{pay.method === "PIX" ? "Pix" : pay.method === "BOLETO" ? "Boleto" : pay.method}</td>
+                        <td className="whitespace-nowrap text-xs font-semibold">{formatMoney(pay.amountCents)}</td>
+                        <td className="text-xs">{formatDate(pay.dueDate)}</td>
+                        <td><span className={`badge ${cls}`}>{label}</span>{pay.paidAt && <span className="block text-[10px] text-muted">{formatDate(pay.paidAt, true)} · {pay.confirmedBy}</span>}</td>
+                        <td className="space-y-1">
+                          {pay.status === "PENDING" && <ActionForm action={setPaymentStatusAction} confirm={`Confirmar recebimento de ${formatMoney(pay.amountCents)}? Verifique no extrato.`}><input type="hidden" name="paymentId" value={pay.id} /><input type="hidden" name="op" value="paid" /><Submit className="btn-primary btn-sm bg-emerald-600 hover:bg-emerald-700" pendingText="…">Confirmar pagamento</Submit></ActionForm>}
+                          {pay.status === "PENDING" && pay.method === "PIX" && !r.anonymizedAt && <ActionForm action={sendPixChargeAction}><input type="hidden" name="paymentId" value={pay.id} /><Submit className="btn-ghost btn-sm" pendingText="…">Enviar por e-mail</Submit></ActionForm>}
+                          {pay.status === "PENDING" && <ActionForm action={setPaymentStatusAction} confirm="Cancelar esta cobrança?"><input type="hidden" name="paymentId" value={pay.id} /><input type="hidden" name="op" value="cancel" /><Submit className="btn-ghost btn-sm" pendingText="…">Cancelar</Submit></ActionForm>}
+                          {pay.status !== "PENDING" && <ActionForm action={setPaymentStatusAction} confirm="Reabrir esta cobrança como pendente?"><input type="hidden" name="paymentId" value={pay.id} /><input type="hidden" name="op" value="reopen" /><Submit className="btn-ghost btn-sm" pendingText="…">Reabrir</Submit></ActionForm>}
+                        </td>
+                      </tr>
+                    );
+                  })}</tbody>
+                </table>
+              </div>
+            ) : <Empty>Nenhuma cobrança registrada.</Empty>}
+
+            {!r.anonymizedAt && (
+              <div className="mt-5 grid gap-4 lg:grid-cols-2">
+                <ActionForm action={createPixChargeAction} resetOnSuccess className="space-y-2 rounded-lg border border-dashed border-line p-4">
+                  <p className="text-sm font-semibold">Nova cobrança Pix</p>
+                  <input type="hidden" name="id" value={r.id} />
+                  <input name="description" className="input" placeholder="Descrição (ex.: Parcela 2 de 24)" aria-label="Descrição" required />
+                  <div className="grid grid-cols-3 gap-2">
+                    <input name="amount" className="input" placeholder="Valor" defaultValue={centsToInput(r.monthlyCents ?? r.amountCents)} aria-label="Valor (R$)" required />
+                    <input name="installment" type="number" min={1} className="input" placeholder="Nº parcela" aria-label="Número da parcela" />
+                    <input name="dueDate" type="date" className="input" aria-label="Vencimento" />
+                  </div>
+                  <label className="flex items-center gap-2 text-xs"><input type="checkbox" name="send" defaultChecked className="accent-brand-700" /> Enviar ao e-mail do cliente</label>
+                  <Submit className="btn-primary btn-sm">Gerar Pix</Submit>
+                </ActionForm>
+                <ActionForm action={sendBoletoAction} resetOnSuccess className="space-y-2 rounded-lg border border-dashed border-line p-4">
+                  <p className="text-sm font-semibold">Enviar boleto por e-mail</p>
+                  <input type="hidden" name="id" value={r.id} />
+                  <input name="description" className="input" placeholder="Descrição (ex.: Parcela 2 de 24)" aria-label="Descrição" required />
+                  <div className="grid grid-cols-3 gap-2">
+                    <input name="amount" className="input" placeholder="Valor" defaultValue={centsToInput(r.monthlyCents ?? r.amountCents)} aria-label="Valor (R$)" required />
+                    <input name="installment" type="number" min={1} className="input" placeholder="Nº parcela" aria-label="Número da parcela" />
+                    <input name="dueDate" type="date" className="input" aria-label="Vencimento" required />
+                  </div>
+                  <input name="file" type="file" accept="application/pdf" className="input text-xs" aria-label="PDF do boleto" required />
+                  <p className="text-[11px] text-muted">Gere o boleto no seu banco e anexe o PDF (até 4 MB). Ele é enviado ao cliente e guardado em Documentação.</p>
+                  <Submit className="btn-secondary btn-sm" pendingText="Enviando…">Enviar boleto</Submit>
+                </ActionForm>
+              </div>
+            )}
+            <div className="mt-4 text-xs text-muted">
+              <p>Pix pela chave do portal: confirme cada recebimento conferindo valor e data no extrato. Consentimentos registrados em {formatDate((r.consents as AnyRec).acceptedAt, true)} (versão {(r.consents as AnyRec).policyVersion}): {Object.entries(r.consents as AnyRec).filter(([, v]) => v === true).map(([k]) => k).join(", ")}.</p>
             </div>
           </Panel>
         </div>

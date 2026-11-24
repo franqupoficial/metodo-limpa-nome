@@ -1,5 +1,6 @@
 "use client";
 
+import type { PixData } from "@/components/PixPayment";
 import { useState } from "react";
 import { cnpjSchema, OPERATION_MODES, addressSchema } from "@/lib/schemas";
 import { formatMoney } from "@/lib/format";
@@ -20,9 +21,9 @@ export function CnpjForm({ priceCents }: { priceCents: number }) {
     operationModes: [] as (typeof OPERATION_MODES)[number][], sameAddress: true, businessAddress: "", initialCapital: "",
   });
   const [consents, setConsents] = useState({ ...emptyConsents, privateFee: false });
-  const [done, setDone] = useState<{ protocol: string; accessCode: string } | null>(null);
+  const [done, setDone] = useState<{ protocol: string; accessCode: string; pix: PixData | null } | null>(null);
 
-  if (done) return <Confirmation {...done} title="Contratação registrada."><p>Enviaremos as instruções de pagamento pelos canais oficiais do portal. Confirmado o pagamento, nossa equipe inicia a abertura do seu CNPJ e entra em contato para validar enquadramento e atividades.</p></Confirmation>;
+  if (done) return <Confirmation {...done} title="Contratação registrada." pixTitle="Pague via Pix para iniciar a abertura do CNPJ"><p>Confirmado o pagamento, nossa equipe inicia a abertura do seu CNPJ e entra em contato para validar enquadramento e atividades.</p></Confirmation>;
 
   const payload = () => ({ personal, address, business: { ...business, initialCapital: business.initialCapital === "" ? 0 : Number(business.initialCapital.replace(/\./g, "").replace(",", ".")) }, consents });
   const shape = cnpjSchema.shape;
@@ -37,7 +38,7 @@ export function CnpjForm({ priceCents }: { priceCents: number }) {
     w.setSubmitting(true);
     const r = await submitRequest("cnpj", payload());
     w.setSubmitting(false);
-    if (r.ok) setDone({ protocol: r.protocol, accessCode: r.accessCode });
+    if (r.ok) setDone({ protocol: r.protocol, accessCode: r.accessCode, pix: r.pix });
     else { w.setFormError(r.error); if (r.fieldErrors) w.setErrors(r.fieldErrors); }
   }
 
@@ -97,10 +98,10 @@ export function CnpjForm({ priceCents }: { priceCents: number }) {
           <div className="rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-50 to-white p-6 text-center">
             <p className="text-sm text-muted">Serviço privado de assistência e formalização</p>
             <p className="mt-1 text-4xl font-extrabold text-brand-800">{formatMoney(priceCents)}</p>
-            <p className="mt-2 text-sm text-muted">Valor único pelo serviço de assistência. Não é taxa governamental.</p>
+            <p className="mt-2 text-sm text-muted">Pagamento único via Pix. Não é taxa governamental. O QR Code aparece ao confirmar.</p>
           </div>
           <Notice tone="info" title="A abertura de MEI pelos canais oficiais é gratuita.">
-            Você pode se formalizar sem custo diretamente no portal oficial do governo. O valor acima remunera o serviço privado de assistência e condução da abertura. As instruções de pagamento são enviadas pelos canais oficiais do Portal Consumidor.
+            Você pode se formalizar sem custo diretamente no portal oficial do governo. O valor acima remunera o serviço privado de assistência e condução da abertura. Ao confirmar, você recebe o QR Code e o Pix copia e cola para pagamento.
           </Notice>
         </div>
       )}

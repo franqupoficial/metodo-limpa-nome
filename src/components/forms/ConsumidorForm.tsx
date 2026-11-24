@@ -1,5 +1,6 @@
 "use client";
 
+import type { PixData } from "@/components/PixPayment";
 import { useState } from "react";
 import { consumidorSchema, personalSchema, addressSchema } from "@/lib/schemas";
 import { formatMoney } from "@/lib/format";
@@ -10,28 +11,27 @@ import { Notice } from "@/components/ui";
 
 const STEPS = ["Dados pessoais", "Endereço", "Apontamentos", "Pagamento e contratação"];
 
-export function ConsumidorForm({ pixCents, installmentCents, maxInstallments, scope }: { pixCents: number; installmentCents: number; maxInstallments: number; scope: string }) {
+export function ConsumidorForm({ pixCents, scope }: { pixCents: number; scope: string }) {
   const w = useWizard(STEPS.length);
   const [personal, setPersonal] = useState(emptyPersonal);
   const [address, setAddress] = useState(emptyAddress);
   const [records, setRecords] = useState({ description: "", creditors: "", alreadyContested: "" as "" | "SIM" | "NAO" | "NAO_SEI" });
-  const [payment, setPayment] = useState({ preference: "" as "" | "PIX" | "PARCELADO" });
   const [consents, setConsents] = useState({ ...emptyConsents, scope: false });
-  const [done, setDone] = useState<{ protocol: string; accessCode: string } | null>(null);
+  const [done, setDone] = useState<{ protocol: string; accessCode: string; pix: PixData | null } | null>(null);
 
-  if (done) return <Confirmation {...done} title="Contratação registrada."><p>Enviaremos as instruções de pagamento pelos canais oficiais do portal. Confirmado o pagamento, iniciamos o levantamento dos apontamentos no Serasa, SPC e Boa Vista e você acompanha cada procedimento pelo protocolo.</p></Confirmation>;
+  if (done) return <Confirmation {...done} title="Contratação registrada." pixTitle="Pague via Pix para iniciar a regularização"><p>Assim que o pagamento for confirmado, iniciamos o levantamento dos apontamentos no Serasa, SPC e Boa Vista. Você acompanha cada procedimento pelo protocolo.</p></Confirmation>;
 
   async function next() {
     if (w.step === 0) return w.advance(validateWith(personalSchema, personal, "personal"));
     if (w.step === 1) return w.advance(validateWith(addressSchema, address, "address"));
     if (w.step === 2) return w.advance(validateWith(consumidorSchema.shape.records, records, "records"));
-    const payload = { personal, address, records, payment, consents };
+    const payload = { personal, address, records, consents };
     const errs = validateWith(consumidorSchema, payload, "");
     if (!w.advance(errs)) return;
     w.setSubmitting(true);
     const r = await submitRequest("consumidor", payload);
     w.setSubmitting(false);
-    if (r.ok) setDone({ protocol: r.protocol, accessCode: r.accessCode });
+    if (r.ok) setDone({ protocol: r.protocol, accessCode: r.accessCode, pix: r.pix });
     else { w.setFormError(r.error); if (r.fieldErrors) w.setErrors(r.fieldErrors); }
   }
 
@@ -55,11 +55,10 @@ export function ConsumidorForm({ pixCents, installmentCents, maxInstallments, sc
           <ReviewSection title="Dados pessoais" onEdit={() => w.go(0)} rows={[["Nome", personal.fullName], ["CPF", personal.cpf], ["Nascimento", personal.birthDate.split("-").reverse().join("/")], ["Telefone", personal.phone], ["E-mail", personal.email]]} />
           <ReviewSection title="Endereço" onEdit={() => w.go(1)} rows={[["CEP", address.cep], ["Endereço", `${address.street}, ${address.number} ${address.complement}`], ["Bairro", address.district], ["Cidade/UF", `${address.city}/${address.state}`]]} />
           <ReviewSection title="Apontamentos" onEdit={() => w.go(2)} rows={[["Descrição", records.description], ["Credores", records.creditors]]} />
-          <RadioCards legend="Forma de pagamento preferida" value={payment.preference} onChange={(v) => setPayment({ preference: v })} error={w.errors["payment.preference"]}
-            options={[
-              { value: "PIX", label: `${formatMoney(pixCents)} à vista via Pix` },
-              { value: "PARCELADO", label: `${formatMoney(installmentCents)} parcelado`, description: `Em até ${maxInstallments}x, conforme condições informadas na contratação.` },
-            ]} />
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+            <div><p className="text-sm text-emerald-900">Valor do serviço — pagamento único via Pix</p><p className="text-3xl font-extrabold text-emerald-800">{formatMoney(pixCents)}</p></div>
+            <p className="max-w-xs text-xs text-emerald-900">O QR Code e o Pix copia e cola aparecem logo após você confirmar a contratação.</p>
+          </div>
           <Notice tone="info" title="O que está incluído">
             {scope} Registros irregulares são contestados para exclusão; dívidas reconhecidas são tratadas por acordo com o credor (valores do acordo não incluídos). As instruções de pagamento são enviadas pelos canais oficiais do portal.
           </Notice>

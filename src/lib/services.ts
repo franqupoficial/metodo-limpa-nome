@@ -47,7 +47,7 @@ export const SERVICES: ServiceMeta[] = [
     formHref: "/emprestimo/solicitar",
     adminHref: "/admin/emprestimos",
     icon: "wallet",
-    description: "Crédito de até R$ 3.000,00 para negativados, com contratação digital, contrato por e-mail e débito automático na data que você escolher.",
+    description: "Crédito de até R$ 3.000,00 para negativados, com contratação digital, contrato por e-mail e parcelas por Pix ou boleto na data que você escolher.",
     keywords: ["empréstimo", "crédito", "dinheiro", "financiamento", "negativado", "restrição"],
   },
   {
@@ -59,7 +59,7 @@ export const SERVICES: ServiceMeta[] = [
     formHref: "/lvb/solicitar",
     adminHref: "/admin/lvb",
     icon: "car",
-    description: "Alugue seu carro para trabalhar com aplicativos. Planos de 12, 24 ou 36 meses, primeira parcela na contratação e vencimento no dia que você escolher.",
+    description: "Alugue seu carro para trabalhar com aplicativos. Planos de 12, 24 ou 36 meses, primeira parcela via Pix e vencimento no dia que você escolher.",
     keywords: ["carro", "locação", "aluguel", "uber", "99", "motorista", "aplicativo", "veículo", "lvb"],
   },
 ];

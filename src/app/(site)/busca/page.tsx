@@ -14,7 +14,7 @@ const PAGES = [
   { href: "/informacoes#seguranca", title: "Segurança e prevenção a golpes", text: "golpe fraude segurança lgpd dados" },
   { href: "/consumidor#consultar", title: "Como consultar seu CPF", text: "consultar cpf registrato birô gratuito" },
   { href: "/consumidor#contestar", title: "Como contestar registros incorretos", text: "contestar procon consumidor.gov.br registro incorreto" },
-  { href: "/emprestimo/como-funciona", title: "Como funciona o empréstimo", text: "empréstimo negativado etapas contrato cet juros débito automático" },
+  { href: "/emprestimo/como-funciona", title: "Como funciona o empréstimo", text: "empréstimo negativado etapas contrato cet juros pix boleto" },
   { href: "/lvb/veiculos", title: "Catálogo de veículos LVB", text: "carro catálogo veículo kwid mobi onix hb20 argo cronos versa polo creta kicks suv sedan" },
   { href: "/lvb/simulador", title: "Simulador de locação", text: "simular simulador valor mensal plano 12 24 36 meses" },
   { href: "/lvb/politicas", title: "Políticas da locação", text: "multa sinistro devolução cancelamento quilometragem manutenção" },

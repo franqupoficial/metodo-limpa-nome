@@ -124,14 +124,12 @@ export default async function Tarifas() {
         <Panel title="Valores dos serviços">
           <ActionForm action={saveServicePricesAction} className="space-y-4">
             <div className="grid gap-3 sm:grid-cols-3">
-              <label><span className="label text-xs">Consumidor — Pix à vista (R$)</span><input name="pix" defaultValue={centsToInput(cons.pixCents)} className="input" /></label>
-              <label><span className="label text-xs">Consumidor — parcelado (R$)</span><input name="installment" defaultValue={centsToInput(cons.installmentCents)} className="input" /></label>
-              <label><span className="label text-xs">Consumidor — máx. parcelas</span><input name="maxInstallments" type="number" min={1} max={24} defaultValue={cons.maxInstallments} className="input" /></label>
-              <label><span className="label text-xs">Abra seu CNPJ (R$)</span><input name="cnpj" defaultValue={centsToInput(cnpj.priceCents)} className="input" /></label>
+              <label><span className="label text-xs">Regularização — Pix à vista (R$)</span><input name="pix" defaultValue={centsToInput(cons.pixCents)} className="input" /></label>
+              <label><span className="label text-xs">Abra seu CNPJ — Pix (R$)</span><input name="cnpj" defaultValue={centsToInput(cnpj.priceCents)} className="input" /></label>
               <label><span className="label text-xs">Empréstimo — mínimo (R$)</span><input name="loanMin" defaultValue={centsToInput(loan.minCents)} className="input" /></label>
               <label><span className="label text-xs">Empréstimo — máximo (R$)</span><input name="loanMax" defaultValue={centsToInput(loan.maxCents)} className="input" /></label>
             </div>
-            <label className="block"><span className="label text-xs">Escopo do serviço Consumidor</span><textarea name="scope" defaultValue={cons.scope} rows={3} className="input" /></label>
+            <label className="block"><span className="label text-xs">Escopo do serviço de Regularização</span><textarea name="scope" defaultValue={cons.scope} rows={3} className="input" /></label>
             <Submit>Salvar valores</Submit>
           </ActionForm>
         </Panel>

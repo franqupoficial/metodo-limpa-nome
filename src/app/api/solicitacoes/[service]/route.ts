@@ -10,6 +10,21 @@ import { clientIp, sameOrigin } from "@/lib/request-meta";
 import { simulate } from "@/lib/pricing";
 import { encryptBuffer, sha256 } from "@/lib/crypto";
 import { DOC_MIMES, readUpload, safeFileName } from "@/lib/uploads";
+import { createPixCharge, pixView } from "@/lib/charges";
+
+/** Resposta de sucesso: protocolo, código de acesso e, quando houver, a cobrança Pix inicial. */
+async function created(r: { id: string; protocol: string; accessCode: string }, charge?: { amountCents: number; description: string; installment?: number }) {
+  let pix = null;
+  if (charge) {
+    try {
+      const p = await createPixCharge({ requestId: r.id, protocol: r.protocol, ...charge });
+      pix = await pixView(p);
+    } catch (e) {
+      console.error("Falha ao gerar cobrança Pix", (e as Error).message);
+    }
+  }
+  return NextResponse.json({ protocol: r.protocol, accessCode: r.accessCode, pix }, { status: 201 });
+}
 
 const MAP: Record<string, ServiceType> = { consumidor: "CONSUMIDOR", cnpj: "CNPJ", emprestimo: "EMPRESTIMO", lvb: "LVB" };
 
@@ -55,13 +70,12 @@ export async function POST(req: Request, { params }: { params: Promise<{ service
     if (service === "CONSUMIDOR") {
       const data = consumidorSchema.parse(raw);
       const cfg = await getSetting("service.consumidor");
-      const amount = data.payment.preference === "PIX" ? cfg.pixCents : cfg.installmentCents;
       const { consents, ...details } = data;
       const r = await createServiceRequest({
-        service, personal: data.personal, details, consents, ip, amountCents: amount,
-        summary: { paymentPreference: data.payment.preference, city: `${data.address.city}/${data.address.state}` },
+        service, personal: data.personal, details, consents, ip, amountCents: cfg.pixCents,
+        summary: { payment: "PIX", city: `${data.address.city}/${data.address.state}` },
       });
-      return NextResponse.json(r, { status: 201 });
+      return created(r, { amountCents: cfg.pixCents, description: "Regularização de apontamentos" });
     }
 
     if (service === "CNPJ") {
@@ -72,7 +86,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ service
         service, personal: data.personal, details, consents, ip, amountCents: cfg.priceCents,
         summary: { tradeName: data.business.tradeName, businessType: data.business.businessType, city: `${data.address.city}/${data.address.state}` },
       });
-      return NextResponse.json(r, { status: 201 });
+      return created(r, { amountCents: cfg.priceCents, description: "Abertura de CNPJ" });
     }
 
     if (service === "EMPRESTIMO") {
@@ -84,7 +98,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ service
         service, personal: data.personal, details, consents, ip, amountCents,
         summary: { requestedCents: amountCents, dueDay: data.loan.dueDay, paymentMethod: data.loan.paymentMethod, city: `${data.address.city}/${data.address.state}` },
       });
-      return NextResponse.json(r, { status: 201 });
+      // Empréstimo: nenhuma cobrança antecipada. As parcelas são cobradas após contrato e liberação.
+      return created(r);
     }
 
     // LVB
@@ -123,11 +138,12 @@ export async function POST(req: Request, { params }: { params: Promise<{ service
         monthlyCents: sim.monthlyCents,
         totalCents: sim.totalCents,
         paymentDay: data.plan.paymentDay,
+        recurringMethod: data.plan.recurringMethod,
         km: kmPackage?.label ?? `${vehicle.kmPerMonth} km/mês`,
         city: `${data.address.city}/${data.address.state}`,
       },
     });
-    return NextResponse.json(r, { status: 201 });
+    return created(r, { amountCents: sim.monthlyCents, description: `Locação LVB — 1ª parcela de ${sim.termMonths}`, installment: 1 });
   } catch (e) {
     if (e instanceof ZodError) return bad("Revise os campos destacados.", 400, { fieldErrors: fieldErrors(e) });
     console.error("Erro ao registrar solicitação", (e as Error).message);
