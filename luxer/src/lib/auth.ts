@@ -15,10 +15,8 @@ const IDLE_TIMEOUT_MS = 60 * 60 * 1000; // 1 hora de inatividade
 const MAX_FAILED = 5;
 const LOCK_MS = 15 * 60 * 1000;
 
-export const PASSWORD_RULES = "Mínimo de 12 caracteres, com letras maiúsculas, minúsculas, números e símbolo.";
-export function passwordIsStrong(p: string): boolean {
-  return p.length >= 12 && p.length <= 128 && /[a-z]/.test(p) && /[A-Z]/.test(p) && /\d/.test(p) && /[^A-Za-z0-9]/.test(p);
-}
+import { PASSWORD_RULES, passwordIsStrong } from "./password";
+export { PASSWORD_RULES, passwordIsStrong };
 export const hashPassword = (p: string) => bcrypt.hash(p, 12);
 const DUMMY_HASH = "$2b$12$Hvd8TBYyd2xO/E24ccQ9Su2N9hiW9nW6QFPxUzTzfeKp/rVj7SwYK";
 
