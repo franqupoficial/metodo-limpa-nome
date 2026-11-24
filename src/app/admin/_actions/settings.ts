@@ -99,6 +99,15 @@ export async function saveContactAction(_: ActionState, fd: FormData): Promise<A
   return ok("Configurações salvas.");
 }
 
+export async function saveServicesEnabledAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const admin = await requireAdmin("ADMIN");
+  const value = { CONSUMIDOR: bool(fd, "CONSUMIDOR"), CNPJ: bool(fd, "CNPJ"), EMPRESTIMO: bool(fd, "EMPRESTIMO"), LVB: bool(fd, "LVB") };
+  await setSetting("services.enabled", value);
+  await audit(admin.id, "settings.services_enabled", "Setting", "services.enabled", value);
+  revalidateAll();
+  return ok("Serviços do site atualizados.");
+}
+
 export async function savePixAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const admin = await requireAdmin("ADMIN");
   const key = str(fd, "key");

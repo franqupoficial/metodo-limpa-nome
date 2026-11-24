@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { Logo } from "./Logo";
-import { getSetting } from "@/lib/settings";
+import { getEnabledServices, getSetting } from "@/lib/settings";
+import { activeServices } from "@/lib/services";
 
 export async function Footer() {
   const contact = await getSetting("site.contact");
+  const services = activeServices(await getEnabledServices());
   const cols = [
-    { title: "Serviços", links: [["/consumidor", "Regularização de apontamentos"], ["/cnpj", "Abra seu CNPJ"], ["/emprestimo", "Empréstimo para negativados"], ["/lvb", "LVB — Locação de veículos"]] },
+    { title: "Serviços", links: services.map((s) => [s.href, s.name]) },
     { title: "Informações", links: [["/informacoes", "Central de informações"], ["/noticias", "Notícias e conteúdos"], ["/perguntas-frequentes", "Perguntas frequentes"], ["/acompanhar", "Acompanhar solicitação"]] },
     { title: "Institucional", links: [["/sobre", "Sobre a empresa"], ["/privacidade", "Política de privacidade"], ["/termos", "Termos de uso"], ["/lvb/politicas", "Políticas da locação LVB"], ["/contato", "Contato"]] },
   ];
@@ -15,7 +17,7 @@ export async function Footer() {
         <div className="space-y-4">
           <Logo light />
           <p className="text-sm leading-relaxed">
-            Regularização de apontamentos, abertura de CNPJ, crédito e locação de veículos para quem trabalha com aplicativos — tudo em um só lugar, com atendimento humano e acompanhamento online.
+            Serviços para o consumidor em um só lugar, com atendimento humano e acompanhamento online.
           </p>
         </div>
         {cols.map((c) => (
