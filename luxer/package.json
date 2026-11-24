@@ -1,0 +1,53 @@
+{
+  "name": "luxer-joias",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3100",
+    "build": "prisma generate && next build",
+    "start": "next start -p ${PORT:-3100}",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test tests/unit/*.test.ts",
+    "test:e2e": "tsx tests/e2e/run.ts",
+    "db:migrate": "prisma migrate deploy",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:seed": "tsx --conditions=react-server prisma/seed.ts",
+    "catalog:scrape": "python3 -I scripts/import/scrape_luxer.py --out data --images storage/catalog-originals",
+    "catalog:import": "tsx --conditions=react-server scripts/import/import-catalog.ts",
+    "admin:create-owner": "tsx --conditions=react-server scripts/create-owner.ts",
+    "jobs:run": "tsx --conditions=react-server scripts/jobs.ts",
+    "backup": "bash scripts/backup.sh",
+    "vercel-build": "prisma generate && prisma migrate deploy && tsx --conditions=react-server prisma/seed.ts && next build"
+  },
+  "engines": {
+    "node": ">=20.9"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1176.0",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource/cormorant-garamond": "^5.3.0",
+    "@prisma/client": "^6.19.3",
+    "bcryptjs": "^3.0.3",
+    "next": "^15.5.29",
+    "nodemailer": "^7.0.13",
+    "prisma": "^6.19.3",
+    "qrcode": "^1.5.4",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "server-only": "^0.0.1",
+    "sharp": "^0.34.5",
+    "tsx": "^4.23.15",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.5",
+    "@types/node": "^22.20.5",
+    "@types/nodemailer": "^8.0.2",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "postcss": "^8.5.33",
+    "tailwindcss": "^4.3.5",
+    "typescript": "^5.9.3"
+  }
+}

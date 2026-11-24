@@ -1,0 +1,1069 @@
+{
+ "generatedAt": "2026-11-24T16:56:30+0000",
+ "source": "https://www.luxerjoias.com.br/",
+ "totals": {
+  "sitemapUrls": 5541,
+  "listingPagesCrawled": 180,
+  "productsOnlyInListings": 0,
+  "uniqueProducts": 825,
+  "imported": 825,
+  "categories": 9,
+  "subcategories": 40,
+  "institutionalPages": 7,
+  "images": 1932,
+  "withPromotion": 0,
+  "unavailable": 31,
+  "withVariants": 825
+ },
+ "duplicateRefs": {
+  "null": [
+   415,
+   472
+  ]
+ },
+ "duplicateNames": {},
+ "productsWithoutImages": [],
+ "imageDownloadFailures": [],
+ "incomplete": [
+  {
+   "sourceId": 34,
+   "ref": "20893",
+   "name": "Tornozeleira Veneziana Branca em Ouro 18 kilates - 20893",
+   "missing": [
+    "pixPrice"
+   ]
+  },
+  {
+   "sourceId": 71,
+   "ref": "22843",
+   "name": "Pulseira Chapas em Ouro 18 Kilates - 22843",
+   "missing": [
+    "material"
+   ]
+  },
+  {
+   "sourceId": 77,
+   "ref": "22889",
+   "name": "Pingente Divino Espirito Santo com Ônix em Ouro 18 Kilates - 22889",
+   "missing": [
+    "pixPrice"
+   ]
+  },
+  {
+   "sourceId": 100,
+   "ref": "23983",
+   "name": "Brinco Estrela Sol e Lua em Ouro 18 Kilates - 23983",
+   "missing": [
+    "pixPrice"
+   ]
+  },
+  {
+   "sourceId": 122,
+   "ref": "20641",
+   "name": "Brinco Coração Vazado Pérola Shell em Ouro 18 Kilates - 20641",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 150,
+   "ref": "22844",
+   "name": "Brinco Argola com Brilhantes em Ouro 18 Kilates - 22844",
+   "missing": [
+    "material",
+    "weightG",
+    "specs"
+   ]
+  },
+  {
+   "sourceId": 179,
+   "ref": "21541",
+   "name": "Pulseira Estrela com Pedra Agata em Ouro 18 Kilates - 21541",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 184,
+   "ref": "22903",
+   "name": "Pulseira Elos Martelados Bicolor em Ouro 18 Kilates - 22903",
+   "missing": [
+    "pixPrice"
+   ]
+  },
+  {
+   "sourceId": 201,
+   "ref": "20850",
+   "name": "Brinco Pérola em Ouro 18 Kilates - 20850",
+   "missing": [
+    "pixPrice"
+   ]
+  },
+  {
+   "sourceId": 214,
+   "ref": "20648",
+   "name": "Colar Omega Dois Tons em Ouro 18 Kilates - 20648",
+   "missing": [
+    "pixPrice"
+   ]
+  },
+  {
+   "sourceId": 215,
+   "ref": "21345",
+   "name": "Corrente Malha Groumet Dupla em Ouro 18 Kilates - 21345",
+   "missing": [
+    "material",
+    "weightG",
+    "specs"
+   ]
+  },
+  {
+   "sourceId": 217,
+   "ref": "21376",
+   "name": "Corrente Malha Olho de Tigre com Infinito em Ouro 18 Kilates - 21376",
+   "missing": [
+    "material",
+    "weightG",
+    "specs"
+   ]
+  },
+  {
+   "sourceId": 222,
+   "ref": "21633",
+   "name": "Colar Terço em Ouro 18 Kilates - 21633",
+   "missing": [
+    "pixPrice"
+   ]
+  },
+  {
+   "sourceId": 249,
+   "ref": "21218",
+   "name": "Corrente Malha Palmeira Fina em Ouro 18 Kilates - 21218",
+   "missing": [
+    "material",
+    "weightG",
+    "specs"
+   ]
+  },
+  {
+   "sourceId": 255,
+   "ref": "20263",
+   "name": "Pulseira Malha Madri em Ouro 18 Kilates - 20263",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 259,
+   "ref": "21158",
+   "name": "Pingente Olho Grego Redondo em Ouro 18 Kilates - 21158",
+   "missing": [
+    "pixPrice"
+   ]
+  },
+  {
+   "sourceId": 356,
+   "ref": "20688",
+   "name": "Aparador Gomo em Ouro 18 Kilates - 20688",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 369,
+   "ref": "23879",
+   "name": "Anel Elegance em Ouro 18 Kilates - 23879",
+   "missing": [
+    "material",
+    "weightG",
+    "specs"
+   ]
+  },
+  {
+   "sourceId": 372,
+   "ref": "24103",
+   "name": "Anel Onda em Ouro 18 Kilates - 24103",
+   "missing": [
+    "material"
+   ]
+  },
+  {
+   "sourceId": 379,
+   "ref": "24110",
+   "name": "Colar Coração Tricolor em Ouro 18 Kilates - 24110",
+   "missing": [
+    "material",
+    "weightG",
+    "specs"
+   ]
+  },
+  {
+   "sourceId": 383,
+   "ref": "25000",
+   "name": "Anel Coração de Zircônias em Ouro 18 Kilates - 25000",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 384,
+   "ref": "25001",
+   "name": "Brinco Argola Acetinada em Ouro 18 Kilates - 25001",
+   "missing": [
+    "pixPrice"
+   ]
+  },
+  {
+   "sourceId": 386,
+   "ref": "24117",
+   "name": "Colar Serpente Degradê em ouro 18 Kilates - 24117",
+   "missing": [
+    "pixPrice",
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 388,
+   "ref": "24119",
+   "name": "Pulseira Coração Segredo em Ouro 18 Kilates - 24119",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 393,
+   "ref": "24224",
+   "name": "Pulseira Malha Singapura em Ouro 18 kilates - 24224",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 394,
+   "ref": "24226",
+   "name": "Pulseira Malha Groumet Fechada em Ouro 18 Kilates - 24226",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 395,
+   "ref": "24229",
+   "name": "Pulseira Estrelas em Ouro 18 Kilates - 24229",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 396,
+   "ref": "24228",
+   "name": "Pulseira Mimo Infinito em Ouro 18 Kilates - 24228",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 398,
+   "ref": "24225",
+   "name": "Pulseira Elos Fosca em Ouro 18 Kilates - 24225",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 399,
+   "ref": "24230",
+   "name": "Pulseira Malha Cartier Mimo em Ouro18 Kilates - 24230",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 400,
+   "ref": "24227",
+   "name": "Pulseira Elos Ovais Laser em Ouro 18 Kilates - 24227",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 401,
+   "ref": "24231",
+   "name": "Anel Quadrado em Ouro 18 Kilates - 24231",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 402,
+   "ref": "24232",
+   "name": "Pingente Chave com Zircônias em Ouro 18 Kilates - 24232",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 403,
+   "ref": "24233",
+   "name": "Pingente Chave com Zircônias em Ouro 18 Kilates - 24233",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 404,
+   "ref": "24234",
+   "name": "Anel Persa em Ouro 18 Kilates - 24234",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 405,
+   "ref": "24235",
+   "name": "Pingente Mão de Deus com Zircônia em Ouro 18 Kilates - 24235",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 406,
+   "ref": "24236",
+   "name": "Pulseira 3 Elos Centrais em Ouro 18 Kilates - 24236",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 411,
+   "ref": "24241",
+   "name": "Pulseira Mista Flor com Zircônia em Ouro 18 Kilates - 24241",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 415,
+   "ref": null,
+   "name": "Pingente Placa com Faixa em Ouro 18 Kilates -25006",
+   "missing": [
+    "ref"
+   ]
+  },
+  {
+   "sourceId": 425,
+   "ref": "25014",
+   "name": "Anel Solitário Pérola e Brilhantes em ouro 18 Kilates - 25014",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 427,
+   "ref": "25021",
+   "name": "Anel Sobreposto Geométrico em Ouro 18 Kilates - 25021",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 428,
+   "ref": "25015",
+   "name": "Anel Frisado Côncavo Ouro 18 Kilates - 25015",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 429,
+   "ref": "25020",
+   "name": "Anel Coração Infinito em Ouro 18 Kilates - 25020",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 430,
+   "ref": "25017",
+   "name": "Anel Fantastic em Ouro 18 Kilates - 25017",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 431,
+   "ref": "25019",
+   "name": "Brinco Love em Ouro 18 Kilates - 25019",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 432,
+   "ref": "25018",
+   "name": "Brinco Pingo de Pérola em Ouro 18 Kilates - 25018",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 433,
+   "ref": "25016",
+   "name": "Brinco Renda Egípcia em Ouro 18 Kilates - 25016",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 434,
+   "ref": "25022",
+   "name": "Colar Gravata Cupido em Ouro 18 Kilates - 25022",
+   "missing": [
+    "material"
+   ]
+  },
+  {
+   "sourceId": 435,
+   "ref": "25023",
+   "name": "Colar Gravata Pênduto com Brilhantes em Ouro 18 Kilates - 25023",
+   "missing": [
+    "material"
+   ]
+  },
+  {
+   "sourceId": 436,
+   "ref": "25024",
+   "name": "Colar Gravata Diva em Ouro 18 Kilates - 25024",
+   "missing": [
+    "pixPrice",
+    "material"
+   ]
+  },
+  {
+   "sourceId": 438,
+   "ref": "25026",
+   "name": "Anel Banana Losango em Ouro 18 Kilates - 25026",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 439,
+   "ref": "25027",
+   "name": "Anel Onda Tri em Ouro 18 Kilates - 25027",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 440,
+   "ref": "25028",
+   "name": "Anel Borboleta em Ouro 18 Kilates - 25028",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 441,
+   "ref": "25029",
+   "name": "Brinco Trevo em Ouro 18 Kilates - 25029",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 442,
+   "ref": "25030",
+   "name": "Colar Mandala com Zircônia em Ouro 18 Kilates - 25030",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 443,
+   "ref": "25032",
+   "name": "Pulseira Malha Pipoca em Ouro 18 Kilates - 25032",
+   "missing": [
+    "material",
+    "weightG",
+    "specs"
+   ]
+  },
+  {
+   "sourceId": 444,
+   "ref": "25033",
+   "name": "Pulseira Mandala com Zircônia em Ouro 18 Kilates - 25033",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 445,
+   "ref": "25031",
+   "name": "Brinco Longo com Discos em Ouro Amarelo 18 Kilates - 25031",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 446,
+   "ref": "25034",
+   "name": "Pulseira Malha Veneziana em Ouro 18 Kilates - 25034",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 447,
+   "ref": "25035",
+   "name": "Pulseira Malha Coração Vazado em Ouro 18 Kilates - 25035",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 448,
+   "ref": "25036",
+   "name": "Pulseira Olho Grego com Zircônia em Ouro 18 Kilates - 25036",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 449,
+   "ref": "25037",
+   "name": "Pulseira Terço em Ouro 18 Kilates - 25037",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 450,
+   "ref": "25038",
+   "name": "Colar Divino Espiríto Santo com Zircônia em Ouro 18 Kilates - 25038",
+   "missing": [
+    "material",
+    "weightG"
+   ]
+  },
+  {
+   "sourceId": 453,
+   "ref": "25040",
+   "name": "Pingente Mandala Divino Espirito Santo Verde com Zircônias em Ouro 18 Kilates - 25040",
+   "missing": [
+    "material"
+   ]
+  },
+  {
+   "sourceId": 454,
+   "ref": "25041",
+   "name": "Pingente Mandala Divino Espirito Santo Vermelho com Zircônias em Ouro 18 Kilates - 25041",
+   "missing": [
+    "material"
+   ]
+  },
+  {
+   "sourceId": 470,
+   "ref": "25053",
+   "name": "Pingente Cruz São Bento Vazada em Ouro Amarelo 18 Kilates - 25053",
+   "missing": [
+    "pixPrice"
+   ]
+  },
+  {
+   "sourceId": 472,
+   "ref": null,
+   "name": "Pingente Divino Espírito Santo Vazado com Raios Ouro Amarelo 18 Kilates -25054",
+   "missing": [
+    "ref"
+   ]
+  },
+  {
+   "sourceId": 473,
+   "ref": "25057",
+   "name": "Pingente Pomba da Paz Vazada com Zircônias em Ouro Amarelo 18 Kilates - 25057",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 475,
+   "ref": "25061",
+   "name": "Brinco Coração Duplo Vazado com Zircônias e Ródio em Ouro Amarelo 18 Kilates - 25061",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 476,
+   "ref": "25063",
+   "name": "Pingente Cruz Quadrada Oca em Ouro Amarelo 18 Kilates - 25063",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 483,
+   "ref": "25070",
+   "name": "Pingente Cruz Trabalhada Vazada Oca em Ouro Amarelo 18 Kilates - 25070",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 489,
+   "ref": "25076",
+   "name": "Pingente Cruz Dupla Acetinada Lisa Oca em Ouro Amarelo 18 Kilates - 25076",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 493,
+   "ref": "25081",
+   "name": "Pingente Nsra. Aparecida Redonda no Cristal em Ouro Amarelo 18 Kilates - 25081",
+   "missing": [
+    "pixPrice"
+   ]
+  },
+  {
+   "sourceId": 495,
+   "ref": "25111",
+   "name": "Brinco Escama de Peixe em Ouro Amarelo 18 Kilates - 25111",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 496,
+   "ref": "25112",
+   "name": "Brinco Trio Fecho Clips em Ouro Amarelo 18 Kilates - 25112",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 497,
+   "ref": "25113",
+   "name": "Brinco Favo Lux em Ouro Amarelo 18 Kilates - 25113",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 498,
+   "ref": "25114",
+   "name": "Brinco Multi Argolas em Ouro Amarelo 18 Kilates - 25114",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 499,
+   "ref": "25115",
+   "name": "Brinco Flor e Gotas Tri em Ouro Amarelo 18 Kilates - 25115",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 500,
+   "ref": "25116",
+   "name": "Brinco Rosa em Ouro Amarelo 18 Kilates - 25116",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 501,
+   "ref": "25110",
+   "name": "Brinco Egípcio com clips em Ouro Amarelo 18 Kilates - 25110",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 502,
+   "ref": "25109",
+   "name": "Pingente Torre de Pisa em Ouro 18 Kilates - 25109",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 503,
+   "ref": "25083",
+   "name": "Pingente Mandala Mil Corações em Ouro 18 Kilates - 25083",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 506,
+   "ref": "25089",
+   "name": "Pingente Cruz Bicolor Ondulada em Ouro 18 Kilates - 25089",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 507,
+   "ref": "25091",
+   "name": "Pingente Cruz Trevo Vazada em Ouro 18 Kilates - 25091",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 508,
+   "ref": "25102",
+   "name": "Pingente Mandala Oração Pai Nosso em Ouro 18 Kilates - 25102",
+   "missing": [
+    "pixPrice"
+   ]
+  },
+  {
+   "sourceId": 509,
+   "ref": "25093",
+   "name": "Pingente Cruz com Nó Bicolor em Ouro 18 Kilates - 25093",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 510,
+   "ref": "25103",
+   "name": "Pingente Coração Sobreposto Vazado em Ouro 18 Kilates - 25103",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 511,
+   "ref": "25104",
+   "name": "Pingente Cruz Bolita em Ouro 18 Kilates - 25104",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 512,
+   "ref": "25105",
+   "name": "Pingente Coração Chapa em Ouro 18 Kilates - 25105",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 513,
+   "ref": "25108",
+   "name": "Pingente Coração Tricolor Ondulada em Ouro 18 Kilates - 25108",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 515,
+   "ref": "25106",
+   "name": "Pingente Torre Big Ben em Ouro 18 Kilates - 25106",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 516,
+   "ref": "25090",
+   "name": "Pingente Crucifixo Moldura em Ouro 18 Kilates - 25090",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 517,
+   "ref": "25082",
+   "name": "Aparador Trama Bicolor Vazado em Ouro Amarelo 18 Kilates - 25082",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 519,
+   "ref": "25096",
+   "name": "Aparador Delicado Bicolor em Ouro Amarelo 18 Kilates - 25096",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 520,
+   "ref": "25099",
+   "name": "Aparador Ondas Vazadas em Ouro Amarelo 18 Kilates - 25099",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 521,
+   "ref": "25101",
+   "name": "Anel Gotas Tricolor Vazado em Ouro Amarelo 18 Kilates - 25101",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 522,
+   "ref": "25100",
+   "name": "Anel Losango Tricolor Vazado Diamantado em Ouro Amarelo 18 Kilates - 25100",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 523,
+   "ref": "25098",
+   "name": "Anel Infinito Sobreposto Vazado em Ouro Amarelo 18 Kilates - 25098",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 524,
+   "ref": "25097",
+   "name": "Anel Cerca Tricolor Diamantado em Ouro Amarelo 18 Kilates - 25097",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 526,
+   "ref": "25095",
+   "name": "Anel Loves Vazado em Ouro Amarelo 18 Kilates - 25095",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 529,
+   "ref": "25087",
+   "name": "Anel Line Diagonal Vazado Tricolor em Ouro Amarelo 18 Kilates - 25087",
+   "missing": [
+    "description"
+   ]
+  },
+  {
+   "sourceId": 530,
+   "ref": "25135",
+   "name": "Pingente Anjo da Guarda Rendado em Ouro Amarelo 18 Kilates - 25135",
+   "missing": [
+    "material",
+    "weightG",
+    "specs"
+   ]
+  },
+  {
+   "sourceId": 533,
+   "ref": "25125",
+   "name": "Pingente Mandala Luz em ouro 18 kilates - 25125",
+   "missing": [
+    "pixPrice"
+   ]
+  },
+  {
+   "sourceId": 650,
+   "ref": "25224",
+   "name": "Pingente Madrepérola Gota em Ouro 18 Kilates  25224",
+   "missing": [
+    "pixPrice"
+   ]
+  },
+  {
+   "sourceId": 678,
+   "ref": "25263",
+   "name": "Anel Brisa Tricolor em Ouro 18 Kilates  25263",
+   "missing": [
+    "material"
+   ]
+  },
+  {
+   "sourceId": 679,
+   "ref": "25257",
+   "name": "Anel Amores Tricolor em Ouro 18 Kilates  25257",
+   "missing": [
+    "material"
+   ]
+  },
+  {
+   "sourceId": 691,
+   "ref": "25272",
+   "name": "Pulseira Zircônias e Bolas Infantil em Ouro 18 Kilates - 25272",
+   "missing": [
+    "material"
+   ]
+  },
+  {
+   "sourceId": 728,
+   "ref": "25309",
+   "name": "Pingente São Bento Vazado em Ouro 18 Kilates - 25309",
+   "missing": [
+    "pixPrice"
+   ]
+  },
+  {
+   "sourceId": 734,
+   "ref": "25315",
+   "name": "Pingente Boneca Alemãzinha em Ouro 18 Kilates  25315",
+   "missing": [
+    "pixPrice"
+   ]
+  },
+  {
+   "sourceId": 759,
+   "ref": "25340",
+   "name": "Pingente Telefone Vintage em Ouro 18 Kilates  25340",
+   "missing": [
+    "pixPrice"
+   ]
+  },
+  {
+   "sourceId": 772,
+   "ref": "25353",
+   "name": "Pingente Placa Retangular em Ouro 18 Kilates  25353",
+   "missing": [
+    "pixPrice"
+   ]
+  },
+  {
+   "sourceId": 780,
+   "ref": "25361",
+   "name": "Pingente Placa Cruz Vazada em Ouro 18 Kilates  25361",
+   "missing": [
+    "pixPrice"
+   ]
+  },
+  {
+   "sourceId": 804,
+   "ref": "25385",
+   "name": "Corrente Malha Fígaro Arredondada em Ouro 18 Kilates  25385",
+   "missing": [
+    "material"
+   ]
+  },
+  {
+   "sourceId": 805,
+   "ref": "25386",
+   "name": "Corrente Malha Groumet Dupla Fina em Ouro 18 Kilates  25386",
+   "missing": [
+    "material"
+   ]
+  },
+  {
+   "sourceId": 806,
+   "ref": "25387",
+   "name": "Corrente Malha Cartier 5 x 1 Fina em Ouro 18 Kilates  25387",
+   "missing": [
+    "material"
+   ]
+  },
+  {
+   "sourceId": 807,
+   "ref": "25388",
+   "name": "Corrente Malha Groumet Fina em Ouro 18 Kilates  25388",
+   "missing": [
+    "material"
+   ]
+  },
+  {
+   "sourceId": 818,
+   "ref": "25399",
+   "name": "Pulseira Malha Portuguesa Escrito Fé em Ouro 18 Kilates  25399",
+   "missing": [
+    "pixPrice"
+   ]
+  },
+  {
+   "sourceId": 831,
+   "ref": "25412",
+   "name": "Brinco Redondo Azul em Zircônias em Ouro 18 Kilates  25412",
+   "missing": [
+    "material"
+   ]
+  },
+  {
+   "sourceId": 832,
+   "ref": "25413",
+   "name": "Brinco Redondo Verde em Zircônias em Ouro 18 Kilates  25413",
+   "missing": [
+    "material"
+   ]
+  },
+  {
+   "sourceId": 864,
+   "ref": "25445",
+   "name": "Anel Navete Esmeralda Sintética em Ouro 18 Kilates  25445",
+   "missing": [
+    "material"
+   ]
+  },
+  {
+   "sourceId": 865,
+   "ref": "25446",
+   "name": "Anel Navete Rubi Sintética em Ouro 18 Kilates  25446",
+   "missing": [
+    "material"
+   ]
+  },
+  {
+   "sourceId": 887,
+   "ref": "25467",
+   "name": "Brinco Solitário de Pérola com 9mm em Ouro 18 Kilates - 25467",
+   "missing": [
+    "weightG"
+   ]
+  }
+ ],
+ "errors": [],
+ "notes": [
+  "Os produtos aparecem em várias URLs do sitemap (uma por subcategoria); foram consolidados por ID de origem.",
+  "Variações vêm dos blocos schema.org por SKU publicados em cada página.",
+  "Estoque numérico não é publicado pelo site de origem: apenas disponibilidade (InStock/OutOfStock).",
+  "Código de barras, quilatagem e número de pedras não estão publicados de forma estruturada."
+ ]
+}
