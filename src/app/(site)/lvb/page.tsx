@@ -48,12 +48,12 @@ export default async function LvbHome() {
           <h2 className="section-title mt-1">Escolha a categoria ideal</h2>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {categories.map((c) => (
-              <Link key={c.id} href={`/lvb/veiculos?categoria=${c.slug}`} className="card-hover group flex gap-4 p-4 no-underline">
+              <Link key={c.id} href={`/lvb/veiculos?categoria=${c.slug}`} className="card-hover group flex min-w-0 gap-4 p-4 no-underline">
                 <div className="h-20 w-28 shrink-0 overflow-hidden rounded-lg"><CarIllustration category={c.name} className="h-full w-full" /></div>
                 <div className="min-w-0">
                   <h3 className="font-bold text-ink group-hover:text-lvb-700">{c.name}</h3>
                   <p className="truncate text-xs text-muted">{c.referenceModels}</p>
-                  <p className="mt-1 text-sm">a partir de <strong className="text-lvb-700">{formatMoney(c.fromCents)}/mês</strong></p>
+                  <p className="mt-1 text-sm">a partir de <strong className="whitespace-nowrap text-lvb-700">{formatMoney(c.fromCents)}/mês</strong></p>
                 </div>
               </Link>
             ))}
@@ -107,6 +107,18 @@ export default async function LvbHome() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="bg-lvb-900 py-12 text-white" id="como-alugar">
+        <div className="container-portal grid items-center gap-8 md:grid-cols-[1fr_320px]">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-lvb-100">Vídeo</p>
+            <h2 className="mt-1 text-2xl font-bold text-white sm:text-3xl">Veja como alugar em poucos minutos</h2>
+            <p className="mt-3 text-lvb-100">Do catálogo ao Pix da primeira parcela: assista ao passo a passo completo e faça o seu pedido pelo celular.</p>
+            <Link href="/lvb/solicitar" className="btn mt-6 bg-accent text-lvb-900 hover:brightness-95">Quero alugar</Link>
+          </div>
+          <video className="mx-auto w-full max-w-[320px] rounded-2xl shadow-2xl ring-1 ring-white/20" src="/videos/como-alugar-lvb.mp4" poster="/videos/como-alugar-lvb.jpg" controls playsInline preload="none" />
         </div>
       </section>
 
