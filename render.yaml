@@ -1,0 +1,50 @@
+# Blueprint do Render: cria o banco PostgreSQL e o site automaticamente.
+# Render → New → Blueprint → selecione este repositório e a branch.
+databases:
+  - name: portal-consumidor-db
+    plan: free
+    databaseName: portal_consumidor
+    user: portal
+    postgresMajorVersion: "16"
+
+services:
+  - type: web
+    name: portal-consumidor
+    runtime: node
+    plan: free
+    branch: claude/portal-consumidor-platform-rbxrws
+    autoDeploy: true
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start:prod
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: portal-consumidor-db
+          property: connectionString
+      # Chaves geradas uma única vez pelo Render. NÃO altere depois: os dados criptografados dependem delas.
+      - key: DATA_ENCRYPTION_KEY
+        generateValue: true
+      - key: HASH_KEY
+        generateValue: true
+      - key: ADMIN_EMAIL
+        value: kennedysantosof@gmail.com
+      # Preenchidos por você no painel do Render (opcionais):
+      - key: ADMIN_INITIAL_PASSWORD
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        sync: false

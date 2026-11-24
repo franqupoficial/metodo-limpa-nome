@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 import { PRIVACIDADE, TERMOS, LVB_POLITICAS } from "./content/pages";
 import { NEWS } from "./content/news";
 
@@ -21,7 +22,18 @@ async function main() {
       create: { email: adminEmail, name: "Administrador", role: "ADMIN" },
       update: { role: "ADMIN", active: true },
     });
-    console.log(`Administrador inicial: ${adminEmail} (defina a senha com "npm run admin:set-password" ou pelo fluxo de recuperação)`);
+    // Senha inicial opcional via variável de ambiente (definida no painel da hospedagem, nunca no código).
+    // Só é aplicada se o administrador ainda não tiver senha.
+    const initial = process.env.ADMIN_INITIAL_PASSWORD ?? "";
+    const strong = initial.length >= 12 && /[a-z]/.test(initial) && /[A-Z]/.test(initial) && /\d/.test(initial) && /[^A-Za-z0-9]/.test(initial);
+    const admin = await prisma.adminUser.findUniqueOrThrow({ where: { email: adminEmail } });
+    if (initial && !admin.passwordHash) {
+      if (strong) {
+        await prisma.adminUser.update({ where: { id: admin.id }, data: { passwordHash: await bcrypt.hash(initial, 12) } });
+        console.log(`Senha inicial aplicada para ${adminEmail}. Remova ADMIN_INITIAL_PASSWORD da hospedagem e troque a senha no painel.`);
+      } else console.warn("ADMIN_INITIAL_PASSWORD ignorada: mínimo de 12 caracteres, com maiúsculas, minúsculas, números e símbolo.");
+    }
+    console.log(`Administrador inicial: ${adminEmail}`);
   }
 
   for (const [i, c] of CATEGORIES.entries()) {

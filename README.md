@@ -92,6 +92,22 @@ Implemente `PaymentProvider` (`src/lib/payments/types.ts`) para o fornecedor esc
 - Confirmar coberturas, custos e preços reais da operação LVB.
 - Confirmar a instituição concedente de crédito e a estrutura contratual do empréstimo.
 
+## Colocar no ar (Render)
+
+O arquivo `render.yaml` cria o site e o banco PostgreSQL automaticamente:
+
+1. Crie uma conta em render.com e conecte sua conta do GitHub.
+2. **New → Blueprint** → selecione o repositório `metodo-limpa-nome` e a branch `claude/portal-consumidor-platform-rbxrws`.
+3. Na tela de variáveis, preencha `ADMIN_INITIAL_PASSWORD` (mínimo de 12 caracteres, com maiúsculas, minúsculas, números e símbolo). As demais podem ficar em branco.
+4. Clique em **Apply**. O primeiro deploy leva alguns minutos e gera o endereço público `https://portal-consumidor.onrender.com` (ou semelhante).
+5. Entre em `/admin` com o e-mail do administrador e a senha definida. Troque a senha em **Segurança** e apague `ADMIN_INITIAL_PASSWORD` no Render.
+
+A cada novo push na branch, o Render publica a atualização automaticamente. As migrações e os dados iniciais rodam a cada início, sem apagar o que já existe.
+
+Observações do plano gratuito: o site “dorme” após 15 minutos sem acesso (o primeiro acesso seguinte leva cerca de 1 minuto) e o banco gratuito expira após 30 dias — antes de usar com clientes reais, mude o banco e o site para um plano pago. As chaves `DATA_ENCRYPTION_KEY` e `HASH_KEY` são geradas uma única vez pelo Render: **não as altere** e guarde uma cópia em local seguro.
+
+Domínio próprio: em Settings → Custom Domains no Render, e defina `APP_URL` com o endereço final.
+
 ## Hospedagem
 
 A aplicação requer Node.js e PostgreSQL (ex.: VPS, Vercel + banco gerenciado, Railway, Render). O GitHub Pages (arquivo `CNAME`) serve apenas sites estáticos e **não** executa esta aplicação; aponte o domínio para a nova hospedagem. A landing page anterior foi preservada em `legacy/`.

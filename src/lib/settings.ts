@@ -65,7 +65,14 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 export async function getSetting<K extends keyof Settings>(key: K): Promise<Settings[K]> {
-  const row = await prisma.setting.findUnique({ where: { key } });
+  let row: { value: unknown } | null = null;
+  try {
+    row = await prisma.setting.findUnique({ where: { key } });
+  } catch (e) {
+    // Banco indisponível (ex.: durante o build): usa os valores padrão
+    console.warn(`Configuração "${key}" indisponível, usando padrão:`, (e as Error).message.split("\n")[0]);
+    return DEFAULT_SETTINGS[key];
+  }
   if (!row) return DEFAULT_SETTINGS[key];
   const def = DEFAULT_SETTINGS[key];
   if (Array.isArray(def)) return row.value as Settings[K];

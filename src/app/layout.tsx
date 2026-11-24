@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
-const base = process.env.APP_URL ?? "http://localhost:3000";
+const base = process.env.APP_URL || process.env.RENDER_EXTERNAL_URL || "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(base),

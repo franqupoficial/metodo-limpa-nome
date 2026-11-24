@@ -28,4 +28,4 @@ export async function sendMail(to: string, subject: string, text: string) {
   await getTransporter().sendMail({ from: process.env.SMTP_FROM, to, subject, text });
 }
 
-export const appUrl = () => (process.env.APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
+export const appUrl = () => (process.env.APP_URL || process.env.RENDER_EXTERNAL_URL || "http://localhost:3000").replace(/\/$/, "");
