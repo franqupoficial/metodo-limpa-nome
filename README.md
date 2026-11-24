@@ -117,6 +117,10 @@ Observações do plano gratuito: o site “dorme” após 15 minutos sem acesso 
 
 Domínio próprio: em Settings → Custom Domains no Render, e defina `APP_URL` com o endereço final.
 
+## Domínio (portalconsumidor.ong.br)
+
+No Registro.br, em **DNS → Modo avançado**, crie os registros indicados pela Vercel em *Settings → Domains* (padrão: `A @ 76.76.21.21` e `CNAME www cname.vercel-dns.com`) e defina `APP_URL=https://portalconsumidor.ong.br` nas variáveis da hospedagem.
+
 ## Hospedagem
 
-A aplicação requer Node.js e PostgreSQL (ex.: VPS, Vercel + banco gerenciado, Railway, Render). O GitHub Pages (arquivo `CNAME`) serve apenas sites estáticos e **não** executa esta aplicação; aponte o domínio para a nova hospedagem. A landing page anterior foi preservada em `legacy/`.
+A aplicação requer Node.js e PostgreSQL (ex.: VPS, Vercel + banco gerenciado, Railway, Render). O antigo arquivo `CNAME` do GitHub Pages foi removido: o domínio aponta para a hospedagem da aplicação. A landing page anterior foi preservada em `legacy/`.

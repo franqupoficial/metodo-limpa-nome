@@ -25,7 +25,7 @@ export interface Settings {
 
 export const DEFAULT_SETTINGS: Settings = {
   "site.contact": {
-    email: "atendimento@portalconsumidor.com.br",
+    email: "atendimento@portalconsumidor.ong.br",
     phone: "",
     whatsapp: "",
     hours: "Segunda a sexta, das 9h às 18h",
