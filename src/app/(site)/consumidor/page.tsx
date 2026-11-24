@@ -69,6 +69,18 @@ export default async function ConsumidorPage() {
             ]} />
           </section>
 
+          <section id="video" className="scroll-mt-36 rounded-2xl bg-brand-900 p-6 text-white sm:p-8">
+            <div className="grid items-center gap-6 md:grid-cols-[1fr_280px]">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-widest text-brand-200">Vídeo</p>
+                <h2 className="mt-1 text-2xl font-bold text-white">Veja como contratar em poucos minutos</h2>
+                <p className="mt-2 text-brand-100">Do formulário ao Pix: o passo a passo completo da contratação e do acompanhamento pelo protocolo.</p>
+                <Link href="/consumidor/solicitar" className="btn mt-5 bg-accent text-brand-900 hover:brightness-95">Contratar regularização</Link>
+              </div>
+              <video className="mx-auto w-full max-w-[280px] rounded-2xl shadow-2xl ring-1 ring-white/20" src="/videos/como-contratar-regularizacao.mp4" poster="/videos/como-contratar-regularizacao.jpg" controls playsInline preload="none" />
+            </div>
+          </section>
+
           <section id="procedimentos" className="scroll-mt-36">
             <h2 className="mb-5 text-2xl font-bold">Procedimentos executados</h2>
             <div className="grid gap-4 sm:grid-cols-2">

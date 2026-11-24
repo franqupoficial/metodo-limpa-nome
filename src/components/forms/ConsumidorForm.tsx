@@ -60,7 +60,7 @@ export function ConsumidorForm({ pixCents, scope }: { pixCents: number; scope: s
             <p className="max-w-xs text-xs text-emerald-900">O QR Code e o Pix copia e cola aparecem logo após você confirmar a contratação.</p>
           </div>
           <Notice tone="info" title="O que está incluído">
-            {scope} Registros irregulares são contestados para exclusão; dívidas reconhecidas são tratadas por acordo com o credor (valores do acordo não incluídos). As instruções de pagamento são enviadas pelos canais oficiais do portal.
+            {scope} Registros irregulares são contestados para exclusão; dívidas reconhecidas são tratadas por acordo com o credor (valores do acordo não incluídos). O QR Code Pix aparece assim que você confirmar a contratação.
           </Notice>
           <div className="space-y-2">
             <BaseConsentFields value={consents} onChange={setConsents} errors={w.errors} />
