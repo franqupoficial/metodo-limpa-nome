@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Logo } from "./Logo";
 import { Icon } from "./Icon";
 
@@ -33,12 +34,6 @@ export function Header() {
       <a href="#conteudo" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-white focus:px-3 focus:py-2">
         Ir para o conteúdo
       </a>
-      <div className="bg-brand-900 text-[12px] text-brand-100">
-        <div className="container-portal flex items-center justify-between gap-3 py-1.5">
-          <p className="truncate">Portal privado de serviços digitais — não é um canal do governo.</p>
-          <Link href="/acompanhar" className="hidden shrink-0 font-semibold text-white no-underline hover:underline sm:inline">Acompanhar solicitação</Link>
-        </div>
-      </div>
       <div className="container-portal flex h-16 items-center justify-between gap-4">
         <Logo />
         <div className="flex items-center gap-2">
@@ -81,8 +76,9 @@ export function Header() {
           ))}
         </ul>
       </nav>
-      {open && (
-        <div id="menu-mobile" className="fixed inset-x-0 bottom-0 top-[calc(4rem+28px)] z-40 overflow-y-auto bg-white lg:hidden">
+      {open && typeof document !== "undefined" && createPortal(
+        // Renderizado no <body>: o backdrop-filter do cabeçalho prenderia um elemento "fixed" dentro dele (bug no iPhone).
+        <div id="menu-mobile" role="dialog" aria-modal="true" aria-label="Menu" className="fixed inset-x-0 bottom-0 top-16 z-50 overflow-y-auto bg-white shadow-lg lg:hidden">
           <div className="container-portal py-4">
             <form action="/busca" role="search" className="mb-4">
               <label htmlFor="busca-mobile" className="sr-only">Buscar no portal</label>
@@ -103,7 +99,7 @@ export function Header() {
             </ul>
           </div>
         </div>
-      )}
+      , document.body)}
     </header>
   );
 }

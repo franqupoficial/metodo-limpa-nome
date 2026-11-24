@@ -17,7 +17,7 @@ export interface Settings {
   "service.cnpj": { priceCents: number };
   "payment.pix": { key: string; receiverName: string; city: string; instructions: string };
   "service.emprestimo": { minCents: number; maxCents: number };
-  "lvb.plans": { termAdjustments: TermAdjustments; kmPackages: KmPackage[]; priceNotice: string };
+  "lvb.plans": { termAdjustments: TermAdjustments; kmPackages: KmPackage[]; priceNotice: string; deliveryWindow: string };
   "lvb.inclusions": { maintenance: InclusionStatus; ipva: InclusionStatus; insurance: InclusionStatus; assistance: InclusionStatus; notes: string };
   "lvb.costs": AdditionalCost[];
   "privacy.retention": { retentionDays: number };
@@ -29,7 +29,7 @@ export const DEFAULT_SETTINGS: Settings = {
     phone: "",
     whatsapp: "",
     hours: "Segunda a sexta, das 9h às 18h",
-    companyName: "Portal Consumidor (razão social a definir)",
+    companyName: "Portal Consumidor",
     cnpj: "",
     address: "",
   },
@@ -53,14 +53,15 @@ export const DEFAULT_SETTINGS: Settings = {
     termAdjustments: { "12": 0, "24": 0, "36": 0 },
     kmPackages: [],
     priceNotice:
-      "Valores mensais dos planos vigentes. Custos adicionais aplicáveis (caução, quilometragem excedente, franquia) são informados no contrato, antes da assinatura.",
+      "Valor mensal com proteção (seguro), manutenção, assistência 24h e IPVA inclusos. Caução, quilometragem excedente e franquia em caso de sinistro conforme contrato.",
+    deliveryWindow: "7 a 15 dias",
   },
   "lvb.inclusions": {
-    maintenance: "TO_CONFIRM",
-    ipva: "TO_CONFIRM",
-    insurance: "TO_CONFIRM",
-    assistance: "TO_CONFIRM",
-    notes: "As coberturas e serviços incluídos são confirmados na proposta de cada plano.",
+    maintenance: "INCLUDED",
+    ipva: "INCLUDED",
+    insurance: "INCLUDED",
+    assistance: "INCLUDED",
+    notes: "Proteção contra colisão, roubo e furto, manutenção preventiva e corretiva, assistência 24h e IPVA/licenciamento já estão no valor mensal.",
   },
   "lvb.costs": [
     { label: "Caução", description: "Pode ser exigida conforme o plano. O valor, quando aplicável, é informado na proposta antes da contratação." },

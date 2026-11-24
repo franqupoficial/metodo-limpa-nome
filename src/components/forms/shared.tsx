@@ -82,7 +82,7 @@ export function BaseConsentFields<T extends BaseConsents>({ value, onChange, err
   return (
     <>
       <Checkbox required checked={value.privacy} onChange={set("privacy")} error={errors["consents.privacy"]}>
-        Li e concordo com a <Link href="/privacidade" target="_blank" className="font-semibold">Política de Privacidade</Link> e autorizo o tratamento dos meus dados pessoais para a finalidade desta solicitação.
+        Li e concordo com a <Link href="/privacidade" target="_blank" className="font-semibold">Política de Privacidade</Link> e autorizo o tratamento dos meus dados pessoais para a finalidade desta solicitação. Estou ciente de que o Portal Consumidor é uma empresa privada de serviços (<Link href="/sobre" target="_blank" className="font-semibold">sobre a empresa</Link>).
       </Checkbox>
       <Checkbox required checked={value.terms} onChange={set("terms")} error={errors["consents.terms"]}>
         Li e concordo com os <Link href="/termos" target="_blank" className="font-semibold">Termos de Uso</Link>.

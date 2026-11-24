@@ -4,7 +4,7 @@ import type { PixData } from "@/components/PixPayment";
 import { useMemo, useState } from "react";
 import { emprestimoSchema, personalSchema, addressSchema, DUE_DAYS, LOAN_PAYMENT_LABEL, LOAN_PAYMENT_METHODS } from "@/lib/schemas";
 import { formatMoney } from "@/lib/format";
-import { Checkbox, FormAlert, RadioCards, ReviewSection, Stepper, TextField, WizardNav } from "./kit";
+import { Checkbox, FormAlert, RadioCards, ReviewSection, SelectField, Stepper, TextField, WizardNav } from "./kit";
 import { AddressFields, BaseConsentFields, Confirmation, PersonalFields, emptyAddress, emptyConsents, emptyPersonal, submitRequest } from "./shared";
 import { useWizard, validateWith } from "./useWizard";
 import { Notice } from "@/components/ui";
@@ -17,6 +17,7 @@ export function EmprestimoForm({ minCents, maxCents }: { minCents: number; maxCe
   const [personal, setPersonal] = useState(emptyPersonal);
   const [address, setAddress] = useState(emptyAddress);
   const [loan, setLoan] = useState({ amount: Math.min(150000, maxCents) / 100, dueDay: "", purpose: "", monthlyIncome: "", paymentMethod: "" as "" | (typeof LOAN_PAYMENT_METHODS)[number] });
+  const [bank, setBank] = useState({ bankName: "", agency: "", account: "", accountType: "" as "" | "CORRENTE" | "POUPANCA" });
   const [consents, setConsents] = useState({ ...emptyConsents, creditAnalysis: false, autoDebit: false, noGuarantee: false });
   const [done, setDone] = useState<{ protocol: string; accessCode: string; pix: PixData | null } | null>(null);
 
@@ -27,7 +28,7 @@ export function EmprestimoForm({ minCents, maxCents }: { minCents: number; maxCe
       </Confirmation>
     );
 
-  const loanPayload = () => ({ ...loan, dueDay: Number(loan.dueDay), monthlyIncome: loan.monthlyIncome ? Number(loan.monthlyIncome.replace(/\./g, "").replace(",", ".")) : undefined });
+  const loanPayload = () => ({ ...loan, bank: loan.paymentMethod === "DEBITO_CONTA" ? bank : undefined, dueDay: Number(loan.dueDay), monthlyIncome: loan.monthlyIncome ? Number(loan.monthlyIncome.replace(/\./g, "").replace(",", ".")) : undefined });
 
   async function next() {
     if (w.step === 0) return w.advance(validateWith(personalSchema, personal, "personal"));
@@ -64,15 +65,24 @@ export function EmprestimoForm({ minCents, maxCents }: { minCents: number; maxCe
             <TextField label="Finalidade do crédito" required={false} value={loan.purpose} onChange={(v) => setLoan({ ...loan, purpose: v })} maxLength={300} />
           </div>
           <RadioCards legend="Forma de pagamento das parcelas" value={loan.paymentMethod} onChange={(v) => setLoan({ ...loan, paymentMethod: v })} error={w.errors["loan.paymentMethod"]}
-            options={LOAN_PAYMENT_METHODS.map((m) => ({ value: m, label: LOAN_PAYMENT_LABEL[m], description: "Enviado ao seu e-mail antes do dia de vencimento escolhido." }))} />
-          <Notice tone="info">Nenhum pagamento é feito agora. Depois da liberação do crédito, cada parcela é cobrada por Pix ou boleto enviado ao e-mail cadastrado, sempre em nome de <strong>Portal Consumidor</strong>.</Notice>
+            options={LOAN_PAYMENT_METHODS.map((m) => ({ value: m, label: LOAN_PAYMENT_LABEL[m], description: m === "DEBITO_CONTA" ? "Debitado automaticamente no dia de vencimento escolhido." : "Enviado ao seu e-mail antes do dia de vencimento escolhido." }))} />
+          {loan.paymentMethod === "DEBITO_CONTA" && (
+            <div className="grid gap-4 rounded-xl border border-line bg-surface p-4 sm:grid-cols-2">
+              <TextField label="Banco" value={bank.bankName} onChange={(v) => setBank({ ...bank, bankName: v })} error={w.errors["loan.bank.bankName"]} placeholder="Ex.: Caixa, Itaú, Nubank" maxLength={60} />
+              <SelectField label="Tipo de conta" value={bank.accountType} onChange={(v) => setBank({ ...bank, accountType: v as typeof bank.accountType })} error={w.errors["loan.bank.accountType"]} options={[{ value: "CORRENTE", label: "Conta corrente" }, { value: "POUPANCA", label: "Conta poupança" }]} />
+              <TextField label="Agência (sem dígito)" value={bank.agency} onChange={(v) => setBank({ ...bank, agency: v.replace(/\D/g, "").slice(0, 5) })} error={w.errors["loan.bank.agency"]} inputMode="numeric" />
+              <TextField label="Conta com dígito" value={bank.account} onChange={(v) => setBank({ ...bank, account: v.replace(/[^\dxX-]/g, "").slice(0, 15) })} error={w.errors["loan.bank.account"]} placeholder="Ex.: 123456-7" />
+              <p className="text-xs text-muted sm:col-span-2">A conta deve estar no seu nome (mesmo CPF do cadastro). Nunca pedimos senha, token ou dados de cartão.</p>
+            </div>
+          )}
+          <Notice tone="info">Nenhum pagamento é feito agora. As parcelas começam depois da liberação do crédito, na data que você escolher.</Notice>
         </div>
       )}
       {w.step === 3 && (
         <div className="space-y-5">
           <ReviewSection title="Dados pessoais" onEdit={() => w.go(0)} rows={[["Nome", personal.fullName], ["CPF", personal.cpf], ["Nascimento", personal.birthDate.split("-").reverse().join("/")], ["Telefone", personal.phone], ["E-mail", personal.email]]} />
           <ReviewSection title="Endereço" onEdit={() => w.go(1)} rows={[["CEP", address.cep], ["Endereço", `${address.street}, ${address.number} ${address.complement}`], ["Bairro", address.district], ["Cidade/UF", `${address.city}/${address.state}`]]} />
-          <ReviewSection title="Proposta" onEdit={() => w.go(2)} rows={[["Valor solicitado", formatMoney(Math.round(loan.amount * 100))], ["Vencimento", loan.dueDay ? `Dia ${loan.dueDay}` : ""], ["Pagamento", loan.paymentMethod ? LOAN_PAYMENT_LABEL[loan.paymentMethod] : ""], ["Renda informada", loan.monthlyIncome ? `R$ ${loan.monthlyIncome}` : ""], ["Finalidade", loan.purpose]]} />
+          <ReviewSection title="Proposta" onEdit={() => w.go(2)} rows={[["Valor solicitado", formatMoney(Math.round(loan.amount * 100))], ["Vencimento", loan.dueDay ? `Dia ${loan.dueDay}` : ""], ["Pagamento", loan.paymentMethod ? LOAN_PAYMENT_LABEL[loan.paymentMethod] : ""], ...(loan.paymentMethod === "DEBITO_CONTA" ? [["Conta para débito", `${bank.bankName} · ag. ${bank.agency} · ${bank.account}`] as [string, string]] : []), ["Renda informada", loan.monthlyIncome ? `R$ ${loan.monthlyIncome}` : ""], ["Finalidade", loan.purpose]]} />
           <Notice tone="warn" title="Leia antes de enviar">
             O valor final, as parcelas e o CET são definidos na aprovação e constam do contrato enviado por e-mail. O crédito é liberado após a assinatura do contrato. Em caso de inadimplemento, podem incidir juros de mora, multa contratual (limitada a 2% conforme o CDC), cobrança dos valores devidos e, após notificação prévia, inclusão em cadastros de proteção ao crédito, conforme a legislação e o contrato.
           </Notice>
@@ -82,7 +92,7 @@ export function EmprestimoForm({ minCents, maxCents }: { minCents: number; maxCe
               Autorizo a consulta das minhas informações de crédito, inclusive em birôs de crédito e no Sistema de Informações de Crédito (SCR) do Banco Central, para aprovação desta proposta.
             </Checkbox>
             <Checkbox required checked={consents.autoDebit} onChange={(v) => setConsents({ ...consents, autoDebit: v })} error={w.errors["consents.autoDebit"]}>
-              Autorizo, após a assinatura do contrato, o envio mensal das cobranças das parcelas ao meu e-mail, na forma de pagamento escolhida, para pagamento até o dia de vencimento indicado.
+              {loan.paymentMethod === "DEBITO_CONTA" ? "Autorizo, após a assinatura do contrato, o débito automático das parcelas na conta informada, no dia de vencimento indicado, nos termos do contrato." : "Autorizo, após a assinatura do contrato, o envio mensal das cobranças das parcelas ao meu e-mail, na forma de pagamento escolhida, para pagamento até o dia de vencimento indicado."}
             </Checkbox>
             <Checkbox required checked={consents.noGuarantee} onChange={(v) => setConsents({ ...consents, noGuarantee: v })} error={w.errors["consents.noGuarantee"]}>
               Compreendo que solicitação, aprovação e liberação são etapas distintas, e que nenhum valor deve ser pago antecipadamente para liberação de crédito.

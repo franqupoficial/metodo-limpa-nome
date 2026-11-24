@@ -57,9 +57,9 @@ O Portal Consumidor é uma **plataforma privada**. Não é órgão público, nã
 ## 3. Serviços
 
 - **Regularização de apontamentos:** serviço de levantamento, contestação e pedido de exclusão de registros irregulares e intermediação de acordos para dívidas reconhecidas nos cadastros Serasa, SPC e Boa Vista. Dívidas legítimas permanecem devidas até pagamento ou acordo; o resultado de cada registro depende da resposta do birô e do credor.
-- **Abra seu CNPJ:** serviço privado de assistência e condução da abertura e formalização empresarial. O valor cobrado não é taxa governamental. A abertura de MEI pelos canais oficiais é gratuita.
+- **Abra seu CNPJ:** serviço de assistência contábil e condução da abertura e formalização empresarial. O valor cobrado corresponde aos honorários do serviço e não constitui taxa pública.
 - **Empréstimo para negativados:** intermediação da contratação de crédito de até R$ 3.000,00 junto à instituição concedente. Solicitação, aprovação e liberação são etapas distintas; a liberação ocorre após a assinatura do contrato. As parcelas são cobradas por Pix ou boleto enviados ao e-mail do cliente.
-- **LVB — Locação de veículos:** locação de veículos para motoristas de aplicativo, formalizada por contrato após aprovação cadastral, com primeira parcela no ato da contratação e parcelas recorrentes.
+- **LVB — Locação de veículos:** locação de veículos para motoristas de aplicativo, com seguro, manutenção, assistência 24h e IPVA inclusos no valor mensal, formalizada por contrato após aprovação cadastral, com primeira parcela via Pix e parcelas recorrentes. Entrega na região do cliente em 7 a 15 dias após aprovação e pagamento.
 
 ## 4. Responsabilidades do usuário
 

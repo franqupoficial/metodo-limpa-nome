@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getSetting } from "@/lib/settings";
 import { formatMoney } from "@/lib/format";
-import { Faq, InfoCard, Notice, PageHero, Section, Steps } from "@/components/ui";
+import { Faq, InfoCard, PageHero, Section, Steps } from "@/components/ui";
 import { Icon } from "@/components/Icon";
 import { FAQ_CNPJ } from "@/content/faq";
 
@@ -23,9 +23,6 @@ export default async function CnpjPage() {
         </div>
       </PageHero>
       <Section>
-        <Notice tone="warn" title="A abertura de MEI pelos canais oficiais é gratuita.">
-          O valor de {formatMoney(priceCents)} cobrado pelo Portal Consumidor refere-se exclusivamente ao serviço privado de assistência e formalização, e não a uma taxa governamental. Se preferir, você pode se formalizar sem custo diretamente no portal oficial do governo.
-        </Notice>
         <div className="mt-8 grid gap-5 md:grid-cols-3">
           <InfoCard icon="briefcase" title="Enquadramento">Definimos com você o porte adequado (MEI, ME ou EPP) conforme atividade e faturamento previsto.</InfoCard>
           <InfoCard icon="doc" title="Atividades e registro">Escolhemos os códigos de atividade (CNAE), conferimos endereço e forma de atuação e conduzimos o registro com você.</InfoCard>
@@ -44,7 +41,7 @@ export default async function CnpjPage() {
       <Section eyebrow="Investimento" title="Valor do serviço de assistência">
         <div className="grid items-center gap-6 md:grid-cols-[320px_1fr]">
           <div className="card border-brand-300 p-6 text-center">
-            <p className="text-sm text-muted">Serviço privado de assistência</p>
+            <p className="text-sm text-muted">Assistência completa à abertura</p>
             <p className="mt-1 text-5xl font-extrabold text-brand-800">{formatMoney(priceCents)}</p>
             <Link href="/cnpj/solicitar" className="btn-primary mt-5 w-full">Contratar abertura de CNPJ</Link>
           </div>

@@ -1,7 +1,6 @@
 export type FaqItem = { q: string; a: string };
 
 export const FAQ_GERAL: FaqItem[] = [
-  { q: "O Portal Consumidor é um site do governo?", a: "Não. O Portal Consumidor é uma plataforma privada de informação e intermediação de serviços. Não temos vínculo com órgãos públicos. Vários serviços que apresentamos também podem ser feitos gratuitamente pelos canais oficiais, e indicamos esses canais em nossas páginas." },
   { q: "Como acompanho minha solicitação?", a: "Ao concluir uma solicitação, você recebe um número de protocolo e um código de acesso. Acesse a página Acompanhar solicitação e informe os dois. Por segurança, o código de acesso é exibido apenas uma vez — guarde-o em local seguro." },
   { q: "Perdi meu código de acesso. E agora?", a: "Entre em contato pelos canais da página Contato informando o protocolo. Após confirmar sua identidade, nossa equipe pode gerar um novo código." },
   { q: "Vocês pedem pagamento por WhatsApp ou depósito em conta de pessoa física?", a: "Não. Nunca solicitamos pagamentos por canais não oficiais, nem antecipação de valores para liberar crédito. Se receber esse tipo de pedido em nosso nome, não pague e nos comunique." },
@@ -20,7 +19,7 @@ export const FAQ_CONSUMIDOR: FaqItem[] = [
 
 export const FAQ_CNPJ: FaqItem[] = [
   { q: "O que está incluído no serviço de R$ 199,00?", a: "Definição do enquadramento (MEI, ME ou EPP), escolha das atividades (CNAE), conferência de endereço e forma de atuação, condução do registro com você até a emissão do CNPJ e orientações sobre as obrigações mensais e anuais." },
-  { q: "Abrir MEI é gratuito?", a: "Sim. A formalização como MEI pelos canais oficiais do governo é gratuita. O valor de R$ 199,00 remunera exclusivamente o serviço privado de assistência e condução da abertura — não é taxa governamental." },
+  { q: "O valor inclui alguma taxa?", a: "Não. Os R$ 199,00 são os honorários do nosso serviço de assistência contábil e formalização. Para MEI não há taxa de registro; eventuais taxas municipais ou estaduais de outros portes são informadas antes." },
   { q: "Toda atividade pode ser MEI?", a: "Não. Existem atividades permitidas, limite de faturamento e outras condições previstas em lei. Se sua atividade não puder ser MEI, indicamos o enquadramento correto." },
   { q: "Quanto tempo leva?", a: "Com as informações completas e o pagamento confirmado, iniciamos a abertura imediatamente. O prazo final depende dos órgãos de registro do seu município e estado; você acompanha cada etapa pelo protocolo." },
 ];
@@ -36,7 +35,6 @@ export const FAQ_EMPRESTIMO: FaqItem[] = [
 ];
 
 export const FAQ_LVB: FaqItem[] = [
-  { q: "A LVB é um programa do governo?", a: "Não. A LVB é uma operação privada de locação de veículos, sem relação com programas governamentais, subsídios públicos ou veículos arrendados pelo governo." },
   { q: "Quais planos estão disponíveis?", a: "Planos de 12, 24 ou 36 meses, com valor mensal fixo no contrato. A primeira parcela é paga via Pix ao concluir o formulário e as demais chegam ao seu e-mail (Pix ou boleto) antes do dia que você escolher." },
   { q: "O que preciso para alugar?", a: "CNH válida (com a observação EAR quando exigida pela plataforma ou pelo plano), comprovante de endereço, dados pessoais e aprovação cadastral. O formulário de locação reúne tudo isso." },
   { q: "O carro da foto é o que vou receber?", a: "As fotos ilustram cada categoria. O veículo do seu contrato — o modelo indicado ou similar da mesma categoria — é confirmado na contratação." },

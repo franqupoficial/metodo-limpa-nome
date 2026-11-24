@@ -19,6 +19,7 @@ export async function getClientPlanSettings(): Promise<ClientPlanSettings> {
     termAdjustments: plans.termAdjustments,
     kmPackages: plans.kmPackages,
     priceNotice: plans.priceNotice,
+    deliveryWindow: plans.deliveryWindow,
     inclusions: [
       { label: "Manutenção", status: INCLUSION_LABEL[inc.maintenance] },
       { label: "IPVA / licenciamento", status: INCLUSION_LABEL[inc.ipva] },

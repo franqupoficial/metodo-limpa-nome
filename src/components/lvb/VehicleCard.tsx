@@ -18,6 +18,7 @@ export function VehicleCard({ v }: { v: ClientVehicle }) {
         <p className="text-2xl font-extrabold text-lvb-700">{formatMoney(v.monthlyCents)}<span className="text-sm font-medium text-muted">/mês</span></p>
         <ul className="mt-3 space-y-1.5 text-sm">
           <li className="flex items-center gap-2"><Icon name="calendar" className="h-4 w-4 text-lvb-600" /> Prazos: {v.terms.join(", ")} meses</li>
+          <li className="flex items-center gap-2"><Icon name="shield" className="h-4 w-4 text-lvb-600" /> Seguro, manutenção e IPVA inclusos</li>
           <li className="flex items-center gap-2"><Icon name="gauge" className="h-4 w-4 text-lvb-600" /> {v.kmPerMonth.toLocaleString("pt-BR")} km/mês contratados</li>
           {v.features.slice(0, 3).map((f) => <li key={f} className="flex items-center gap-2"><Icon name="check" className="h-4 w-4 text-lvb-600" /> {f}</li>)}
           {v.maintenanceInfo && <li className="flex items-center gap-2"><Icon name="settings" className="h-4 w-4 text-lvb-600" /> {v.maintenanceInfo}</li>}

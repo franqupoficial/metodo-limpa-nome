@@ -88,7 +88,7 @@ export function CnpjForm({ priceCents }: { priceCents: number }) {
           <div className="space-y-2">
             <BaseConsentFields value={consents} onChange={setConsents} errors={w.errors} />
             <Checkbox required checked={consents.privateFee} onChange={(v) => setConsents({ ...consents, privateFee: v })} error={w.errors["consents.privateFee"]}>
-              Compreendo que a abertura de MEI pelos canais oficiais é gratuita e que o valor cobrado refere-se ao serviço privado de assistência e formalização, não a uma taxa governamental.
+              Estou ciente de que o valor refere-se aos honorários do serviço de assistência contábil e formalização prestado pelo Portal Consumidor, empresa privada.
             </Checkbox>
           </div>
         </div>
@@ -96,13 +96,10 @@ export function CnpjForm({ priceCents }: { priceCents: number }) {
       {w.step === 4 && (
         <div className="space-y-5">
           <div className="rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-50 to-white p-6 text-center">
-            <p className="text-sm text-muted">Serviço privado de assistência e formalização</p>
+            <p className="text-sm text-muted">Assistência contábil e formalização</p>
             <p className="mt-1 text-4xl font-extrabold text-brand-800">{formatMoney(priceCents)}</p>
-            <p className="mt-2 text-sm text-muted">Pagamento único via Pix. Não é taxa governamental. O QR Code aparece ao confirmar.</p>
+            <p className="mt-2 text-sm text-muted">Pagamento único via Pix. O QR Code aparece ao confirmar.</p>
           </div>
-          <Notice tone="info" title="A abertura de MEI pelos canais oficiais é gratuita.">
-            Você pode se formalizar sem custo diretamente no portal oficial do governo. O valor acima remunera o serviço privado de assistência e condução da abertura. Ao confirmar, você recebe o QR Code e o Pix copia e cola para pagamento.
-          </Notice>
         </div>
       )}
       <WizardNav step={w.step} total={STEPS.length} onBack={w.back} onNext={next} submitting={w.submitting} submitLabel="Confirmar contratação" />

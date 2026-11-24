@@ -47,7 +47,7 @@ export default function Page() {
       </Section>
       <Section id="transparencia" title="Transparência" className="bg-surface">
         <div className="prose-portal max-w-3xl">
-          <p>O Portal Consumidor é uma <strong>plataforma privada</strong>. Não somos órgão público, não representamos o governo e não temos relação com programas governamentais.</p>
+          <p>O Portal Consumidor é uma empresa de serviços ao consumidor. Conheça nossos dados e políticas na página <Link href="/sobre">Sobre a empresa</Link>.</p>
           <p>Nossos serviços são opcionais e pagos quando indicado. Sempre que existir alternativa gratuita em canal oficial — como a abertura de MEI ou a contestação de registros em cadastros de crédito — informamos isso de forma clara.</p>
           <p>Cada serviço tem suas condições descritas de forma clara antes da contratação. Empréstimos dependem de aprovação de crédito e locações, de aprovação cadastral e contrato.</p>
         </div>
