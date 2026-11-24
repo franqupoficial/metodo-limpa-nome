@@ -26,6 +26,10 @@ services:
         fromDatabase:
           name: portal-consumidor-db
           property: connectionString
+      - key: DATABASE_URL_UNPOOLED
+        fromDatabase:
+          name: portal-consumidor-db
+          property: connectionString
       # Chaves geradas uma única vez pelo Render. NÃO altere depois: os dados criptografados dependem delas.
       - key: DATA_ENCRYPTION_KEY
         generateValue: true

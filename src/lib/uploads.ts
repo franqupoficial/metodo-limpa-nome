@@ -1,6 +1,6 @@
 import "server-only";
 
-export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+export const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;
 export const DOC_MIMES = ["image/jpeg", "image/png", "application/pdf"] as const;
 export const IMAGE_MIMES = ["image/jpeg", "image/png", "image/webp"] as const;
 
@@ -16,7 +16,7 @@ export function sniffMime(buf: Buffer): string | null {
 
 export async function readUpload(file: File, allowed: readonly string[]): Promise<{ buf: Buffer; mime: string } | { error: string }> {
   if (file.size === 0) return { error: "Arquivo vazio." };
-  if (file.size > MAX_UPLOAD_BYTES) return { error: "Arquivo maior que 5 MB." };
+  if (file.size > MAX_UPLOAD_BYTES) return { error: "Arquivo maior que 4 MB." };
   const buf = Buffer.from(await file.arrayBuffer());
   const mime = sniffMime(buf);
   if (!mime || !allowed.includes(mime)) return { error: "Formato de arquivo não permitido." };

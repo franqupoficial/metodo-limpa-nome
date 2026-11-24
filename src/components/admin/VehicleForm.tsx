@@ -42,7 +42,7 @@ export function VehicleForm({ action, vehicle: v, categories }: Props) {
       <section className="card space-y-4 p-5">
         <h2 className="text-sm font-bold">Imagem</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <label><span className="label">Enviar foto (JPG, PNG ou WEBP, até 5 MB)</span><input name="image" type="file" accept="image/jpeg,image/png,image/webp" className="input" /></label>
+          <label><span className="label">Enviar foto (JPG, PNG ou WEBP, até 4 MB)</span><input name="image" type="file" accept="image/jpeg,image/png,image/webp" className="input" /></label>
           <label><span className="label">ou URL da imagem (https://)</span><input name="imageUrl" defaultValue={v?.imageUrl ?? ""} className="input" /></label>
           <label className="sm:col-span-2"><span className="label">Legenda obrigatória</span><input name="imageCaption" defaultValue={v?.imageCaption ?? "Imagem ilustrativa de modelo similar"} required className="input" /><span className="hint block">Use fotos de veículos específicos apenas quando houver disponibilidade real. Caso contrário, identifique como imagem ilustrativa.</span></label>
         </div>

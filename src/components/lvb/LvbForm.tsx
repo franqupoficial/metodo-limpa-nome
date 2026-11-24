@@ -44,7 +44,7 @@ export function LvbForm({ vehicles, settings, initial }: { vehicles: ClientVehic
     if (w.step === 1) return w.advance(validateWith(addressSchema, address, "address"));
     if (w.step === 2) {
       const errs = validateWith(shape.license, license, "license");
-      if (cnhFile && cnhFile.size > 5 * 1024 * 1024) errs["license.file"] = "Arquivo maior que 5 MB.";
+      if (cnhFile && cnhFile.size > 4 * 1024 * 1024) errs["license.file"] = "Arquivo maior que 4 MB.";
       return w.advance(errs);
     }
     if (w.step === 3) return w.advance(validateWith(shape.driver, driver, "driver"));
@@ -87,7 +87,7 @@ export function LvbForm({ vehicles, settings, initial }: { vehicles: ClientVehic
           <div>
             <label htmlFor="cnh-file" className="label">Cópia da CNH <span className="text-xs font-normal text-muted">(opcional)</span></label>
             <input id="cnh-file" type="file" accept="image/jpeg,image/png,application/pdf" className="input file:mr-3 file:rounded-full file:border-0 file:bg-lvb-50 file:px-3 file:py-1 file:text-sm file:font-semibold file:text-lvb-700" onChange={(e) => setCnhFile(e.target.files?.[0] ?? null)} />
-            <p className="hint">JPG, PNG ou PDF, até 5 MB. O arquivo é armazenado de forma criptografada, com acesso restrito. Se a operação precisar de outro documento, pediremos pelo e-mail cadastrado.</p>
+            <p className="hint">JPG, PNG ou PDF, até 4 MB. O arquivo é armazenado de forma criptografada, com acesso restrito. Se a operação precisar de outro documento, pediremos pelo e-mail cadastrado.</p>
             {w.errors["license.file"] && <p className="field-error">{w.errors["license.file"]}</p>}
           </div>
         </div>
