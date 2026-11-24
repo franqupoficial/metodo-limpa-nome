@@ -15,10 +15,11 @@ const NAV: (NavItem & { perm: Permission })[] = [
   { href: "/admin/categorias", label: "Categorias", icon: "layers", perm: "categories.manage", children: [{ href: "/admin/categorias", label: "Categorias" }, { href: "/admin/categorias/colecoes", label: "Coleções" }] },
   { href: "/admin/estoque", label: "Estoque", icon: "tag", perm: "stock.view", children: [{ href: "/admin/estoque", label: "Saldos" }, { href: "/admin/estoque/movimentacoes", label: "Movimentações" }, { href: "/admin/estoque/inventario", label: "Inventário e CSV" }] },
   { href: "/admin/pedidos", label: "Pedidos", icon: "cart", perm: "orders.view" },
+  { href: "/admin/atendimento", label: "Atendimento", icon: "chat", perm: "support.chat" },
   { href: "/admin/clientes", label: "Clientes", icon: "users", perm: "customers.view", children: [{ href: "/admin/clientes", label: "Clientes" }, { href: "/admin/clientes/segmentos", label: "Segmentos" }] },
   { href: "/admin/financeiro", label: "Financeiro", icon: "coin", perm: "finance.view" },
   { href: "/admin/marketing", label: "Marketing", icon: "megaphone", perm: "marketing.manage", children: [
-    { href: "/admin/marketing/banners", label: "Banners" }, { href: "/admin/marketing/cupons", label: "Cupons" }, { href: "/admin/marketing/popups", label: "Pop-ups" },
+    { href: "/admin/marketing/remarketing", label: "Remarketing" }, { href: "/admin/marketing/banners", label: "Banners" }, { href: "/admin/marketing/cupons", label: "Cupons" }, { href: "/admin/marketing/popups", label: "Pop-ups" },
     { href: "/admin/marketing/campanhas", label: "Campanhas" }, { href: "/admin/marketing/leads", label: "Leads e newsletter" }, { href: "/admin/marketing/carrinhos", label: "Carrinhos abandonados" },
   ] },
   { href: "/admin/conteudo", label: "Conteúdo", icon: "file", perm: "content.manage", children: [{ href: "/admin/conteudo/homepage", label: "Homepage" }, { href: "/admin/conteudo/paginas", label: "Páginas" }, { href: "/admin/conteudo/faq", label: "Perguntas frequentes" }, { href: "/admin/conteudo/midia", label: "Biblioteca de mídia" }] },
@@ -32,11 +33,13 @@ const NAV: (NavItem & { perm: Permission })[] = [
 export default async function PainelLayout({ children }: { children: React.ReactNode }) {
   const admin = await requireAdmin();
   const nav = NAV.filter((n) => admin.can(n.perm) || (n.href === "/admin/usuarios" && admin.can("audit.view"))).map(({ perm: _p, ...n }) => n);
+  const navWithBadges = () => nav.map((n) => (n.href === "/admin/atendimento" && waiting ? { ...n, label: `Atendimento (${waiting})` } : n));
   const notes = await prisma.adminNotification.findMany({ where: { OR: [{ adminId: admin.id }, { adminId: null }] }, orderBy: { createdAt: "desc" }, take: 15 });
+  const waiting = admin.can("support.chat") ? await prisma.chatConversation.count({ where: { status: { in: ["WAITING_HUMAN", "HUMAN"] }, unreadAdmin: { gt: 0 } } }) : 0;
   const unread = await prisma.adminNotification.count({ where: { readAt: null, OR: [{ adminId: admin.id }, { adminId: null }] } });
   return (
     <Shell
-      nav={nav}
+      nav={navWithBadges()}
       user={{ name: admin.name, role: ROLE_LABEL[admin.role] }}
       topbar={
         <>

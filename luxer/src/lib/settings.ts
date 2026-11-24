@@ -77,6 +77,21 @@ export const DEFAULT_SETTINGS = {
     newsletterConsentText: "Aceito receber novidades e ofertas da Luxer Joias por e-mail. Posso cancelar a qualquer momento.",
     instagramPosts: [] as { imageKey: string; url: string; caption?: string }[],
   },
+  concierge: {
+    enabled: true,
+    /** IA responde primeiro; sem ANTHROPIC_API_KEY o chat vai direto para a equipe */
+    aiEnabled: true,
+    model: "claude-opus-5-5",
+    greeting: "Olá! Sou o Concierge Luxer. Posso ajudar a encontrar a joia ideal, tirar dúvidas sobre aro, certificado, pagamento e prazos — ou chamar alguém da nossa equipe.",
+    offlineMessage: "Nossa equipe responde de segunda a sexta, das 10h às 17h. Deixe sua mensagem e seu contato: retornamos assim que possível.",
+    extraInstructions: "",
+    quickAnswers: [
+      { title: "Numeração de aro", answer: "Os anéis e alianças da Luxer são oferecidos do aro 13 ao 30, conforme a peça. Se você já usa um anel, meça a circunferência interna em milímetros (ou passe um fio no dedo e meça) e envie para nossa equipe, que confirma o aro ideal antes do envio." },
+      { title: "Certificado Amagold", answer: "Todas as joias Luxer acompanham certificado de garantia e nota fiscal. Garantimos o teor do ouro 18 quilates e a pureza das pedras descritas." },
+      { title: "Prazos de entrega", answer: "O prazo é de 10 dias úteis de preparo somado ao prazo da transportadora, contado a partir da aprovação do pagamento. Informe seu CEP na página da joia para ver valor e prazo exatos." },
+      { title: "Pagamento", answer: "Aceitamos Pix com desconto e cartão de crédito parcelado. O pagamento é processado com segurança pela Pagar.me." },
+    ] as { title: string; answer: string }[],
+  },
   ai: {
     tryOnEnabled: false,
     provider: "gemini" as "gemini" | "openai",

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { customerLogin, customerLogout, startCustomerSession, getCustomer, customerPasswordOk, CUSTOMER_PASSWORD_RULES, createCustomerToken, consumeCustomerToken } from "@/lib/customer-auth";
-import { rateLimit } from "@/lib/rate-limit";
+import { rateLimit, resetRateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request-meta";
 import { sendMail, appUrl } from "@/lib/mail";
 import { isValidEmail, onlyDigits, UFS } from "@/lib/validators";
@@ -18,6 +18,7 @@ export async function loginCustomer(_: ActionState, fd: FormData): Promise<Actio
   if (!(await rateLimit(`cust-login:${ip}`, 20, 900)) || !(await rateLimit(`cust-login:${email}`, 8, 900))) return fail("Muitas tentativas. Aguarde 15 minutos.");
   const c = await customerLogin(email, str(fd, "password"));
   if (!c) return fail("E-mail ou senha incorretos.");
+  await resetRateLimit(`cust-login:${email}`);
   redirect(safeBack(str(fd, "voltar")));
 }
 

@@ -8,7 +8,7 @@ import { isValidEmail, onlyDigits } from "@/lib/validators";
 import { bool, dec, fail, int, money, ok, str, type ActionState } from "@/lib/action";
 import type { Permission } from "@/lib/permissions";
 
-const GROUP_PERMISSION: Partial<Record<SettingsGroup, Permission>> = { ai: "ai.manage", analytics: "integrations.manage", payment: "integrations.manage" };
+const GROUP_PERMISSION: Partial<Record<SettingsGroup, Permission>> = { ai: "ai.manage", concierge: "ai.manage", analytics: "integrations.manage", payment: "integrations.manage" };
 
 const emails = (v: string) => v.split(/[,;\s]+/).map((e) => e.trim().toLowerCase()).filter(Boolean);
 const hex = (v: string, d: string) => (/^#[0-9a-f]{6}$/i.test(v) ? v : d);
@@ -101,6 +101,16 @@ export async function saveSettings(_: ActionState, fd: FormData): Promise<Action
         }).filter((p) => p.imageKey && p.url).slice(0, 12);
         next = { whatsappButton: bool(fd, "whatsappButton"), whatsappMessage: str(fd, "whatsappMessage"), cartRecoveryEnabled: bool(fd, "cartRecoveryEnabled"),
           cartRecoveryDelayHours: Math.max(1, int(fd, "cartRecoveryDelayHours") ?? 3), newsletterConsentText: str(fd, "newsletterConsentText") || s.marketing.newsletterConsentText, instagramPosts: posts };
+        break;
+      }
+      case "concierge": {
+        const qa = str(fd, "quickAnswers").split(/\r?\n/).map((l) => l.trim()).filter(Boolean).map((l) => {
+          const i = l.indexOf("|");
+          return i > 0 ? { title: l.slice(0, i).trim(), answer: l.slice(i + 1).trim() } : null;
+        }).filter(Boolean) as { title: string; answer: string }[];
+        next = { enabled: bool(fd, "enabled"), aiEnabled: bool(fd, "aiEnabled"), model: str(fd, "model").replace(/[^A-Za-z0-9._-]/g, "") || "claude-opus-5-5",
+          greeting: str(fd, "greeting") || s.concierge.greeting, offlineMessage: str(fd, "offlineMessage") || s.concierge.offlineMessage,
+          extraInstructions: str(fd, "extraInstructions").slice(0, 4000), quickAnswers: qa.slice(0, 12) };
         break;
       }
       case "ai": {

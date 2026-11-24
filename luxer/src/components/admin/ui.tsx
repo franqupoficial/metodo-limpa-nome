@@ -9,7 +9,7 @@ export function PageHeader({ title, subtitle, actions, back }: { title: string; 
         <h1 className="text-xl font-semibold tracking-tight text-zinc-900 sm:text-2xl">{title}</h1>
         {subtitle && <p className="mt-1 text-sm text-zinc-500">{subtitle}</p>}
       </div>
-      {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
+      {actions && <div className="flex min-w-0 max-w-full flex-wrap gap-2">{actions}</div>}
     </div>
   );
 }
@@ -32,7 +32,7 @@ export function Badge({ tone = "gray", children }: { tone?: Tone; children: Reac
 
 export function Card({ title, actions, children, className = "", pad = true }: { title?: ReactNode; actions?: ReactNode; children: ReactNode; className?: string; pad?: boolean }) {
   return (
-    <section className={`card ${className}`}>
+    <section className={`card min-w-0 ${className}`}>
       {(title || actions) && (
         <div className="flex items-center justify-between gap-2 border-b border-zinc-100 px-4 py-3">
           <h2 className="text-sm font-semibold text-zinc-800">{title}</h2>

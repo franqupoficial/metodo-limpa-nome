@@ -10,6 +10,7 @@ import { existsSync, readFileSync } from "node:fs";
 import bcrypt from "bcryptjs";
 import { prisma } from "../src/lib/db";
 import { slugify } from "../src/lib/format";
+import { ensureDefaultFlows } from "../src/lib/remarketing";
 
 async function owner() {
   const email = (process.env.OWNER_EMAIL || "").trim().toLowerCase();
@@ -71,6 +72,15 @@ async function home() {
   await prisma.homeSection.createMany({ data: sections.map((s, i) => ({ ...s, position: i })) });
 }
 
+/** Garante a seção Atelier Concierge logo após a abertura (instalações existentes). */
+async function atelier() {
+  if (await prisma.homeSection.findFirst({ where: { type: "ATELIER" } })) return;
+  const hero = await prisma.homeSection.findFirst({ where: { type: "HERO" } });
+  const pos = (hero?.position ?? 0) + 1;
+  await prisma.homeSection.updateMany({ where: { position: { gte: pos } }, data: { position: { increment: 1 } } });
+  await prisma.homeSection.create({ data: { type: "ATELIER", title: "Encontre a joia ideal em três escolhas", subtitle: "Atelier Concierge", position: pos } });
+}
+
 async function faq() {
   if (await prisma.faqItem.count()) return;
   // Respostas extraídas das políticas publicadas pela própria Luxer no site atual.
@@ -89,6 +99,8 @@ async function main() {
   await pages();
   await home();
   await faq();
+  await atelier();
+  await ensureDefaultFlows(); // fluxos de remarketing criados DESATIVADOS
 }
 
 main()

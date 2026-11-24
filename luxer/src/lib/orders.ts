@@ -7,6 +7,7 @@ import { notify } from "./notifications";
 import { ORDER_STATUS_LABEL, canTransition, REVENUE_STATUSES } from "./order-status";
 import * as pagarme from "./payments/pagarme";
 import { correiosTrackingUrl } from "./shipping";
+import { attributeOrder } from "./remarketing";
 
 type Actor = { id: string; name: string } | null;
 
@@ -80,6 +81,7 @@ export async function markPaid(orderId: string) {
   });
   if (!updated) return;
   await addEvent(orderId, "payment", "Pagamento aprovado.", null, { internal: false });
+  await attributeOrder(updated).catch((e) => console.error("[remarketing] atribuição", e));
   await orderMails.paid(updated);
   await notify("orders", `Novo pedido pago #${updated.number}`, `${updated.name} · ${(updated.totalCents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`, `/admin/pedidos/${updated.id}`);
 }

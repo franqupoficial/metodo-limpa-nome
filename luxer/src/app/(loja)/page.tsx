@@ -10,6 +10,9 @@ import { HeroCarousel } from "@/components/site/HeroCarousel";
 import { ProductGrid } from "@/components/site/ProductCard";
 import { SectionHead, Container } from "@/components/site/Section";
 import { NewsletterForm } from "@/components/site/NewsletterForm";
+import { CinematicHero, type HeroJewel } from "@/components/site/CinematicHero";
+import { AtelierFinder } from "@/components/site/AtelierFinder";
+import { cutoutUrl } from "@/lib/cutout";
 
 export const dynamic = "force-dynamic";
 
@@ -34,33 +37,41 @@ export default async function Home() {
     const limit = cfg.limit ?? 8;
     switch (sec.type) {
       case "HERO": {
+        // joia em destaque por temperatura do ouro (peças reais do catálogo); referências fixas via config.refs
+        const pick = async (where: Prisma.ProductWhereInput): Promise<HeroJewel | null> => {
+          const p = await prisma.product.findFirst({ where: { AND: [visibleWhere(), { images: { some: {} } }, cfg.refs?.length ? { ref: { in: cfg.refs } } : {}, where] }, orderBy: [{ featured: "desc" }, { bestSeller: "desc" }, { priceCents: "desc" }], select: { name: true, slug: true, ref: true, images: { take: 1, orderBy: { position: "asc" }, select: { id: true } } } });
+          if (!p?.images[0]) return null;
+          const image = await cutoutUrl(p.images[0].id);
+          return image ? { name: p.name, slug: p.slug, ref: p.ref, image } : null;
+        };
+        const inCat = (slug: string) => ({ categories: { some: { category: { OR: [{ slug }, { parent: { slug } }] } } } });
+        const amarelo = (await pick({ AND: [inCat("aneis"), { color: { contains: "amarelo", mode: "insensitive" } }, { stoneType: { not: null } }] })) ?? (await pick({}));
+        if (!amarelo) break;
+        const branco = await pick({ AND: [inCat("aneis"), { color: { contains: "branco", mode: "insensitive" } }] });
+        const rose = (await pick({ AND: [{ OR: [inCat("aneis"), inCat("pingentes"), inCat("brincos")] }, { OR: [{ color: { contains: "ros", mode: "insensitive" } }, { goldType: { contains: "ros", mode: "insensitive" } }] }] }));
+        out.push(
+          <CinematicHero key={sec.id} jewels={{ amarelo, ...(branco ? { branco } : {}), ...(rose ? { rose } : {}) }}
+            eyebrow={sec.subtitle ?? "Alta joalheria em ouro 18 quilates · Curitiba"}
+            title={sec.title?.includes("|") ? (sec.title.split("|").map((x) => x.trim()) as [string, string]) : ["A joia certa", "para cada história."]}
+            subtitle={cfg.text ?? "Alianças, anéis, correntes, brincos e pingentes em ouro 18k — com certificado de garantia, nota fiscal e atendimento de joalheria."}
+            primary={{ label: cfg.ctaLabel ?? "Explorar coleção", href: cfg.ctaUrl ?? "/busca" }} secondaryLabel="Descobrir minha joia ideal" />,
+        );
+        // banners do painel seguem como faixa editorial logo após a abertura
         const banners = await prisma.banner.findMany({ where: { placement: "HOME_HERO", active: true, imageKey: { not: null }, AND: [{ OR: [{ startsAt: null }, { startsAt: { lte: now } }] }, { OR: [{ endsAt: null }, { endsAt: { gt: now } }] }] }, orderBy: { position: "asc" } });
-        if (banners.length) {
-          out.push(<HeroCarousel key={sec.id} slides={banners.map((b) => ({ id: b.id, eyebrow: b.eyebrow, title: b.title, subtitle: b.subtitle, ctaLabel: b.ctaLabel, ctaUrl: b.ctaUrl, image: mediaUrl(b.imageKey)!, mobile: mediaUrl(b.mobileKey), theme: b.theme }))} />);
-        } else {
-          // sem banner cadastrado: destaque editorial com fotografia real do catálogo
-          const hero = await prisma.product.findFirst({ where: { AND: [visibleWhere(), { images: { some: {} } }, { OR: [{ featured: true }, { priceCents: { gte: 500000 } }] }] }, orderBy: [{ featured: "desc" }, { priceCents: "desc" }], select: { name: true, slug: true, images: { take: 1, orderBy: { position: "asc" }, select: { key: true } } } });
-          out.push(
-            <section key={sec.id} className="relative overflow-hidden bg-ink text-ivory">
-              <div className="mx-auto grid max-w-[1440px] items-center gap-10 px-6 py-16 sm:px-12 lg:min-h-[78svh] lg:grid-cols-[1.05fr_1fr] lg:py-0">
-                <div className="order-2 lg:order-1">
-                  <div className="eyebrow animate-fade-up text-gold">Ouro 18 quilates · Curitiba</div>
-                  <h1 className="display mt-5 animate-fade-up text-5xl sm:text-7xl xl:text-[5.5rem]">A joia certa<br /><em className="text-gold-soft">para cada história.</em></h1>
-                  <p className="mt-6 max-w-md animate-fade-up text-base leading-relaxed text-ivory/70">Alianças, anéis, correntes, brincos e pingentes em ouro 18k, com certificado de garantia e nota fiscal.</p>
-                  <div className="mt-9 flex flex-wrap gap-3"><Link href="/categoria/aneis" className="btn-line border-gold text-gold">Descobrir joias</Link><Link href="/luxer-fe" className="btn-line border-white/30 text-ivory">Luxer Fé</Link></div>
-                </div>
-                {hero?.images[0] && (
-                  <Link href={`/produto/${hero.slug}`} className="relative order-1 mx-auto aspect-square w-full max-w-[560px] overflow-hidden bg-ivory lg:order-2">
-                    <img src={mediaUrl(hero.images[0].key)!} alt={hero.name} className="h-full w-full animate-slow-zoom object-cover" fetchPriority="high" />
-                    <span className="absolute bottom-4 left-4 bg-ink/80 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-gold-soft">{hero.name}</span>
-                  </Link>
-                )}
-              </div>
-            </section>,
-          );
-        }
+        if (banners.length) out.push(<div key={`${sec.id}-banners`} className="[&>section]:h-[62svh] [&>section]:min-h-[420px]"><HeroCarousel slides={banners.map((b) => ({ id: b.id, eyebrow: b.eyebrow, title: b.title, subtitle: b.subtitle, ctaLabel: b.ctaLabel, ctaUrl: b.ctaUrl, image: mediaUrl(b.imageKey)!, mobile: mediaUrl(b.mobileKey), theme: b.theme }))} /></div>);
         break;
       }
+      case "ATELIER":
+        out.push(
+          <section key={sec.id} id="atelier" className="relative overflow-hidden bg-[#060606] py-20 sm:py-28">
+            <div aria-hidden className="pointer-events-none absolute left-1/2 top-0 h-[50vmin] w-[80vmin] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(212,175,55,0.12),transparent_70%)] blur-3xl" />
+            <Container className="relative">
+              <div className="mb-10 text-center"><div className="eyebrow text-[var(--color-atelier)]">{sec.subtitle ?? "Atelier Concierge"}</div><h2 className="display mt-3 text-4xl text-ivory sm:text-5xl">{sec.title ?? "Encontre a joia ideal em três escolhas"}</h2></div>
+              <AtelierFinder whatsapp={s.contact.whatsapp} />
+            </Container>
+          </section>,
+        );
+        break;
       case "CATEGORIES": {
         const cats = await prisma.category.findMany({ where: { parentId: null, active: true, faith: false }, orderBy: [{ position: "asc" }, { name: "asc" }], take: 8 });
         const tiles = await Promise.all(cats.map(async (c) => {
@@ -119,8 +130,12 @@ export default async function Home() {
       case "FAITH": {
         const items = await products({ categories: { some: { category: { faith: true } } } }, [{ featured: "desc" }, { salesCount: "desc" }, { priceCents: "desc" }], 4);
         if (!items.length) break;
+        const faithCuts = await Promise.all(items.map(async (p) => {
+          const img = await prisma.productImage.findFirst({ where: { product: { slug: p.slug } }, orderBy: { position: "asc" }, select: { id: true } });
+          return img ? cutoutUrl(img.id) : p.image;
+        }));
         out.push(
-          <section key={sec.id} className="bg-ink py-20 text-ivory sm:py-28"><Container>
+          <section key={sec.id} className="bg-[#060606] py-20 text-ivory sm:py-28"><Container>
             <div className="grid gap-12 lg:grid-cols-[1fr_2fr] lg:items-center">
               <div>
                 <div className="eyebrow text-gold">Luxer Fé</div>
@@ -128,7 +143,7 @@ export default async function Home() {
                 <p className="mt-5 max-w-sm leading-relaxed text-ivory/65">{cfg.text ?? sec.subtitle ?? "Nossa Senhora, Divino Espírito Santo, crucifixos, medalhas e escapulários em ouro 18k — joias que acompanham a sua fé."}</p>
                 <Link href={cfg.ctaUrl ?? "/luxer-fe"} className="btn-line mt-8 border-gold text-gold">{cfg.ctaLabel ?? "Conhecer a coleção"}</Link>
               </div>
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 [&_h3]:text-ivory [&_.bg-sand]:bg-ivory">{items.map((p) => <Link key={p.id} href={`/produto/${p.slug}`} className="group"><div className="aspect-square overflow-hidden bg-ivory">{p.image && <img src={p.image} alt={p.alt} loading="lazy" className="h-full w-full object-cover mix-blend-multiply transition duration-700 group-hover:scale-105" />}</div><div className="mt-3 line-clamp-2 font-serif text-sm text-ivory/90">{p.name}</div></Link>)}</div>
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">{items.map((p, k) => <Link key={p.id} href={`/produto/${p.slug}`} className="group"><div className="relative aspect-square"><div aria-hidden className="absolute inset-[20%] rounded-full bg-[radial-gradient(circle,rgba(212,175,55,0.16),transparent_70%)] blur-2xl transition group-hover:opacity-100" />{faithCuts[k] && <img src={faithCuts[k]!} alt={p.alt} loading="lazy" className="relative h-full w-full object-contain p-3 transition duration-700 [filter:drop-shadow(0_18px_20px_rgba(0,0,0,.6))] group-hover:scale-105" />}</div><div className="mt-3 line-clamp-2 font-serif text-sm text-ivory/90">{p.name}</div><div className="mt-1 text-xs text-gold">{p.price.price ? (p.price.price / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : ""}</div></Link>)}</div>
             </div>
           </Container></section>,
         );

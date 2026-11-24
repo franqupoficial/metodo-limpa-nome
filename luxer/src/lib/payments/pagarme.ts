@@ -10,7 +10,8 @@ import { timingSafeEqual } from "node:crypto";
  * Os dados do cartão nunca passam pelo nosso servidor: o navegador envia o cartão direto à Pagar.me
  * e recebemos apenas o card_token.
  */
-const BASE = "https://api.pagar.me/core/v5";
+// PAGARME_API_URL só deve ser definido em testes automatizados (servidor simulado local)
+const BASE = process.env.PAGARME_API_URL || "https://api.pagar.me/core/v5";
 
 export const pagarmeConfigured = () => Boolean(process.env.PAGARME_SECRET_KEY);
 export const pagarmeSandbox = () => (process.env.PAGARME_SECRET_KEY || "").startsWith("sk_test_");

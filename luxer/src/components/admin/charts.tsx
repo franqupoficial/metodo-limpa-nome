@@ -18,10 +18,11 @@ const compact = (c: number) => {
 
 function useWidth<T extends HTMLElement>() {
   const ref = useRef<T>(null);
-  const [w, setW] = useState(640);
+  const [w, setW] = useState(300);
   useEffect(() => {
     if (!ref.current) return;
-    const ro = new ResizeObserver((e) => setW(Math.max(260, e[0].contentRect.width)));
+    setW(Math.max(240, ref.current.clientWidth));
+    const ro = new ResizeObserver((e) => setW(Math.max(240, e[0].contentRect.width)));
     ro.observe(ref.current);
     return () => ro.disconnect();
   }, []);
@@ -51,7 +52,7 @@ export function RevenueChart({ data, currentLabel, previousLabel }: { data: { la
   const empty = data.every((d) => !d.current && !d.previous);
 
   return (
-    <div ref={ref}>
+    <div ref={ref} className="w-full min-w-0 overflow-hidden">
       <div className="mb-2 flex flex-wrap items-center gap-4 text-xs text-zinc-600">
         <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded" style={{ background: C.series }} /> {currentLabel}</span>
         <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded" style={{ background: C.compare }} /> {previousLabel}</span>

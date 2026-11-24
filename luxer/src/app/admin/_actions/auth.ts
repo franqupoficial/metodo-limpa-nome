@@ -1,7 +1,7 @@
 "use server";
 import { redirect } from "next/navigation";
 import { adminLogin, adminLogout, createResetToken, consumeResetToken, getCurrentAdmin } from "@/lib/auth";
-import { rateLimit } from "@/lib/rate-limit";
+import { rateLimit, resetRateLimit } from "@/lib/rate-limit";
 import { clientIp } from "@/lib/request-meta";
 import { prisma } from "@/lib/db";
 import { sendMail, appUrl } from "@/lib/mail";
@@ -14,6 +14,7 @@ export async function loginAction(_: ActionState, fd: FormData): Promise<ActionS
     return fail("Muitas tentativas. Aguarde 15 minutos.");
   const r = await adminLogin(email, String(fd.get("password") ?? ""));
   if (!r.ok) return fail(r.error);
+  await resetRateLimit(`admin-login:email:${email}`);
   const next = str(fd, "next");
   redirect(next.startsWith("/admin") && !next.startsWith("//") ? next : "/admin");
 }

@@ -7,6 +7,7 @@ import { lowStockVariants } from "./stock";
 import { notify } from "./notifications";
 import { deleteObject } from "./storage";
 import { rateLimit } from "./rate-limit";
+import { runAutomations } from "./remarketing";
 
 /** Rotinas periódicas (agendar a cada 15 minutos). Cada etapa é independente: uma falha não interrompe as outras. */
 export async function runJobs() {
@@ -17,6 +18,7 @@ export async function runJobs() {
   await step("pedidosExpirados", expireStaleOrders);
   await step("carrinhos", processAbandonedCarts);
   await step("campanhas", () => processCampaigns());
+  await step("remarketing", runAutomations);
   await step("estoqueBaixo", async () => {
     // alerta no máximo 1x a cada 12h
     if (!(await rateLimit("job:lowstock", 1, 43200))) return "aguardando";

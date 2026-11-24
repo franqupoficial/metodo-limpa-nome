@@ -50,7 +50,7 @@ export function buildPrompt(i: Pick<TryOnInput, "category" | "productName" | "pr
 async function gemini(i: TryOnInput): Promise<TryOnOutput> {
   const key = process.env.GEMINI_API_KEY;
   if (!key) throw new TryOnError("not_configured", "GEMINI_API_KEY não configurada.");
-  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(i.model)}:generateContent`, {
+  const res = await fetch(`${process.env.GEMINI_API_URL || "https://generativelanguage.googleapis.com"}/v1beta/models/${encodeURIComponent(i.model)}:generateContent`, {
     method: "POST",
     headers: { "Content-Type": "application/json", "x-goog-api-key": key },
     body: JSON.stringify({

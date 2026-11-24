@@ -1,13 +1,33 @@
 "use client";
-import { useActionState, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useActionState, useContext, useEffect, useRef, useState, useTransition, type ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
 import type { ActionState } from "@/lib/action";
 
 type Action = (prev: ActionState, fd: FormData) => Promise<ActionState>;
 
+/** Estado de envio dos formulários que não usam o reset automático do React 19. */
+export const PendingContext = createContext<boolean | null>(null);
+
+/**
+ * Envia o formulário à server action SEM o reset automático do React 19
+ * (que apagaria os campos preenchidos quando a ação retorna erro).
+ */
+export function useKeepValuesSubmit(formAction: (fd: FormData) => void) {
+  const [pending, start] = useTransition();
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const submitter = (e.nativeEvent as SubmitEvent).submitter as HTMLButtonElement | null;
+    const fd = new FormData(e.currentTarget, submitter);
+    start(() => formAction(fd));
+  };
+  return { pending, onSubmit };
+}
+
 export function Submit({ children, className = "btn btn-primary", pendingText = "Salvando…", name, value, confirm }: { children: ReactNode; className?: string; pendingText?: string; name?: string; value?: string; confirm?: string }) {
-  const { pending } = useFormStatus();
+  const ctx = useContext(PendingContext);
+  const status = useFormStatus();
+  const pending = ctx ?? status.pending;
   return (
     <button
       className={className}
@@ -35,9 +55,10 @@ export function ActionForm({ action, children, className = "", resetOnSuccess = 
       router.refresh();
     }
   }, [state, router, resetOnSuccess]);
+  const { pending, onSubmit } = useKeepValuesSubmit(formAction);
   return (
-    <form ref={ref} action={formAction} className={className} id={id}>
-      {children}
+    <form ref={ref} onSubmit={onSubmit} className={className} id={id}>
+      <PendingContext.Provider value={pending}>{children}</PendingContext.Provider>
       {state && (
         <p role="status" className={`mt-3 rounded-md px-3 py-2 text-sm ${state.ok ? "bg-emerald-50 text-emerald-800" : "bg-red-50 text-red-700"}`}>
           {state.message}

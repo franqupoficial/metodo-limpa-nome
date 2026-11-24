@@ -8,13 +8,20 @@ import { centsToInput } from "@/lib/action";
 import { PageHeader, Card, Stat, Badge, Field, Alert, Empty } from "@/components/admin/ui";
 import { ActionForm, Submit } from "@/components/admin/forms";
 import { saveSettings } from "../../_actions/settings";
+import { aiSupportConfigured } from "@/lib/ai/support";
 
 export const metadata = { title: "Luxer AI" };
 const CATS: [string, string][] = [["colares", "Colares"], ["correntes", "Correntes"], ["pingentes", "Pingentes"], ["brincos", "Brincos"], ["pulseiras", "Pulseiras"], ["aneis", "Anéis"]];
 
 export default async function LuxerAI() {
   const admin = await requireAdmin("ai.view");
-  const s = (await getSettings()).ai;
+  const all = await getSettings();
+  const s = all.ai;
+  const cg = all.concierge;
+  const [chats30, handoffs30] = await Promise.all([
+    prisma.chatConversation.count({ where: { createdAt: { gte: new Date(Date.now() - 30 * 86400000) }, messages: { some: { role: "USER" } } } }),
+    prisma.chatConversation.count({ where: { createdAt: { gte: new Date(Date.now() - 30 * 86400000) }, handoffReason: { not: null } } }),
+  ]);
   const monthStart = new Date(new Date().toISOString().slice(0, 8) + "01T03:00:00Z");
   const dayStart = new Date(Date.now() - 86400000);
   const [month, byStatus, day, recent, errors, top] = await Promise.all([
@@ -30,7 +37,31 @@ export default async function LuxerAI() {
   const configured = providerConfigured(s.provider);
   return (
     <>
-      <PageHeader title="Luxer AI" subtitle="LUXER AI TRY-ON — provador virtual de joias com IA generativa." />
+      <PageHeader title="Luxer AI" subtitle="Concierge Luxer (atendimento com IA + equipe) e LUXER AI TRY-ON (provador virtual)." />
+      <Card title="Concierge Luxer — atendimento" className="mb-6">
+        <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <Stat label="Status" value={cg.enabled ? (cg.aiEnabled && aiSupportConfigured() ? "IA + equipe" : "Somente equipe") : "Desligado"} hint={aiSupportConfigured() ? cg.model : "ANTHROPIC_API_KEY ausente"} />
+          <Stat label="Conversas (30 dias)" value={chats30} />
+          <Stat label="Transferidas à equipe" value={handoffs30} hint={chats30 ? `${((handoffs30 / chats30) * 100).toFixed(0)}% das conversas` : undefined} />
+          <div className="card flex items-center justify-center p-4"><Link href="/admin/atendimento" className="btn btn-primary">Abrir atendimento</Link></div>
+        </div>
+        {admin.can("ai.manage") && (
+          <ActionForm action={saveSettings} className="grid gap-3 lg:grid-cols-2"><input type="hidden" name="group" value="concierge" />
+            <div className="space-y-3">
+              <label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" name="enabled" defaultChecked={cg.enabled} /> Concierge (botão e chat) ativo na loja</label>
+              <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="aiEnabled" defaultChecked={cg.aiEnabled} /> IA responde primeiro (Claude)</label>
+              <Field label="Modelo"><input name="model" defaultValue={cg.model} className="input font-mono text-xs" /></Field>
+              <Field label="Mensagem de boas-vindas"><textarea name="greeting" defaultValue={cg.greeting} rows={3} className="input" /></Field>
+              <Field label="Mensagem fora do horário"><textarea name="offlineMessage" defaultValue={cg.offlineMessage} rows={2} className="input" /></Field>
+            </div>
+            <div className="space-y-3">
+              <Field label="Respostas rápidas (uma por linha: Título | Resposta)" hint="Exibidas como atalhos no Concierge e usadas pela IA como fonte oficial. Confira o texto do certificado antes de publicar."><textarea name="quickAnswers" rows={7} defaultValue={cg.quickAnswers.map((q) => `${q.title} | ${q.answer}`).join("\n")} className="input text-xs" /></Field>
+              <Field label="Orientações adicionais para a IA" hint="Ex.: promoções vigentes, tom de voz, assuntos a evitar. A IA nunca inventa preços ou estoque: ela consulta o catálogo."><textarea name="extraInstructions" defaultValue={cg.extraInstructions} rows={4} className="input text-xs" /></Field>
+              <Submit>Salvar Concierge</Submit>
+            </div>
+          </ActionForm>
+        )}
+      </Card>
       {!configured && <div className="mb-4"><Alert>O provedor <b>{s.provider === "gemini" ? "Google Gemini" : "OpenAI"}</b> não tem credencial configurada ({s.provider === "gemini" ? "GEMINI_API_KEY" : "OPENAI_API_KEY"}). O provador fica indisponível na loja, exibindo a mensagem de indisponibilidade.</Alert></div>}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
         <Stat label="Status" value={s.tryOnEnabled && configured ? "Ativo" : "Inativo"} hint={s.tryOnEnabled ? (configured ? s.model : "sem credencial") : "desligado no painel"} />

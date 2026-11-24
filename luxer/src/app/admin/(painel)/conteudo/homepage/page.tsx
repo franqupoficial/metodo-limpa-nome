@@ -7,7 +7,7 @@ import { saveHomeSection, addHomeSection, deleteHomeSection } from "../../../_ac
 
 export const metadata = { title: "Homepage" };
 const TYPES: Record<string, string> = {
-  HERO: "Destaque principal (banners)", CATEGORIES: "Categorias", BESTSELLERS: "Mais vendidos", NEW: "Novidades", COLLECTIONS: "Coleções especiais",
+  HERO: "Abertura cinematográfica (título: “linha 1 | linha 2”; banners do painel aparecem logo abaixo)", ATELIER: "Atelier Concierge (compra guiada)", CATEGORIES: "Categorias", BESTSELLERS: "Mais vendidos", NEW: "Novidades", COLLECTIONS: "Coleções especiais",
   FAITH: "Luxer Fé", RECOMMENDED: "Produtos recomendados", PRODUCTS: "Vitrine manual (referências)", TRYON: "Provador virtual", STORY: "História da marca",
   REVIEWS: "Avaliações", INSTAGRAM: "Instagram", NEWSLETTER: "Newsletter", EDITORIAL: "Bloco editorial (imagem + texto)",
 };
@@ -33,10 +33,10 @@ export default async function HomeEditor() {
                 <Field label="Título"><input name="title" defaultValue={s.title ?? ""} className="input" /></Field>
                 <Field label="Subtítulo"><input name="subtitle" defaultValue={s.subtitle ?? ""} className="input" /></Field>
                 {["BESTSELLERS", "NEW", "RECOMMENDED", "FAITH", "REVIEWS", "PRODUCTS"].includes(s.type) && <Field label="Quantidade de itens"><input name="limit" type="number" min={2} max={24} defaultValue={cfg.limit ?? 8} className="input" /></Field>}
-                {["PRODUCTS", "BESTSELLERS", "NEW"].includes(s.type) && <Field label="Referências fixas (opcional)" hint="Se preenchido, mostra exatamente estas peças, nesta ordem."><input name="refs" defaultValue={cfg.refs?.join(", ") ?? ""} className="input font-mono text-xs" /></Field>}
+                {["PRODUCTS", "BESTSELLERS", "NEW", "HERO"].includes(s.type) && <Field label="Referências fixas (opcional)" hint="Se preenchido, mostra exatamente estas peças, nesta ordem."><input name="refs" defaultValue={cfg.refs?.join(", ") ?? ""} className="input font-mono text-xs" /></Field>}
                 {s.type === "COLLECTIONS" && <p className="text-xs text-zinc-500 sm:col-span-2">Exibe as coleções marcadas como “Destacar na homepage”.</p>}
-                {["STORY", "TRYON", "EDITORIAL", "FAITH", "NEWSLETTER"].includes(s.type) && <Field label="Texto" className="sm:col-span-2"><textarea name="text" defaultValue={cfg.text ?? ""} rows={3} className="input" /></Field>}
-                {["STORY", "TRYON", "EDITORIAL", "FAITH"].includes(s.type) && <>
+                {["STORY", "TRYON", "EDITORIAL", "FAITH", "NEWSLETTER", "HERO"].includes(s.type) && <Field label="Texto" className="sm:col-span-2"><textarea name="text" defaultValue={cfg.text ?? ""} rows={3} className="input" /></Field>}
+                {["STORY", "TRYON", "EDITORIAL", "FAITH", "HERO"].includes(s.type) && <>
                   <Field label="Texto do botão"><input name="ctaLabel" defaultValue={cfg.ctaLabel ?? ""} className="input" /></Field>
                   <Field label="Link do botão"><input name="ctaUrl" defaultValue={cfg.ctaUrl ?? ""} className="input" /></Field>
                   <Field label="Imagem"><input type="file" name="image" accept="image/*" className="text-sm" />{cfg.imageKey && <img src={mediaUrl(cfg.imageKey)!} alt="" className="mt-2 h-20 rounded object-cover" />}</Field>

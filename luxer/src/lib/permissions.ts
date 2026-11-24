@@ -24,6 +24,7 @@ export const PERMISSIONS = {
   "marketing.manage": "Banners, pop-ups, cupons e campanhas",
   "content.manage": "Páginas, homepage e perguntas frequentes",
   "reviews.moderate": "Moderar avaliações",
+  "support.chat": "Atendimento ao cliente (chat)",
   "ai.view": "Consultar Luxer AI",
   "ai.manage": "Configurar Luxer AI",
   "reports.view": "Ver relatórios",
@@ -50,16 +51,16 @@ export const ROLE_PERMISSIONS: Record<AdminRole, Permission[]> = {
     "dashboard.view", "products.view", "products.edit", "products.price", "products.publish", "products.delete",
     "categories.manage", "stock.view", "stock.adjust", "orders.view", "orders.update", "orders.cancel",
     "customers.view", "customers.edit", "customers.export", "marketing.manage", "content.manage",
-    "reviews.moderate", "ai.view", "reports.view", "audit.view",
+    "reviews.moderate", "support.chat", "ai.view", "reports.view", "audit.view",
   ],
   MANAGER: [
     "dashboard.view", "products.view", "products.edit", "products.price", "products.publish", "categories.manage",
     "stock.view", "stock.adjust", "orders.view", "orders.update", "orders.cancel", "customers.view",
-    "reviews.moderate", "reports.view", "ai.view",
+    "reviews.moderate", "reports.view", "ai.view", "support.chat",
   ],
-  OPERATOR: ["dashboard.view", "products.view", "stock.view", "orders.view", "orders.update"],
+  OPERATOR: ["dashboard.view", "products.view", "stock.view", "orders.view", "orders.update", "support.chat"],
   MARKETING: [
-    "dashboard.view", "products.view", "marketing.manage", "content.manage", "reviews.moderate", "reports.view", "ai.view",
+    "dashboard.view", "products.view", "marketing.manage", "content.manage", "reviews.moderate", "reports.view", "ai.view", "support.chat",
   ],
 };
 

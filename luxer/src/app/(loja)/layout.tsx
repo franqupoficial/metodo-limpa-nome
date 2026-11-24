@@ -11,6 +11,7 @@ import { Consent } from "@/components/site/Consent";
 import { WhatsAppButton } from "@/components/site/WhatsAppButton";
 import { Popup } from "@/components/site/Popup";
 import { CompareBar } from "@/components/site/Compare";
+import { Concierge } from "@/components/site/Concierge";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,9 @@ export default async function StoreLayout({ children }: { children: React.ReactN
       <Header cats={cats} cartCount={cart.count} logo={mediaUrl(s.store.logoKey)} storeName={s.store.name} announcement={announcement} logged={Boolean(customer)} />
       <main id="conteudo" className="flex-1">{children}</main>
       <Footer s={s} pages={pages} cats={cats.filter((c) => !c.faith).map((c) => ({ slug: c.slug, name: c.name }))} />
-      {s.marketing.whatsappButton && <WhatsAppButton number={s.contact.whatsapp} message={s.marketing.whatsappMessage} />}
+      {s.concierge.enabled ? (
+        <Concierge greeting={s.concierge.greeting} quick={s.concierge.quickAnswers} whatsapp={s.marketing.whatsappButton ? s.contact.whatsapp : ""} whatsappMessage={s.marketing.whatsappMessage} chatEnabled />
+      ) : s.marketing.whatsappButton && <WhatsAppButton number={s.contact.whatsapp} message={s.marketing.whatsappMessage} />}
       <CompareBar />
       <Consent ids={{ ga4Id: s.analytics.ga4Id, gtmId: s.analytics.gtmId, metaPixelId: s.analytics.metaPixelId }} />
       <Popup consentText={s.marketing.newsletterConsentText} popup={popup ? { id: popup.id, title: popup.title, body: popup.body, image: mediaUrl(popup.imageKey), ctaLabel: popup.ctaLabel, ctaUrl: popup.ctaUrl, couponCode: popup.couponCode, collectEmail: popup.collectEmail, delaySeconds: popup.delaySeconds, pages: popup.pages } : null} />

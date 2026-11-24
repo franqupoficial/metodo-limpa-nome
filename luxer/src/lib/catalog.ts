@@ -14,7 +14,7 @@ export const cardSelect = {
   id: true, name: true, slug: true, ref: true, priceCents: true, compareAtCents: true, pixPriceCents: true,
   promoStartsAt: true, promoEndsAt: true, maxInstallments: true, isNew: true, bestSeller: true, trackStock: true,
   ratingAvg: true, ratingCount: true, material: true,
-  images: { orderBy: { position: "asc" }, take: 2, select: { key: true, thumbKey: true, alt: true } },
+  images: { orderBy: { position: "asc" }, take: 2, select: { id: true, key: true, thumbKey: true, alt: true } },
   variants: { where: { active: true }, select: { stock: true, reserved: true } },
 } satisfies Prisma.ProductSelect;
 
@@ -57,37 +57,9 @@ export async function toCards(rows: CardRow[]): Promise<ProductCard[]> {
 
 // ─────────── Busca ───────────
 
-const SYNONYMS: Record<string, string[]> = {
-  colar: ["colar", "corrente", "gargantilha"],
-  corrente: ["corrente", "colar"],
-  diamante: ["diamante", "brilhante"],
-  brilhante: ["brilhante", "diamante"],
-  alianca: ["alianca", "aliancas"],
-  anel: ["anel", "aneis", "solitario"],
-  aneis: ["anel", "aneis"],
-  brinco: ["brinco", "brincos", "argola"],
-  pulseira: ["pulseira", "bracelete"],
-  pingente: ["pingente", "medalha"],
-  medalha: ["medalha", "pingente"],
-  ouro: ["ouro"],
-  "18k": ["18 kilates", "18k", "18 quilates"],
-  religioso: ["religios", "santo", "santa", "cruz", "crucifixo", "nossa senhora", "espirito santo", "terco", "escapulario"],
-  fe: ["religios", "santo", "santa", "cruz", "crucifixo", "nossa senhora", "espirito santo"],
-  zirconia: ["zirconia", "zirconias"],
-  perola: ["perola", "perolas"],
-};
-
-export const normalize = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
-
-export function searchTokens(q: string): string[][] {
-  const STOP = new Set(["de", "da", "do", "em", "com", "e", "para", "a", "o", "as", "os"]);
-  return normalize(q)
-    .replace(/[^a-z0-9 ]/g, " ")
-    .split(/\s+/)
-    .filter((t) => t.length > 1 && !STOP.has(t))
-    .slice(0, 8)
-    .map((t) => SYNONYMS[t] ?? (t.endsWith("s") && t.length > 4 ? [t, t.slice(0, -1)] : [t]));
-}
+import { searchTokens } from "./search-tokens";
+export { searchTokens };
+export { normalize } from "./catalog-normalize";
 
 /** IDs de produtos visíveis que casam com todos os termos (cada termo aceita sinônimos), ordenados por relevância. */
 export async function searchIds(q: string, limit = 500): Promise<string[]> {
