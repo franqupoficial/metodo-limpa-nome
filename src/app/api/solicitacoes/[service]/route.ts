@@ -44,6 +44,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ service
   const service = MAP[slug];
   if (!service) return bad("Serviço inválido.", 404);
   if (!sameOrigin(req)) return bad("Origem não autorizada.", 403);
+  if (!(await getSetting("services.enabled"))[service]) return bad("Este serviço está temporariamente indisponível.", 403);
 
   const ip = await clientIp();
   if (!(await rateLimit(`submit:${ip}`, 10, 3600))) return bad("Muitas solicitações em pouco tempo. Tente novamente mais tarde.", 429);

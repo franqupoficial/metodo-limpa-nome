@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { SERVICES } from "@/lib/services";
+import { activeServices, hiddenPaths } from "@/lib/services";
+import { getEnabledServices } from "@/lib/settings";
 import { PageHero } from "@/components/ui";
 import { Icon } from "@/components/Icon";
 import { FAQ_CNPJ, FAQ_CONSUMIDOR, FAQ_EMPRESTIMO, FAQ_GERAL, FAQ_LVB } from "@/content/faq";
@@ -28,9 +29,11 @@ export default async function Busca({ searchParams }: { searchParams: Promise<{ 
   const terms = norm(q).split(/\s+/).filter((t) => t.length > 1);
   const match = (s: string) => terms.length > 0 && terms.some((t) => norm(s).includes(t));
 
-  const services = SERVICES.filter((s) => match(`${s.name} ${s.description} ${s.keywords.join(" ")}`));
-  const pages = PAGES.filter((p) => match(`${p.title} ${p.text}`));
-  const faqs = [...FAQ_GERAL, ...FAQ_CONSUMIDOR, ...FAQ_CNPJ, ...FAQ_EMPRESTIMO, ...FAQ_LVB].filter((f) => match(f.q)).slice(0, 6);
+  const enabled = await getEnabledServices();
+  const hidden = hiddenPaths(enabled);
+  const services = activeServices(enabled).filter((s) => match(`${s.name} ${s.description} ${s.keywords.join(" ")}`));
+  const pages = PAGES.filter((p) => !hidden.some((h) => p.href.startsWith(h)) && match(`${p.title} ${p.text}`));
+  const faqs = [...FAQ_GERAL, ...FAQ_CONSUMIDOR, ...FAQ_CNPJ, ...(enabled.EMPRESTIMO ? FAQ_EMPRESTIMO : []), ...(enabled.LVB ? FAQ_LVB : [])].filter((f) => match(f.q)).slice(0, 6);
   const news = q
     ? await prisma.newsPost.findMany({
         where: { published: true, publishedAt: { lte: new Date() }, OR: [{ title: { contains: q, mode: "insensitive" } }, { subtitle: { contains: q, mode: "insensitive" } }, { content: { contains: q, mode: "insensitive" } }] },

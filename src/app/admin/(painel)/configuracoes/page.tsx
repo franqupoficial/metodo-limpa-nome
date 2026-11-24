@@ -3,13 +3,15 @@ import { requireAdmin } from "@/lib/auth";
 import { getSetting } from "@/lib/settings";
 import { AdminHeader, Panel } from "@/components/admin/ui";
 import { ActionForm, Submit } from "@/components/admin/ActionForm";
-import { saveContactAction, savePageAction, savePixAction } from "../../_actions/settings";
+import { saveContactAction, savePageAction, savePixAction, saveServicesEnabledAction } from "../../_actions/settings";
+import { SERVICES } from "@/lib/services";
 
 export const metadata = { title: "Configurações" };
 
 export default async function Configuracoes() {
   await requireAdmin("ADMIN");
   const [c, retention, pages, pix] = await Promise.all([getSetting("site.contact"), getSetting("privacy.retention"), prisma.page.findMany({ orderBy: { slug: "asc" } }), getSetting("payment.pix")]);
+  const enabled = await getSetting("services.enabled");
   return (
     <>
       <AdminHeader title="Configurações" subtitle="Dados institucionais, privacidade e páginas editáveis." />
@@ -25,6 +27,21 @@ export default async function Configuracoes() {
             <label className="sm:col-span-2"><span className="label text-xs">Endereço</span><input name="address" defaultValue={c.address} className="input" /></label>
             <label><span className="label text-xs">Retenção de dados (dias)</span><input name="retentionDays" type="number" min={180} max={3650} defaultValue={retention.retentionDays} className="input" /><span className="hint block">Solicitações encerradas há mais tempo são anonimizadas por <code>npm run retention</code>.</span></label>
           </div>
+          <Submit>Salvar</Submit>
+        </ActionForm>
+      </Panel>
+
+      <Panel title="Serviços ativos no site" className="mb-6">
+        <ActionForm action={saveServicesEnabledAction} className="space-y-3">
+          <div className="grid gap-2 sm:grid-cols-2">
+            {SERVICES.map((s) => (
+              <label key={s.type} className="flex items-center gap-3 rounded-lg border border-line p-3 text-sm">
+                <input type="checkbox" name={s.type} defaultChecked={enabled[s.type]} className="h-4 w-4 accent-brand-700" />
+                <span><strong>{s.name}</strong><span className="block text-xs text-muted">{enabled[s.type] ? "Visível e aceitando pedidos" : "Desativado: oculto do site e sem novos pedidos"}</span></span>
+              </label>
+            ))}
+          </div>
+          <p className="text-xs text-muted">Serviços desativados somem do menu, da página inicial, do rodapé, da busca e do mapa do site; o endereço direto mostra “temporariamente indisponível”. Solicitações já recebidas continuam no painel.</p>
           <Submit>Salvar</Submit>
         </ActionForm>
       </Panel>

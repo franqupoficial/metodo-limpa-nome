@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { Faq, PageHero, Section } from "@/components/ui";
+import { getEnabledServices } from "@/lib/settings";
 import { FAQ_CNPJ, FAQ_CONSUMIDOR, FAQ_EMPRESTIMO, FAQ_GERAL, FAQ_LVB } from "@/content/faq";
 
 export const metadata: Metadata = { title: "Perguntas frequentes", description: "Respostas para as dúvidas mais comuns sobre os serviços do Portal Consumidor.", alternates: { canonical: "/perguntas-frequentes" } };
 
-const GROUPS = [
+const ALL_GROUPS = [
   { id: "geral", title: "Sobre o portal", items: FAQ_GERAL },
   { id: "consumidor", title: "Regularização de apontamentos", items: FAQ_CONSUMIDOR },
   { id: "cnpj", title: "Abra seu CNPJ", items: FAQ_CNPJ },
@@ -12,7 +13,9 @@ const GROUPS = [
   { id: "lvb", title: "LVB — Locação de veículos", items: FAQ_LVB },
 ];
 
-export default function Page() {
+export default async function Page() {
+  const enabled = await getEnabledServices();
+  const GROUPS = ALL_GROUPS.filter((g) => (g.id !== "emprestimo" || enabled.EMPRESTIMO) && (g.id !== "lvb" || enabled.LVB));
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",

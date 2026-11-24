@@ -16,6 +16,8 @@ export interface Settings {
   "service.consumidor.freeze": { enabled: boolean; title: string; description: string; legalBasis: string };
   "service.cnpj": { priceCents: number };
   "payment.pix": { key: string; receiverName: string; city: string; instructions: string };
+  /** Serviços visíveis e contratáveis no site */
+  "services.enabled": { CONSUMIDOR: boolean; CNPJ: boolean; EMPRESTIMO: boolean; LVB: boolean };
   "service.emprestimo": { minCents: number; maxCents: number };
   "lvb.plans": { termAdjustments: TermAdjustments; kmPackages: KmPackage[]; priceNotice: string; deliveryWindow: string };
   "lvb.inclusions": { maintenance: InclusionStatus; ipva: InclusionStatus; insurance: InclusionStatus; assistance: InclusionStatus; notes: string };
@@ -42,6 +44,7 @@ export const DEFAULT_SETTINGS: Settings = {
   },
   "service.consumidor.freeze": { enabled: false, title: "Congelamento de apontamentos por 12 meses", description: "", legalBasis: "" },
   "service.cnpj": { priceCents: 19900 },
+  "services.enabled": { CONSUMIDOR: true, CNPJ: true, EMPRESTIMO: false, LVB: false },
   "payment.pix": {
     key: "58d93626-10e0-4972-bb10-eb116d2a8a22",
     receiverName: "Portal Consumidor",
@@ -100,3 +103,8 @@ export const INCLUSION_LABEL: Record<InclusionStatus, string> = {
   NOT_INCLUDED: "Não incluído",
   TO_CONFIRM: "Confirmado na proposta",
 };
+
+/** Serviços ativos no site (os desativados somem da navegação e não aceitam pedidos). */
+export async function getEnabledServices() {
+  return getSetting("services.enabled");
+}

@@ -18,7 +18,8 @@ export const NAV = [
   { href: "/perguntas-frequentes", label: "Perguntas frequentes" },
 ];
 
-export function Header() {
+export function Header({ hidden = [] }: { hidden?: string[] }) {
+  const nav = NAV.filter((n) => !hidden.includes(n.href));
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   useEffect(() => setOpen(false), [pathname]);
@@ -61,7 +62,7 @@ export function Header() {
       </div>
       <nav aria-label="Navegação principal" className="hidden border-t border-line lg:block">
         <ul className="container-portal flex items-center gap-1 overflow-x-auto py-1">
-          {NAV.map((item) => (
+          {nav.map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}
@@ -88,7 +89,7 @@ export function Header() {
               </div>
             </form>
             <ul className="divide-y divide-line">
-              {[...NAV, { href: "/noticias", label: "Notícias e conteúdos" }, { href: "/acompanhar", label: "Acompanhar solicitação" }, { href: "/contato", label: "Contato" }].map((item) => (
+              {[...nav, { href: "/noticias", label: "Notícias e conteúdos" }, { href: "/acompanhar", label: "Acompanhar solicitação" }, { href: "/contato", label: "Contato" }].map((item) => (
                 <li key={item.href}>
                   <Link href={item.href} aria-current={isActive(item.href) ? "page" : undefined} className="flex items-center justify-between py-3.5 text-base font-medium text-ink no-underline">
                     {item.label}

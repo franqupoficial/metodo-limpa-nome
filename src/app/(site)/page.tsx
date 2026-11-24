@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { SERVICES } from "@/lib/services";
+import { activeServices } from "@/lib/services";
+import { getEnabledServices } from "@/lib/settings";
 import { ServiceCard } from "@/components/ServiceCard";
 import { NewsCard } from "@/components/NewsCard";
 import { Faq, InfoCard, Section } from "@/components/ui";
@@ -10,6 +11,8 @@ import { FAQ_GERAL } from "@/content/faq";
 export const revalidate = 300;
 
 export default async function HomePage() {
+  const enabled = await getEnabledServices();
+  const services = activeServices(enabled);
   const news = await prisma.newsPost.findMany({
     where: { published: true, publishedAt: { lte: new Date() } },
     orderBy: { publishedAt: "desc" },
@@ -37,7 +40,7 @@ export default async function HomePage() {
               </div>
             </form>
             <ul className="mt-5 flex flex-wrap gap-2 text-sm">
-              {[["/consumidor", "Regularizar CPF"], ["/cnpj", "Abrir CNPJ"], ["/emprestimo", "Empréstimo"], ["/lvb", "Alugar carro"], ["/acompanhar", "Acompanhar"]].map(([h, l]) => (
+              {[["/consumidor", "Regularizar CPF"], ["/cnpj", "Abrir CNPJ"], ["/emprestimo", "Empréstimo"], ["/lvb", "Alugar carro"], ["/acompanhar", "Acompanhar"]].filter(([h]) => !services.every((s) => s.href !== h) || h === "/acompanhar").map(([h, l]) => (
                 <li key={h}><Link href={h} className="inline-block rounded-full border border-white/25 bg-white/10 px-3 py-1 text-white no-underline transition-colors hover:bg-white/20">{l}</Link></li>
               ))}
             </ul>
@@ -46,8 +49,8 @@ export default async function HomePage() {
       </section>
 
       <Section id="servicos" eyebrow="Serviços" title="O que você precisa resolver?" intro="Escolha o serviço, conheça as condições e contrate online.">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {SERVICES.map((s) => <ServiceCard key={s.type} s={s} cta="Conhecer e contratar" />)}
+        <div className={`grid gap-5 sm:grid-cols-2 ${services.length >= 4 ? "lg:grid-cols-4" : services.length === 3 ? "lg:grid-cols-3" : ""}`}>
+          {services.map((s) => <ServiceCard key={s.type} s={s} cta="Conhecer e contratar" />)}
         </div>
       </Section>
 

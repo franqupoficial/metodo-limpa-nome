@@ -66,3 +66,12 @@ export const SERVICES: ServiceMeta[] = [
 
 export const serviceMeta = (t: ServiceType) => SERVICES.find((s) => s.type === t)!;
 export const serviceByCode = (c: string) => SERVICES.find((s) => s.code === c);
+
+/** Filtra a lista de serviços pelos que estão ativos no painel. */
+export function activeServices(enabled: Record<ServiceType, boolean>) {
+  return SERVICES.filter((s) => enabled[s.type]);
+}
+/** Rotas públicas de serviços desativados (para esconder da navegação). */
+export function hiddenPaths(enabled: Record<ServiceType, boolean>) {
+  return SERVICES.filter((s) => !enabled[s.type]).map((s) => s.href);
+}
