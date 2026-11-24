@@ -18,7 +18,10 @@
     "admin:create-owner": "tsx --conditions=react-server scripts/create-owner.ts",
     "jobs:run": "tsx --conditions=react-server scripts/jobs.ts",
     "backup": "bash scripts/backup.sh",
-    "vercel-build": "prisma generate && prisma migrate deploy && tsx --conditions=react-server prisma/seed.ts && next build"
+    "vercel-build": "prisma generate && prisma migrate deploy && tsx --conditions=react-server scripts/snapshot.ts --restore && tsx --conditions=react-server prisma/seed.ts && next build",
+    "snapshot:export": "tsx --conditions=react-server scripts/snapshot.ts",
+    "snapshot:restore": "tsx --conditions=react-server scripts/snapshot.ts --restore",
+    "cutouts": "tsx --conditions=react-server scripts/cutouts.ts"
   },
   "engines": {
     "node": ">=20.9"

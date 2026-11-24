@@ -59,6 +59,15 @@ export async function getObject(key: string): Promise<{ body: Buffer; contentTyp
     const body = await fs.readFile(path.join(localDir(), k));
     return { body, contentType: guessType(k) };
   } catch {
+    // disco local vazio (ex.: hospedagem serverless): busca o arquivo publicado na URL pública das imagens
+    const cdn = process.env.NEXT_PUBLIC_MEDIA_URL;
+    if (cdn && driver() === "local") {
+      try {
+        const base = cdn.startsWith("http") ? cdn : (process.env.APP_URL || "").replace(/\/$/, "") + cdn;
+        const r = await fetch(`${base.replace(/\/$/, "")}/${k.split("/").map(encodeURIComponent).join("/")}`, { cache: "force-cache" });
+        if (r.ok) return { body: Buffer.from(await r.arrayBuffer()), contentType: r.headers.get("content-type") || guessType(k) };
+      } catch {}
+    }
     return null;
   }
 }
