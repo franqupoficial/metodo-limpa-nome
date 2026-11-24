@@ -1,0 +1,342 @@
+// Portal Consumidor — modelo de dados
+// Dados pessoais sensíveis (CPF, data de nascimento, endereço, CNH etc.) são
+// armazenados criptografados (AES-256-GCM) na coluna `detailsEnc` / `cpfEnc`.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url       = env("DATABASE_URL")
+  /// Conexão direta (sem pooler) usada pelas migrações. Na Vercel+Neon: DATABASE_URL_UNPOOLED.
+  directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+enum AdminRole {
+  ADMIN
+  OPERATOR
+}
+
+enum ServiceType {
+  CONSUMIDOR
+  CNPJ
+  EMPRESTIMO
+  LVB
+}
+
+enum PricingMode {
+  MANUAL
+  REFERENCE
+}
+
+enum Availability {
+  AVAILABLE
+  ON_REQUEST
+  UNAVAILABLE
+}
+
+enum PaymentMethod {
+  PIX
+  CARD
+  CARD_RECURRING
+  BOLETO
+}
+
+enum PaymentStatus {
+  PENDING
+  AUTHORIZED
+  PAID
+  FAILED
+  CANCELED
+  REFUNDED
+}
+
+model AdminUser {
+  id            String               @id @default(cuid())
+  email         String               @unique
+  name          String
+  passwordHash  String?
+  role          AdminRole            @default(OPERATOR)
+  active        Boolean              @default(true)
+  failedLogins  Int                  @default(0)
+  lockedUntil   DateTime?
+  lastLoginAt   DateTime?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  sessions      AdminSession[]
+  resetTokens   PasswordResetToken[]
+  auditLogs     AuditLog[]
+  statusChanges StatusHistory[]
+  notes         AdminNote[]
+}
+
+model AdminSession {
+  id         String    @id @default(cuid())
+  tokenHash  String    @unique
+  userId     String
+  user       AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ip         String?
+  userAgent  String?
+  createdAt  DateTime  @default(now())
+  lastSeenAt DateTime  @default(now())
+  expiresAt  DateTime
+
+  @@index([userId])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  userId    String
+  user      AdminUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model Customer {
+  id        String           @id @default(cuid())
+  name      String
+  cpfEnc    String
+  cpfHash   String           @unique
+  cpfLast2  String
+  email     String
+  phone     String
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  requests  ServiceRequest[]
+
+  @@index([email])
+}
+
+model ServiceRequest {
+  id             String          @id @default(cuid())
+  protocol       String          @unique
+  service        ServiceType
+  status         String          @default("RECEBIDO")
+  customerId     String
+  customer       Customer        @relation(fields: [customerId], references: [id])
+  /// JSON criptografado com todos os dados do formulário
+  detailsEnc     String
+  /// Resumo não sensível (ex.: veículo, prazo, valor) para listagens
+  summary        Json            @default("{}")
+  amountCents    Int?
+  vehicleId      String?
+  vehicle        Vehicle?        @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+  termMonths     Int?
+  monthlyCents   Int?
+  accessCodeHash String
+  consents       Json
+  ipHash         String?
+  anonymizedAt   DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  history        StatusHistory[]
+  notes          AdminNote[]
+  documents      Document[]
+  payments       Payment[]
+
+  @@index([service, status])
+  @@index([createdAt])
+}
+
+model StatusHistory {
+  id         String         @id @default(cuid())
+  requestId  String
+  request    ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  fromStatus String?
+  toStatus   String
+  note       String?
+  publicNote String?
+  adminId    String?
+  admin      AdminUser?     @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  createdAt  DateTime       @default(now())
+
+  @@index([requestId])
+}
+
+model AdminNote {
+  id        String         @id @default(cuid())
+  requestId String
+  request   ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  adminId   String?
+  admin     AdminUser?     @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  content   String
+  createdAt DateTime       @default(now())
+}
+
+/// Documentos enviados pelo cliente — conteúdo criptografado, acesso restrito ao painel
+model Document {
+  id           String         @id @default(cuid())
+  requestId    String
+  request      ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  kind         String
+  originalName String
+  mime         String
+  size         Int
+  sha256       String
+  dataEnc      Bytes
+  createdAt    DateTime       @default(now())
+}
+
+/// Arquivos públicos (imagens de veículos e notícias)
+model Media {
+  id        String   @id @default(cuid())
+  mime      String
+  size      Int
+  data      Bytes
+  alt       String?
+  createdAt DateTime @default(now())
+}
+
+model VehicleCategory {
+  id              String    @id @default(cuid())
+  slug            String    @unique
+  name            String
+  description     String
+  referenceModels String
+  startingCents   Int
+  sortOrder       Int       @default(0)
+  active          Boolean   @default(true)
+  vehicles        Vehicle[]
+  updatedAt       DateTime  @updatedAt
+}
+
+model Vehicle {
+  id                  String           @id @default(cuid())
+  slug                String           @unique
+  name                String
+  brand               String
+  categoryId          String
+  category            VehicleCategory  @relation(fields: [categoryId], references: [id])
+  description         String
+  features            String[]
+  imageUrl            String?
+  imageCaption        String           @default("Imagem ilustrativa de modelo similar")
+  kmPerMonth          Int
+  terms               Int[]
+  conditions          String           @default("")
+  protectionInfo      String?
+  maintenanceInfo     String?
+  availability        Availability     @default(ON_REQUEST)
+  active              Boolean          @default(true)
+  sortOrder           Int              @default(0)
+  pricingMode         PricingMode      @default(MANUAL)
+  referencePriceCents Int?
+  referenceSource     String?
+  referenceDate       DateTime?
+  discountPercent     Float            @default(20)
+  /// Preço publicado. Só é exibido publicamente quando priceValidatedAt != null
+  finalPriceCents     Int?
+  /// Preço sugerido (cálculo por referência) aguardando validação
+  suggestedCents      Int?
+  priceValidatedAt    DateTime?
+  priceValidatedBy    String?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  requests            ServiceRequest[]
+
+  @@index([categoryId, active])
+}
+
+model NewsPost {
+  id             String    @id @default(cuid())
+  slug           String    @unique
+  title          String
+  subtitle       String
+  content        String
+  category       String
+  author         String
+  imageUrl       String?
+  imageAlt       String?
+  related        String[]
+  seoTitle       String?
+  seoDescription String?
+  published      Boolean   @default(false)
+  publishedAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([published, publishedAt])
+  @@index([category])
+}
+
+/// Páginas institucionais editáveis (privacidade, termos, políticas LVB…)
+model Page {
+  slug          String    @id
+  title         String
+  content       String
+  legalReviewed Boolean   @default(false)
+  updatedAt     DateTime  @updatedAt
+}
+
+model Setting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String     @id @default(cuid())
+  adminId   String?
+  admin     AdminUser? @relation(fields: [adminId], references: [id], onDelete: SetNull)
+  action    String
+  entity    String?
+  entityId  String?
+  meta      Json?
+  ip        String?
+  createdAt DateTime   @default(now())
+
+  @@index([createdAt])
+  @@index([entity, entityId])
+}
+
+model RateLimit {
+  key         String   @id
+  count       Int
+  windowStart DateTime
+}
+
+/// Estrutura preparada para checkout futuro. NUNCA armazenar número completo de cartão ou CVV:
+/// apenas identificadores/tokens do fornecedor de pagamento.
+model Payment {
+  id               String         @id @default(cuid())
+  requestId        String
+  request          ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  provider         String
+  providerChargeId String?
+  authorizationId  String?
+  method           PaymentMethod
+  status           PaymentStatus  @default(PENDING)
+  amountCents      Int
+  installments     Int            @default(1)
+  recurring        Boolean        @default(false)
+  dueDate          DateTime?
+  paidAt           DateTime?
+  cardBrand        String?
+  cardLast4        String?
+  /// Descrição exibida ao cliente (ex.: "Parcela 2 de 24")
+  description      String?
+  installment      Int?
+  /// Código Pix copia e cola gerado para esta cobrança
+  pixPayload       String?
+  /// Data do envio da cobrança/boleto por e-mail
+  sentAt           DateTime?
+  confirmedBy      String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  events           PaymentEvent[]
+
+  @@unique([provider, providerChargeId])
+  @@index([requestId])
+}
+
+model PaymentEvent {
+  id        String   @id @default(cuid())
+  paymentId String
+  payment   Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  type      String
+  payload   Json
+  createdAt DateTime @default(now())
+}
