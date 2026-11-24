@@ -56,10 +56,10 @@ O Portal Consumidor é uma **plataforma privada**. Não é órgão público, nã
 
 ## 3. Serviços
 
-- **Regularização e análise de apontamentos:** serviço administrativo de análise, orientação e, quando cabível, contestação de registros. Não há garantia de remoção de registros, aumento de score ou eliminação de dívidas legítimas.
-- **Abra seu CNPJ:** serviço privado de assistência à formalização. O valor cobrado não é taxa governamental. A abertura de MEI pelos canais oficiais é gratuita.
-- **Empréstimo:** intermediação de solicitação de crédito, sujeita à análise, elegibilidade, aprovação e contratação junto à instituição concedente.
-- **LVB — Locação de veículos:** operação privada de locação, sujeita à análise, disponibilidade e aprovação, regida por contrato específico.
+- **Regularização de apontamentos:** serviço de levantamento, contestação e pedido de exclusão de registros irregulares e intermediação de acordos para dívidas reconhecidas nos cadastros Serasa, SPC e Boa Vista. Dívidas legítimas permanecem devidas até pagamento ou acordo; o resultado de cada registro depende da resposta do birô e do credor.
+- **Abra seu CNPJ:** serviço privado de assistência e condução da abertura e formalização empresarial. O valor cobrado não é taxa governamental. A abertura de MEI pelos canais oficiais é gratuita.
+- **Empréstimo para negativados:** intermediação da contratação de crédito de até R$ 3.000,00 junto à instituição concedente. Solicitação, aprovação e liberação são etapas distintas; a liberação ocorre após a assinatura do contrato e a autorização do débito automático.
+- **LVB — Locação de veículos:** locação de veículos para motoristas de aplicativo, formalizada por contrato após aprovação cadastral, com primeira parcela no ato da contratação e parcelas recorrentes.
 
 ## 4. Responsabilidades do usuário
 

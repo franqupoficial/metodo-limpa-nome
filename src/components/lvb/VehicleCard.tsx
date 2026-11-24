@@ -28,7 +28,7 @@ export function VehicleCard({ v }: { v: ClientVehicle }) {
           {v.availability === "UNAVAILABLE" ? (
             <span className="btn btn-sm cursor-not-allowed bg-surface text-muted">Indisponível</span>
           ) : (
-            <Link href={`/lvb/solicitar?veiculo=${v.slug}`} className="btn-lvb btn-sm">Solicitar locação</Link>
+            <Link href={`/lvb/solicitar?veiculo=${v.slug}`} className="btn-lvb btn-sm">Alugar</Link>
           )}
         </div>
       </div>

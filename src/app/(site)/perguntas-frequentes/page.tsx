@@ -6,9 +6,9 @@ export const metadata: Metadata = { title: "Perguntas frequentes", description: 
 
 const GROUPS = [
   { id: "geral", title: "Sobre o portal", items: FAQ_GERAL },
-  { id: "consumidor", title: "Regularização e análise de apontamentos", items: FAQ_CONSUMIDOR },
+  { id: "consumidor", title: "Regularização de apontamentos", items: FAQ_CONSUMIDOR },
   { id: "cnpj", title: "Abra seu CNPJ", items: FAQ_CNPJ },
-  { id: "emprestimo", title: "Empréstimo", items: FAQ_EMPRESTIMO },
+  { id: "emprestimo", title: "Empréstimo para negativados", items: FAQ_EMPRESTIMO },
   { id: "lvb", title: "LVB — Locação de veículos", items: FAQ_LVB },
 ];
 

@@ -71,7 +71,7 @@ export async function createServiceRequest(input: CreateInput): Promise<{ protoc
       sendMail(
         input.personal.email,
         `Solicitação recebida — protocolo ${protocol}`,
-        `Olá,\n\nRecebemos sua solicitação de "${serviceMeta(input.service).name}".\n\nProtocolo: ${protocol}\n\nPara acompanhar, acesse ${appUrl()}/acompanhar e informe o protocolo e o código de acesso exibido na tela de confirmação.\n\nA solicitação está sujeita à análise. Nunca solicitamos senhas ou pagamentos por canais não oficiais.\n\nPortal Consumidor`,
+        `Olá,\n\nRecebemos sua solicitação de "${serviceMeta(input.service).name}".\n\nProtocolo: ${protocol}\n\nPara acompanhar, acesse ${appUrl()}/acompanhar e informe o protocolo e o código de acesso exibido na tela de confirmação.\n\nAcompanhe cada etapa pelo portal. Nunca solicitamos senhas ou pagamentos por canais não oficiais.\n\nPortal Consumidor`,
       ).catch((e) => console.error("Falha ao enviar e-mail de confirmação", e));
       return { protocol, accessCode };
     } catch (e) {

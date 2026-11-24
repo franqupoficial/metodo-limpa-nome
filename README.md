@@ -2,9 +2,9 @@
 
 Plataforma web privada de informação, orientação e serviços digitais, com quatro serviços:
 
-1. **Regularização e análise de apontamentos** (`/consumidor`)
+1. **Regularização de apontamentos** — Serasa, SPC e Boa Vista (`/consumidor`)
 2. **Abra seu CNPJ** (`/cnpj`)
-3. **Solicitação de empréstimo** (`/emprestimo`)
+3. **Empréstimo para negativados** — até R$ 3.000,00, débito automático (`/emprestimo`)
 4. **LVB — Locação de veículos** para motoristas de aplicativo (`/lvb`)
 
 Inclui conteúdo educativo, notícias, busca, acompanhamento público de solicitações (`/acompanhar`) e painel administrativo completo (`/admin`). O checkout **não** está implementado — a arquitetura de pagamentos está preparada em `src/lib/payments`.
@@ -59,6 +59,14 @@ Perfis: **Administrador** (tudo) e **Operador** (sem configurações, valores do
 - O valor da solicitação é sempre recalculado no servidor.
 
 Os valores iniciais do catálogo (R$ 1.440 a R$ 2.640/mês) são **ilustrativos** e os veículos foram cadastrados como “disponibilidade sob consulta”, com imagens ilustrativas. Itens como manutenção, IPVA, proteção e assistência estão como “confirmado na proposta” até serem configurados conforme a operação real.
+
+### Bloco “congelamento por 12 meses”
+
+Em **Tarifas → Regularização**, o administrador pode publicar esse bloco na página de Regularização. Ele só aparece se estiver ativado **e** com a descrição do procedimento e a base jurídica/operacional que o comprova. Sem isso, a página mostra as hipóteses legais de suspensão de registros.
+
+### Dados de cartão
+
+Dados completos de cartão e CVV **não** são coletados nem armazenados (PCI DSS). O débito automático é autorizado pelo cliente no ambiente seguro do processador de pagamentos; o portal guarda apenas a forma de pagamento escolhida e, no futuro, token, bandeira e 4 últimos dígitos.
 
 ## Segurança e LGPD
 

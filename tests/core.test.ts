@@ -37,8 +37,8 @@ test("validadores", () => {
 
 test("empréstimo respeita o limite de R$ 3.000", () => {
   const s = emprestimoSchema(300000, 30000).shape.loan;
-  assert.equal(s.safeParse({ amount: 3000, dueDay: 10 }).success, true);
-  assert.equal(s.safeParse({ amount: 3000.01, dueDay: 10 }).success, false);
+  assert.equal(s.safeParse({ amount: 3000, dueDay: 10, paymentMethod: "CARTAO_CREDITO" }).success, true);
+  assert.equal(s.safeParse({ amount: 3000.01, dueDay: 10, paymentMethod: "CARTAO_CREDITO" }).success, false);
 });
 
 test("acompanhamento exige protocolo + código", () => {
@@ -49,4 +49,9 @@ test("acompanhamento exige protocolo + código", () => {
 test("status por serviço", () => {
   assert.equal(isValidStatus("LVB", "RETIRADA_AGENDADA"), true);
   assert.equal(isValidStatus("CNPJ", "RETIRADA_AGENDADA"), false);
+});
+
+test("empréstimo exige forma de débito automático", () => {
+  const s = emprestimoSchema(300000, 30000).shape.loan;
+  assert.equal(s.safeParse({ amount: 1000, dueDay: 10 }).success, false);
 });

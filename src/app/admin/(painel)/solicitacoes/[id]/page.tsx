@@ -7,7 +7,7 @@ import { decryptJson, decryptString } from "@/lib/crypto";
 import { serviceMeta } from "@/lib/services";
 import { statusDef, statusesFor } from "@/lib/status";
 import { formatCep, formatCpf, formatDate, formatMoney, formatPhone, maskCpf } from "@/lib/format";
-import { EXPERIENCE_LABEL } from "@/lib/schemas";
+import { EXPERIENCE_LABEL, LOAN_PAYMENT_LABEL } from "@/lib/schemas";
 import { checkoutEnabled } from "@/lib/payments";
 import { AdminHeader, DefList, Panel, Empty } from "@/components/admin/ui";
 import { ActionForm, Submit } from "@/components/admin/ActionForm";
@@ -88,7 +88,7 @@ export default async function RequestDetail({ params, searchParams }: { params: 
 
           {r.service === "EMPRESTIMO" && !r.anonymizedAt && (
             <Panel title="Proposta de crédito">
-              <DefList rows={[["Valor solicitado", formatMoney(r.amountCents)], ["Vencimento desejado", `Dia ${d.loan?.dueDay}`], ["Renda informada", d.loan?.monthlyIncome ? formatMoney(Math.round(d.loan.monthlyIncome * 100)) : ""], ["Finalidade", d.loan?.purpose]]} />
+              <DefList rows={[["Valor solicitado", formatMoney(r.amountCents)], ["Vencimento desejado", `Dia ${d.loan?.dueDay}`], ["Débito automático", LOAN_PAYMENT_LABEL[d.loan?.paymentMethod as keyof typeof LOAN_PAYMENT_LABEL] ?? "—"], ["Renda informada", d.loan?.monthlyIncome ? formatMoney(Math.round(d.loan.monthlyIncome * 100)) : ""], ["Finalidade", d.loan?.purpose]]} />
             </Panel>
           )}
 

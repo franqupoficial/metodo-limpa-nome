@@ -52,6 +52,18 @@ export async function saveServicePricesAction(_: ActionState, fd: FormData): Pro
   return ok("Valores dos serviços atualizados.");
 }
 
+export async function saveFreezeAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const admin = await requireAdmin("ADMIN");
+  const enabled = bool(fd, "enabled");
+  const value = { enabled, title: str(fd, "title").slice(0, 120) || "Congelamento de apontamentos por 12 meses", description: str(fd, "description").slice(0, 3000), legalBasis: str(fd, "legalBasis").slice(0, 3000) };
+  if (enabled && (value.description.length < 20 || value.legalBasis.length < 20))
+    return fail("Para exibir este bloco, descreva o procedimento e informe a base jurídica e operacional comprovada (norma, decisão ou contrato que o sustenta).");
+  await setSetting("service.consumidor.freeze", value);
+  await audit(admin.id, "settings.consumidor_freeze", "Setting", "service.consumidor.freeze", { enabled });
+  revalidateAll();
+  return ok(enabled ? "Bloco publicado na página de Regularização." : "Bloco desativado.");
+}
+
 export async function saveLvbPlansAction(_: ActionState, fd: FormData): Promise<ActionState> {
   const admin = await requireAdmin();
   const adj = (t: number) => Number(str(fd, `adj${t}`).replace(",", ".")) || 0;

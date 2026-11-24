@@ -13,7 +13,7 @@ import { FAQ_LVB } from "@/content/faq";
 
 export const metadata: Metadata = {
   title: "LVB — Locação de Veículos para motoristas de aplicativo",
-  description: "Seu próximo carro para trabalhar. Planos de locação de 12, 24 e 36 meses para motoristas de Uber, 99 e outros aplicativos.",
+  description: "Alugue seu carro para trabalhar na Uber, 99 e outros aplicativos. Planos de 12, 24 e 36 meses, primeira parcela na contratação e vencimento no dia que você escolher.",
   alternates: { canonical: "/lvb" },
 };
 export const revalidate = 300;
@@ -31,12 +31,12 @@ export default async function LvbHome() {
           <div className="animate-fade-up">
             <p className="text-xs font-bold uppercase tracking-widest text-lvb-100">LVB — Locação de Veículos</p>
             <h1 className="mt-3 text-4xl font-extrabold leading-tight text-white sm:text-5xl">Seu próximo carro para trabalhar.</h1>
-            <p className="mt-4 text-lg text-lvb-100">Conheça nossos planos de locação de veículos, escolha a categoria ideal para sua rotina e solicite sua locação de forma digital.</p>
+            <p className="mt-4 text-lg text-lvb-100">Escolha o carro no catálogo, defina o plano de 12, 24 ou 36 meses e faça sua locação online. Primeira parcela na contratação e as demais no dia que você escolher.</p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link href="/lvb/veiculos" className="btn bg-accent text-lvb-900 hover:brightness-95">Ver catálogo <Icon name="arrow" className="h-4 w-4" /></Link>
               <Link href="/lvb/simulador" className="btn border border-white/40 text-white hover:bg-white/10">Simular plano</Link>
             </div>
-            <p className="mt-5 text-xs text-lvb-100">Operação privada de locação. Não é programa governamental. Sujeito a análise, disponibilidade e aprovação.</p>
+            <p className="mt-5 text-xs text-lvb-100">Operação privada de locação. Não é programa governamental. Locação mediante aprovação cadastral e contrato.</p>
           </div>
           <div className="hidden lg:block"><div className="overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/20"><CarIllustration category="Sedan" className="w-full" /></div></div>
         </div>
@@ -124,7 +124,7 @@ export default async function LvbHome() {
             <p className="eyebrow text-lvb-600">Como funciona</p>
             <h2 className="section-title mt-1">Da escolha à retirada</h2>
             <ol className="mt-5 space-y-3">
-              {["Escolha o veículo", "Escolha o plano", "Preencha sua solicitação", "Análise", "Contratação", "Pagamento inicial", "Cobranças recorrentes", "Retirada"].map((s, i) => (
+              {["Escolha o veículo", "Escolha o plano", "Formulário de locação", "Aprovação cadastral", "Assinatura do contrato", "Primeira parcela", "Retirada do veículo", "Parcelas recorrentes"].map((s, i) => (
                 <li key={s} className="flex items-center gap-3"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-lvb-600 text-xs font-bold text-white">{i + 1}</span>{s}</li>
               ))}
             </ol>
@@ -141,9 +141,9 @@ export default async function LvbHome() {
       <section className="py-12">
         <div className="container-portal grid gap-5 md:grid-cols-2">
           <div className="card p-6">
-            <h2 className="text-xl font-bold">Pronto para solicitar?</h2>
-            <p className="mt-2 text-sm text-muted">O formulário tem 7 etapas e você pode revisar tudo antes de enviar. Nenhum pagamento é solicitado neste momento.</p>
-            <Link href="/lvb/solicitar" className="btn-lvb mt-5">Solicitar locação</Link>
+            <h2 className="text-xl font-bold">Pronto para alugar?</h2>
+            <p className="mt-2 text-sm text-muted">Formulário completo de locação em 7 etapas. Aprovado o cadastro, você assina o contrato, paga a primeira parcela e agenda a retirada.</p>
+            <Link href="/lvb/solicitar" className="btn-lvb mt-5">Alugar agora</Link>
           </div>
           <div className="card p-6">
             <h2 className="text-xl font-bold">Já fez sua solicitação?</h2>

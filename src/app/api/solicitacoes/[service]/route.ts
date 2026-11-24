@@ -82,7 +82,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ service
       const { consents, ...details } = data;
       const r = await createServiceRequest({
         service, personal: data.personal, details, consents, ip, amountCents,
-        summary: { requestedCents: amountCents, dueDay: data.loan.dueDay, city: `${data.address.city}/${data.address.state}` },
+        summary: { requestedCents: amountCents, dueDay: data.loan.dueDay, paymentMethod: data.loan.paymentMethod, city: `${data.address.city}/${data.address.state}` },
       });
       return NextResponse.json(r, { status: 201 });
     }

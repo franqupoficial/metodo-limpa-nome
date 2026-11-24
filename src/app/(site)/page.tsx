@@ -32,12 +32,12 @@ export default async function HomePage() {
               <label htmlFor="busca-hero" className="sr-only">Buscar serviços e informações</label>
               <div className="flex overflow-hidden rounded-full bg-white p-1.5 shadow-lg ring-1 ring-black/5">
                 <Icon name="search" className="ml-3 h-5 w-5 self-center text-muted" />
-                <input id="busca-hero" name="q" type="search" placeholder="Ex.: consultar CPF, abrir MEI, alugar carro…" className="min-w-0 flex-1 bg-transparent px-3 py-2.5 text-ink placeholder:text-slate-400 focus:outline-none" />
+                <input id="busca-hero" name="q" type="search" placeholder="Ex.: regularizar CPF, abrir CNPJ, alugar carro…" className="min-w-0 flex-1 bg-transparent px-3 py-2.5 text-ink placeholder:text-slate-400 focus:outline-none" />
                 <button type="submit" className="btn-primary">Buscar</button>
               </div>
             </form>
             <ul className="mt-5 flex flex-wrap gap-2 text-sm">
-              {[["/consumidor", "Análise de CPF"], ["/cnpj", "Abrir CNPJ"], ["/emprestimo", "Empréstimo"], ["/lvb", "Alugar carro"], ["/acompanhar", "Acompanhar"]].map(([h, l]) => (
+              {[["/consumidor", "Regularizar CPF"], ["/cnpj", "Abrir CNPJ"], ["/emprestimo", "Empréstimo"], ["/lvb", "Alugar carro"], ["/acompanhar", "Acompanhar"]].map(([h, l]) => (
                 <li key={h}><Link href={h} className="inline-block rounded-full border border-white/25 bg-white/10 px-3 py-1 text-white no-underline transition-colors hover:bg-white/20">{l}</Link></li>
               ))}
             </ul>
@@ -45,9 +45,9 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <Section id="servicos" eyebrow="Serviços" title="O que você precisa resolver?" intro="Escolha um serviço para conhecer as informações, condições e iniciar sua solicitação.">
+      <Section id="servicos" eyebrow="Serviços" title="O que você precisa resolver?" intro="Escolha o serviço, conheça as condições e contrate online.">
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {SERVICES.map((s) => <ServiceCard key={s.type} s={s} />)}
+          {SERVICES.map((s) => <ServiceCard key={s.type} s={s} cta="Conhecer e contratar" />)}
         </div>
       </Section>
 

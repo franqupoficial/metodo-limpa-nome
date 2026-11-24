@@ -30,6 +30,6 @@ export interface ClientPlanSettings {
 
 export const AVAILABILITY_LABEL = {
   AVAILABLE: "Disponível para reserva",
-  ON_REQUEST: "Disponibilidade sob consulta",
+  ON_REQUEST: "Reserva confirmada na contratação",
   UNAVAILABLE: "Indisponível no momento",
 } as const;

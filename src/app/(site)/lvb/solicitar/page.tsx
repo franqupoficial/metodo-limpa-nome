@@ -5,7 +5,7 @@ import { LvbSubnav } from "@/components/lvb/LvbSubnav";
 import { LvbForm } from "@/components/lvb/LvbForm";
 import { PageHero } from "@/components/ui";
 
-export const metadata: Metadata = { title: "Solicitar locação LVB", alternates: { canonical: "/lvb/solicitar" } };
+export const metadata: Metadata = { title: "Formulário de locação LVB", alternates: { canonical: "/lvb/solicitar" } };
 export const dynamic = "force-dynamic";
 
 export default async function Page({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
@@ -17,7 +17,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Rec
   return (
     <>
       <LvbSubnav current="/lvb/solicitar" />
-      <PageHero tone="lvb" eyebrow="LVB" title="Solicitação de locação" subtitle="7 etapas. Você revisa tudo antes de enviar. Nenhum pagamento é solicitado agora." crumbs={[{ href: "/lvb", label: "LVB" }, { label: "Solicitar" }]} />
+      <PageHero tone="lvb" eyebrow="LVB" title="Formulário de locação" subtitle="7 etapas. Aprovado o cadastro, você assina o contrato, paga a primeira parcela e retira o carro." crumbs={[{ href: "/lvb", label: "LVB" }, { label: "Alugar" }]} />
       <div className="container-portal py-10">
         <div className="card mx-auto max-w-3xl p-5 sm:p-8">
           {cv.length ? <LvbForm vehicles={cv} settings={settings} initial={{ vehicleId: pre?.id, term: [12, 24, 36].includes(term) ? term : undefined, km: sp.km }} /> : <p className="text-center text-muted">No momento não há veículos disponíveis para solicitação.</p>}

@@ -12,6 +12,8 @@ export interface AdditionalCost {
 export interface Settings {
   "site.contact": { email: string; phone: string; whatsapp: string; hours: string; companyName: string; cnpj: string; address: string };
   "service.consumidor": { pixCents: number; installmentCents: number; maxInstallments: number; scope: string };
+  /** Bloco de "congelamento por 12 meses": só é exibido quando habilitado E com base jurídica/operacional preenchida. */
+  "service.consumidor.freeze": { enabled: boolean; title: string; description: string; legalBasis: string };
   "service.cnpj": { priceCents: number };
   "service.emprestimo": { minCents: number; maxCents: number };
   "lvb.plans": { termAdjustments: TermAdjustments; kmPackages: KmPackage[]; priceNotice: string };
@@ -35,15 +37,16 @@ export const DEFAULT_SETTINGS: Settings = {
     installmentCents: 39000,
     maxInstallments: 12,
     scope:
-      "Análise administrativa dos registros informados, orientação sobre direitos e, quando houver indício de irregularidade, elaboração e protocolo de contestação nos canais adequados.",
+      "Levantamento dos apontamentos no Serasa, SPC e Boa Vista; verificação técnica de cada registro; contestação formal e pedidos de exclusão de registros irregulares junto aos birôs e credores; intermediação de acordos para dívidas reconhecidas; reclamações em Procon e consumidor.gov.br quando cabível; e acompanhamento até a conclusão de cada procedimento.",
   },
+  "service.consumidor.freeze": { enabled: false, title: "Congelamento de apontamentos por 12 meses", description: "", legalBasis: "" },
   "service.cnpj": { priceCents: 19900 },
   "service.emprestimo": { minCents: 30000, maxCents: 300000 },
   "lvb.plans": {
     termAdjustments: { "12": 0, "24": 0, "36": 0 },
     kmPackages: [],
     priceNotice:
-      "Valores de referência, sujeitos a confirmação na proposta, à análise cadastral e à disponibilidade. Custos adicionais são informados antes da contratação.",
+      "Valores mensais dos planos vigentes. Custos adicionais aplicáveis (caução, quilometragem excedente, franquia) são informados no contrato, antes da assinatura.",
   },
   "lvb.inclusions": {
     maintenance: "TO_CONFIRM",

@@ -5,7 +5,7 @@ import { getSetting } from "@/lib/settings";
 export async function Footer() {
   const contact = await getSetting("site.contact");
   const cols = [
-    { title: "Serviços", links: [["/consumidor", "Regularização e análise de apontamentos"], ["/cnpj", "Abra seu CNPJ"], ["/emprestimo", "Solicitação de empréstimo"], ["/lvb", "LVB — Locação de veículos"]] },
+    { title: "Serviços", links: [["/consumidor", "Regularização de apontamentos"], ["/cnpj", "Abra seu CNPJ"], ["/emprestimo", "Empréstimo para negativados"], ["/lvb", "LVB — Locação de veículos"]] },
     { title: "Informações", links: [["/informacoes", "Central de informações"], ["/noticias", "Notícias e conteúdos"], ["/perguntas-frequentes", "Perguntas frequentes"], ["/acompanhar", "Acompanhar solicitação"]] },
     { title: "Institucional", links: [["/privacidade", "Política de privacidade"], ["/termos", "Termos de uso"], ["/lvb/politicas", "Políticas da locação LVB"], ["/contato", "Contato"]] },
   ];

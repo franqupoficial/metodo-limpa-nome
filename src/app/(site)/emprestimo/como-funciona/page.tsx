@@ -2,20 +2,21 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Notice, PageHero, Section } from "@/components/ui";
 
-export const metadata: Metadata = { title: "Como funciona o empréstimo", description: "Entenda cada etapa da solicitação de crédito no Portal Consumidor.", alternates: { canonical: "/emprestimo/como-funciona" } };
+export const metadata: Metadata = { title: "Como funciona o empréstimo para negativados", description: "Do cadastro à liberação: cada etapa do empréstimo de até R$ 3.000,00 no Portal Consumidor.", alternates: { canonical: "/emprestimo/como-funciona" } };
 
 const STEPS = [
-  { t: "Preencha seus dados", d: "Informe seus dados pessoais, endereço, valor desejado e data de vencimento preferida. A solicitação é digital e leva poucos minutos." },
-  { t: "Sua proposta será submetida à análise", d: "As informações são avaliadas quanto à elegibilidade e ao perfil de crédito, mediante sua autorização. Possuir restrições não impede a solicitação, mas pode influenciar o resultado." },
-  { t: "Condições informadas, caso aprovada", d: "Se a proposta for aprovada, você recebe as condições completas: valor liberado, número e valor das parcelas, taxa de juros, Custo Efetivo Total (CET), encargos, vencimentos e demais condições contratuais. Você decide se deseja contratar." },
-  { t: "Contrato enviado por e-mail", d: "Com o aceite das condições, o contrato é enviado ao seu e-mail em até 24 horas, conforme o fluxo de contratação. Leia com atenção antes de assinar." },
-  { t: "Autorização segura de cobrança", d: "Quando houver cobrança automática por cartão, a autorização ocorre exclusivamente por meio de mecanismo seguro do fornecedor de pagamentos. O portal não armazena número completo de cartão nem código de segurança (CVV)." },
+  { t: "Cadastro", d: "Preencha seus dados pessoais, endereço, valor desejado (até R$ 3.000,00), dia de vencimento e a forma de débito automático preferida." },
+  { t: "Aprovação da proposta", d: "A instituição concedente avalia a proposta e define o valor aprovado e as condições. Ter restrições no CPF não impede a contratação deste produto." },
+  { t: "Condições contratuais", d: "Você recebe valor liberado, número e valor das parcelas, taxa de juros, Custo Efetivo Total (CET), encargos e datas de vencimento." },
+  { t: "Contrato por e-mail em até 24 horas", d: "Com o aceite das condições, o contrato é enviado ao e-mail cadastrado em até 24 horas, conforme o fluxo operacional." },
+  { t: "Autorização do débito automático", d: "As parcelas são debitadas automaticamente no dia que você escolheu, no cartão de crédito ou em conta corrente. Os dados de pagamento são informados apenas no ambiente seguro do processador de pagamentos." },
+  { t: "Liberação do valor", d: "Contrato assinado e débito autorizado: o crédito é liberado na sua conta." },
 ];
 
 export default function Page() {
   return (
     <>
-      <PageHero eyebrow="Empréstimo" title="Como funciona" subtitle="Entenda cada etapa, do pedido à contratação." crumbs={[{ href: "/emprestimo", label: "Empréstimo" }, { label: "Como funciona" }]} />
+      <PageHero eyebrow="Empréstimo" title="Como funciona" subtitle="Do cadastro à liberação do crédito." crumbs={[{ href: "/emprestimo", label: "Empréstimo" }, { label: "Como funciona" }]} />
       <Section>
         <ol className="relative max-w-3xl space-y-6 border-l-2 border-brand-100 pl-8">
           {STEPS.map((s, i) => (
@@ -28,11 +29,11 @@ export default function Page() {
           ))}
         </ol>
         <div className="mt-10 max-w-3xl space-y-4">
-          <Notice tone="warn" title="Consequências do inadimplemento">
-            O atraso pode gerar juros de mora, multa (limitada a 2% conforme o CDC), cobrança dos valores devidos, vencimento antecipado quando previsto em contrato e, após notificação prévia, inclusão em cadastros de proteção ao crédito.
+          <Notice tone="warn" title="Consequências do atraso">
+            Juros de mora, multa (limitada a 2% conforme o CDC), cobrança dos valores devidos, vencimento antecipado quando previsto em contrato e, após notificação prévia, inclusão em cadastros de proteção ao crédito.
           </Notice>
-          <Notice tone="info" title="Direito de arrependimento">Em contratações feitas fora do estabelecimento comercial, você pode desistir em até 7 dias (art. 49 do CDC).</Notice>
-          <Link href="/emprestimo/solicitar" className="btn-primary">Fazer minha solicitação</Link>
+          <Notice tone="info" title="Direito de arrependimento">Você pode desistir em até 7 dias após a contratação (art. 49 do CDC).</Notice>
+          <Link href="/emprestimo/solicitar" className="btn-primary">Solicitar meu empréstimo</Link>
         </div>
       </Section>
     </>

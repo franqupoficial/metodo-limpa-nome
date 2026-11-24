@@ -3,7 +3,7 @@ import { LvbMark } from "@/components/Logo";
 
 const ITEMS = [
   ["/lvb", "Início"], ["/lvb/veiculos", "Catálogo"], ["/lvb/como-funciona", "Como funciona"], ["/lvb/simulador", "Simulador"],
-  ["/lvb/politicas", "Políticas"], ["/lvb/solicitar", "Solicitar"],
+  ["/lvb/politicas", "Políticas"], ["/lvb/solicitar", "Alugar"],
 ];
 
 export function LvbSubnav({ current }: { current: string }) {

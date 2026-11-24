@@ -45,7 +45,7 @@ export default async function VehiclePage({ params }: { params: Promise<{ slug: 
               <div className="rounded-lg bg-surface p-3"><dt className="text-xs text-muted">Prazos disponíveis</dt><dd className="font-semibold">{v.terms.join(", ")} meses</dd></div>
               <div className="rounded-lg bg-surface p-3"><dt className="text-xs text-muted">Quilometragem contratada</dt><dd className="font-semibold">{v.kmPerMonth.toLocaleString("pt-BR")} km/mês</dd></div>
             </dl>
-            {v.availability !== "UNAVAILABLE" && <Link href={`/lvb/solicitar?veiculo=${v.slug}`} className="btn-lvb mt-6 w-full sm:w-auto">Solicitar locação</Link>}
+            {v.availability !== "UNAVAILABLE" && <Link href={`/lvb/solicitar?veiculo=${v.slug}`} className="btn-lvb mt-6 w-full sm:w-auto">Alugar este veículo</Link>}
           </div>
         </div>
         <div className="mt-10 grid gap-6 md:grid-cols-2">
@@ -65,7 +65,7 @@ export default async function VehiclePage({ params }: { params: Promise<{ slug: 
           <h2 className="mb-5 text-2xl font-bold">Simule este veículo</h2>
           <Simulator vehicles={all.map(toClientVehicle)} settings={settings} initialVehicleId={cv.id} />
         </section>
-        <div className="mt-8"><Notice tone="info">{v.imageCaption}. O modelo pode ser substituído por similar da mesma categoria. Disponibilidade confirmada após a análise da solicitação.</Notice></div>
+        <div className="mt-8"><Notice tone="info">{v.imageCaption}. O modelo pode ser substituído por similar da mesma categoria; o veículo do seu contrato é confirmado na contratação.</Notice></div>
       </div>
     </>
   );

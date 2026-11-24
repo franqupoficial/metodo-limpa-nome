@@ -88,7 +88,7 @@ export function Simulator({ vehicles, settings, initialVehicleId }: { vehicles: 
               {settings.costs.map((c) => <li key={c.label}><strong className="text-ink">{c.label}:</strong> {c.description}</li>)}
             </ul>
           </details>
-          <Link href={`/lvb/solicitar?veiculo=${vehicle.slug}&prazo=${sim.termMonths}${kmPackage ? `&km=${kmPackage.id}` : ""}`} className="btn-lvb w-full">Solicitar locação</Link>
+          <Link href={`/lvb/solicitar?veiculo=${vehicle.slug}&prazo=${sim.termMonths}${kmPackage ? `&km=${kmPackage.id}` : ""}`} className="btn-lvb w-full">Alugar com este plano</Link>
         </div>
       </aside>
     </div>

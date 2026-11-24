@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(base),
   title: { default: "Portal Consumidor — Informação, orientação e serviços digitais", template: "%s | Portal Consumidor" },
   description:
-    "Acesse serviços digitais, encontre informações e solicite atendimento de forma simples e organizada: análise de apontamentos no CPF, abertura de CNPJ, empréstimo e locação de veículos para motoristas de aplicativo.",
+    "Acesse serviços digitais, encontre informações e solicite atendimento de forma simples e organizada: regularização de apontamentos no CPF, abertura de CNPJ, empréstimo para negativados e locação de veículos para motoristas de aplicativo.",
   applicationName: "Portal Consumidor",
   openGraph: { type: "website", locale: "pt_BR", siteName: "Portal Consumidor" },
   twitter: { card: "summary_large_image" },

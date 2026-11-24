@@ -7,7 +7,7 @@ import { referenceIsStale, simulate } from "@/lib/pricing";
 import { centsToInput } from "@/lib/action";
 import { AdminHeader, Panel, Empty } from "@/components/admin/ui";
 import { ActionForm, Submit } from "@/components/admin/ActionForm";
-import { saveCategoryAction, saveLvbPlansAction, saveServicePricesAction } from "../../_actions/settings";
+import { saveCategoryAction, saveFreezeAction, saveLvbPlansAction, saveServicePricesAction } from "../../_actions/settings";
 import { discardSuggestionAction, validatePriceAction } from "../../_actions/vehicles";
 
 export const metadata = { title: "Tarifas" };
@@ -16,11 +16,11 @@ const INCL = [["INCLUDED", "Incluído no plano"], ["NOT_INCLUDED", "Não incluí
 
 export default async function Tarifas() {
   const admin = await requireAdmin();
-  const [categories, pending, plans, inc, costs, cons, cnpj, loan] = await Promise.all([
+  const [categories, pending, plans, inc, costs, cons, cnpj, loan, freeze] = await Promise.all([
     prisma.vehicleCategory.findMany({ orderBy: { sortOrder: "asc" }, include: { _count: { select: { vehicles: true } } } }),
     prisma.vehicle.findMany({ where: { suggestedCents: { not: null } }, include: { category: true } }),
     getSetting("lvb.plans"), getSetting("lvb.inclusions"), getSetting("lvb.costs"),
-    getSetting("service.consumidor"), getSetting("service.cnpj"), getSetting("service.emprestimo"),
+    getSetting("service.consumidor"), getSetting("service.cnpj"), getSetting("service.emprestimo"), getSetting("service.consumidor.freeze"),
   ]);
   const example = simulate({ baseMonthlyCents: categories[0]?.startingCents ?? 144000, termMonths: 12, termAdjustments: plans.termAdjustments });
 
@@ -133,6 +133,19 @@ export default async function Tarifas() {
             </div>
             <label className="block"><span className="label text-xs">Escopo do serviço Consumidor</span><textarea name="scope" defaultValue={cons.scope} rows={3} className="input" /></label>
             <Submit>Salvar valores</Submit>
+          </ActionForm>
+        </Panel>
+      )}
+
+      {admin.role === "ADMIN" && (
+        <Panel title="Regularização — bloco “congelamento por 12 meses”" className="mt-6">
+          <p className="mb-4 text-sm text-muted">Este bloco só aparece no site quando estiver ativado <strong>e</strong> com a descrição do procedimento e a base jurídica e operacional que o comprova (por exemplo, norma, decisão judicial ou contrato com o birô). Sem isso, a página exibe a seção padrão sobre as hipóteses legais de suspensão de registros.</p>
+          <ActionForm action={saveFreezeAction} className="space-y-3">
+            <label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" name="enabled" defaultChecked={freeze.enabled} className="accent-brand-700" /> Exibir bloco no site</label>
+            <input name="title" defaultValue={freeze.title} className="input" aria-label="Título" />
+            <textarea name="description" defaultValue={freeze.description} rows={4} className="input" placeholder="Como o procedimento funciona, prazos e condições para o cliente" aria-label="Descrição" />
+            <textarea name="legalBasis" defaultValue={freeze.legalBasis} rows={3} className="input" placeholder="Base jurídica e operacional comprovada" aria-label="Base jurídica" />
+            <Submit>Salvar bloco</Submit>
           </ActionForm>
         </Panel>
       )}

@@ -31,8 +31,8 @@ export function LvbForm({ vehicles, settings, initial }: { vehicles: ClientVehic
 
   if (done)
     return (
-      <Confirmation {...done}>
-        <p>A solicitação estará sujeita à análise, disponibilidade e aprovação. Caso aprovada, você receberá a proposta com todas as condições, valores, obrigações e coberturas antes da contratação. Nenhum pagamento é solicitado nesta etapa.</p>
+      <Confirmation {...done} title="Pedido de locação recebido.">
+        <p>Próximos passos: aprovação cadastral, envio do contrato para assinatura, pagamento da primeira parcela e agendamento da retirada. As demais parcelas serão cobradas no dia escolhido.</p>
       </Confirmation>
     );
 
@@ -87,7 +87,7 @@ export function LvbForm({ vehicles, settings, initial }: { vehicles: ClientVehic
           <div>
             <label htmlFor="cnh-file" className="label">Cópia da CNH <span className="text-xs font-normal text-muted">(opcional)</span></label>
             <input id="cnh-file" type="file" accept="image/jpeg,image/png,application/pdf" className="input file:mr-3 file:rounded-full file:border-0 file:bg-lvb-50 file:px-3 file:py-1 file:text-sm file:font-semibold file:text-lvb-700" onChange={(e) => setCnhFile(e.target.files?.[0] ?? null)} />
-            <p className="hint">JPG, PNG ou PDF, até 5 MB. O arquivo é armazenado de forma criptografada, com acesso restrito. Outros documentos, se necessários, serão solicitados durante a análise.</p>
+            <p className="hint">JPG, PNG ou PDF, até 5 MB. O arquivo é armazenado de forma criptografada, com acesso restrito. Se a operação precisar de outro documento, pediremos pelo e-mail cadastrado.</p>
             {w.errors["license.file"] && <p className="field-error">{w.errors["license.file"]}</p>}
           </div>
         </div>
@@ -105,7 +105,7 @@ export function LvbForm({ vehicles, settings, initial }: { vehicles: ClientVehic
           {driver.others && <TextField label="Quais outros aplicativos?" required={false} value={driver.othersText} onChange={(v) => setDriver({ ...driver, othersText: v })} maxLength={120} />}
           <SelectField label="Há quanto tempo trabalha como motorista?" value={driver.experience} onChange={(v) => setDriver({ ...driver, experience: v as typeof driver.experience })} options={EXPERIENCE.map((e) => ({ value: e, label: EXPERIENCE_LABEL[e] }))} error={w.errors["driver.experience"]} />
           <TextField label="Plataforma principal" required={false} value={driver.mainPlatform} onChange={(v) => setDriver({ ...driver, mainPlatform: v })} maxLength={60} />
-          <TextArea label="Informações adicionais para análise" required={false} hint="Ex.: cidade em que atua, média de horas por semana, se já alugou veículos." value={driver.notes} onChange={(v) => setDriver({ ...driver, notes: v })} rows={3} maxLength={800} />
+          <TextArea label="Informações adicionais" required={false} hint="Ex.: cidade em que atua, média de horas por semana, se já alugou veículos." value={driver.notes} onChange={(v) => setDriver({ ...driver, notes: v })} rows={3} maxLength={800} />
         </div>
       )}
       {w.step === 4 && (
@@ -155,22 +155,22 @@ export function LvbForm({ vehicles, settings, initial }: { vehicles: ClientVehic
           <div className="space-y-2">
             <BaseConsentFields value={consents} onChange={setConsents} errors={w.errors} />
             <Checkbox required checked={consents.analysis} onChange={(v) => setConsents({ ...consents, analysis: v })} error={w.errors["consents.analysis"]}>
-              Autorizo a análise cadastral e a verificação da minha habilitação para avaliação desta solicitação.
+              Autorizo a verificação cadastral e da minha habilitação para aprovação da locação.
             </Checkbox>
             <Checkbox required checked={consents.conditions} onChange={(v) => setConsents({ ...consents, conditions: v })} error={w.errors["consents.conditions"]}>
-              Compreendo que os valores são estimados, que a solicitação está sujeita à análise, disponibilidade e aprovação, e que todas as condições serão apresentadas antes da contratação.
+              Li as condições do plano e compreendo que a locação é formalizada por contrato, após aprovação cadastral e confirmação do veículo, com primeira parcela no ato da contratação e demais parcelas recorrentes no dia escolhido.
             </Checkbox>
           </div>
         </div>
       )}
       {w.step === 6 && (
         <div className="space-y-4 text-center">
-          <h2 className="text-xl font-bold">Tudo pronto para enviar</h2>
-          <p className="mx-auto max-w-xl text-muted">Ao enviar, sua solicitação receberá um número de protocolo. Ela estará sujeita à análise, disponibilidade e aprovação. Nenhum pagamento é solicitado nesta etapa.</p>
+          <h2 className="text-xl font-bold">Tudo pronto para a sua locação</h2>
+          <p className="mx-auto max-w-xl text-muted">Ao enviar, você recebe o protocolo do seu pedido de locação. Em seguida: aprovação cadastral, contrato, primeira parcela e retirada do veículo.</p>
           {sim && vehicle && <p className="text-sm"><strong>{vehicle.brand} {vehicle.name}</strong> · {sim.termMonths} meses · {formatMoney(sim.monthlyCents)}/mês</p>}
         </div>
       )}
-      <WizardNav step={w.step} total={STEPS.length} onBack={w.back} onNext={next} submitting={w.submitting} />
+      <WizardNav step={w.step} total={STEPS.length} onBack={w.back} onNext={next} submitting={w.submitting} submitLabel="Enviar pedido de locação" />
     </div>
   );
 }

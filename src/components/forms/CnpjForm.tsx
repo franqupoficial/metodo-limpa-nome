@@ -8,7 +8,7 @@ import { AddressFields, BaseConsentFields, Confirmation, PersonalFields, emptyAd
 import { useWizard, validateWith } from "./useWizard";
 import { Notice } from "@/components/ui";
 
-const STEPS = ["Dados pessoais", "Endereço", "Dados empresariais", "Revisão", "Solicitação"];
+const STEPS = ["Dados pessoais", "Endereço", "Dados empresariais", "Revisão", "Contratação"];
 const TYPE_LABEL: Record<string, string> = { MEI: "MEI — Microempreendedor Individual", ME: "ME — Microempresa", EPP: "EPP — Empresa de Pequeno Porte", NAO_SEI: "Ainda não sei / quero orientação" };
 
 export function CnpjForm({ priceCents }: { priceCents: number }) {
@@ -22,7 +22,7 @@ export function CnpjForm({ priceCents }: { priceCents: number }) {
   const [consents, setConsents] = useState({ ...emptyConsents, privateFee: false });
   const [done, setDone] = useState<{ protocol: string; accessCode: string } | null>(null);
 
-  if (done) return <Confirmation {...done}><p>Nossa equipe analisará as informações e entrará em contato com as orientações sobre enquadramento e próximos passos. O pagamento do serviço de assistência só é solicitado pelos canais oficiais do portal.</p></Confirmation>;
+  if (done) return <Confirmation {...done} title="Contratação registrada."><p>Enviaremos as instruções de pagamento pelos canais oficiais do portal. Confirmado o pagamento, nossa equipe inicia a abertura do seu CNPJ e entra em contato para validar enquadramento e atividades.</p></Confirmation>;
 
   const payload = () => ({ personal, address, business: { ...business, initialCapital: business.initialCapital === "" ? 0 : Number(business.initialCapital.replace(/\./g, "").replace(",", ".")) }, consents });
   const shape = cnpjSchema.shape;
@@ -100,11 +100,11 @@ export function CnpjForm({ priceCents }: { priceCents: number }) {
             <p className="mt-2 text-sm text-muted">Valor único pelo serviço de assistência. Não é taxa governamental.</p>
           </div>
           <Notice tone="info" title="A abertura de MEI pelos canais oficiais é gratuita.">
-            Você pode se formalizar sem custo diretamente no portal oficial do governo. Nosso serviço é opcional e oferece orientação e acompanhamento. O pagamento será solicitado posteriormente, pelos canais oficiais do Portal Consumidor, após a confirmação.
+            Você pode se formalizar sem custo diretamente no portal oficial do governo. O valor acima remunera o serviço privado de assistência e condução da abertura. As instruções de pagamento são enviadas pelos canais oficiais do Portal Consumidor.
           </Notice>
         </div>
       )}
-      <WizardNav step={w.step} total={STEPS.length} onBack={w.back} onNext={next} submitting={w.submitting} />
+      <WizardNav step={w.step} total={STEPS.length} onBack={w.back} onNext={next} submitting={w.submitting} submitLabel="Confirmar contratação" />
     </div>
   );
 }

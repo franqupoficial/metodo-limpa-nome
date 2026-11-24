@@ -56,7 +56,7 @@ export const consumidorSchema = z.object({
   payment: z.object({ preference: z.enum(["PIX", "PARCELADO"]) }),
   consents: z.object({
     ...baseConsents,
-    scope: mustAccept("Confirme que compreendeu o escopo do serviço."),
+    scope: mustAccept("Confirme que leu as condições do serviço."),
   }),
 });
 
@@ -101,6 +101,11 @@ export const cnpjSchema = z.object({
 
 /* ---------------- Empréstimo ---------------- */
 export const DUE_DAYS = [5, 10, 15, 20, 25] as const;
+export const LOAN_PAYMENT_METHODS = ["CARTAO_CREDITO", "DEBITO_CONTA"] as const;
+export const LOAN_PAYMENT_LABEL: Record<(typeof LOAN_PAYMENT_METHODS)[number], string> = {
+  CARTAO_CREDITO: "Débito automático no cartão de crédito",
+  DEBITO_CONTA: "Débito automático em conta corrente",
+};
 export const emprestimoSchema = (maxCents: number, minCents: number) =>
   z.object({
     personal: personalSchema,
@@ -113,11 +118,13 @@ export const emprestimoSchema = (maxCents: number, minCents: number) =>
       dueDay: z.coerce.number().refine((v) => (DUE_DAYS as readonly number[]).includes(v), "Selecione o dia de vencimento."),
       purpose: optText(300),
       monthlyIncome: z.coerce.number().min(0).max(1_000_000).optional(),
+      paymentMethod: z.enum(LOAN_PAYMENT_METHODS, { errorMap: () => ({ message: "Selecione a forma de pagamento." }) }),
     }),
     consents: z.object({
       ...baseConsents,
-      creditAnalysis: mustAccept("Autorize a análise de crédito para continuar."),
-      noGuarantee: mustAccept("Confirme que compreendeu que a aprovação não é garantida."),
+      creditAnalysis: mustAccept("Autorize a consulta de crédito para continuar."),
+      autoDebit: mustAccept("Autorize o débito automático das parcelas para continuar."),
+      noGuarantee: mustAccept("Confirme que compreendeu as etapas de aprovação e liberação."),
     }),
   });
 
@@ -160,8 +167,8 @@ export const lvbSchema = z.object({
   }),
   consents: z.object({
     ...baseConsents,
-    analysis: mustAccept("Autorize a análise cadastral para continuar."),
-    conditions: mustAccept("Confirme que compreendeu as condições do plano."),
+    analysis: mustAccept("Autorize a verificação cadastral para continuar."),
+    conditions: mustAccept("Confirme que leu as condições da locação."),
   }),
 });
 
