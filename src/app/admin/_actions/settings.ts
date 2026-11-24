@@ -75,7 +75,7 @@ export async function saveLvbPlansAction(_: ActionState, fd: FormData): Promise<
   const inclusionSchema = z.enum(["INCLUDED", "NOT_INCLUDED", "TO_CONFIRM"]);
   const inc = (k: string) => (inclusionSchema.safeParse(str(fd, k)).success ? (str(fd, k) as InclusionStatus) : "TO_CONFIRM");
   const costs = [0, 1, 2, 3, 4, 5, 6, 7].map((i) => ({ label: str(fd, `cost${i}label`).slice(0, 80), description: str(fd, `cost${i}desc`).slice(0, 400) })).filter((c) => c.label);
-  await setSetting("lvb.plans", { termAdjustments, kmPackages, priceNotice: str(fd, "priceNotice").slice(0, 500) });
+  await setSetting("lvb.plans", { termAdjustments, kmPackages, priceNotice: str(fd, "priceNotice").slice(0, 500), deliveryWindow: str(fd, "deliveryWindow").slice(0, 60) || "7 a 15 dias" });
   await setSetting("lvb.inclusions", { maintenance: inc("maintenance"), ipva: inc("ipva"), insurance: inc("insurance"), assistance: inc("assistance"), notes: str(fd, "inclusionNotes").slice(0, 500) });
   await setSetting("lvb.costs", costs);
   await audit(admin.id, "settings.lvb_plans", "Setting", "lvb.*", { termAdjustments, kmPackages, costs: costs.length });

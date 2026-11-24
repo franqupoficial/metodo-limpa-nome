@@ -33,7 +33,7 @@ export function LvbForm({ vehicles, settings, initial }: { vehicles: ClientVehic
   if (done)
     return (
       <Confirmation {...done} title="Pedido de locação recebido." pixTitle="Pague a 1ª parcela via Pix">
-        <p>Próximos passos: confirmação do pagamento da 1ª parcela, aprovação cadastral, envio do contrato e agendamento da retirada. As demais parcelas chegam ao seu e-mail antes de cada vencimento.</p>
+        <p>Próximos passos: confirmação do pagamento da 1ª parcela, aprovação cadastral, envio do contrato e entrega do veículo na sua região em {settings.deliveryWindow}. As demais parcelas chegam ao seu e-mail antes de cada vencimento.</p>
       </Confirmation>
     );
 
@@ -140,6 +140,8 @@ export function LvbForm({ vehicles, settings, initial }: { vehicles: ClientVehic
                 <li>Primeira parcela: <strong>{formatMoney(sim.firstInstallmentCents)}</strong> (via Pix ao concluir)</li>
                 <li>Demais: <strong>{sim.remainingInstallments}× {formatMoney(sim.monthlyCents)}</strong> (recorrente)</li>
                 <li>Total estimado: <strong>{formatMoney(sim.totalCents)}</strong></li>
+                <li className="sm:col-span-2">Entrega em <strong>{address.city ? `${address.city}/${address.state}` : "sua região"}</strong>: <strong>{settings.deliveryWindow}</strong> após aprovação e pagamento da 1ª parcela.</li>
+                <li className="sm:col-span-2">Seguro, manutenção, assistência 24h e IPVA inclusos no valor mensal.</li>
               </ul>
             </div>
           )}
@@ -176,6 +178,7 @@ export function LvbForm({ vehicles, settings, initial }: { vehicles: ClientVehic
           <Checkbox required checked={consents.recurring} onChange={(v) => setConsents({ ...consents, recurring: v })} error={w.errors["consents.recurring"]}>
             Aceito o pagamento recorrente: autorizo o envio das cobranças das demais {sim?.remainingInstallments ?? ""} parcelas de {formatMoney(sim?.monthlyCents)} ao meu e-mail, por {plan.recurringMethod === "BOLETO" ? "boleto" : "Pix"}, para pagamento até todo dia {plan.paymentDay}, conforme o contrato de locação.
           </Checkbox>
+          <p className="rounded-lg bg-lvb-50 p-3 text-sm text-lvb-900">Prazo de entrega em <strong>{address.city ? `${address.city}/${address.state}` : "sua região"}</strong>: <strong>{settings.deliveryWindow}</strong> após a aprovação e o pagamento da 1ª parcela.</p>
           <p className="text-sm text-muted">Ao concluir, você recebe o QR Code e o Pix copia e cola da primeira parcela. Com o pagamento confirmado e o cadastro aprovado, enviamos o contrato e agendamos a retirada do veículo.</p>
         </div>
       )}

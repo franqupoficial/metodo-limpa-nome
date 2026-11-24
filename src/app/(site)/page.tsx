@@ -64,8 +64,8 @@ export default async function HomePage() {
             <InfoCard icon="lock" title="Segurança e privacidade" href="/informacoes#seguranca">
               Seus dados são protegidos conforme a LGPD. Veja como evitar golpes e reconhecer canais oficiais.
             </InfoCard>
-            <InfoCard icon="info" title="Transparência" href="/informacoes#transparencia">
-              Somos uma plataforma privada. Indicamos sempre os canais públicos e gratuitos disponíveis.
+            <InfoCard icon="track" title="Acompanhamento online" href="/acompanhar">
+              Acompanhe cada etapa da sua solicitação pelo protocolo, de onde estiver, a qualquer hora.
             </InfoCard>
           </div>
         </div>

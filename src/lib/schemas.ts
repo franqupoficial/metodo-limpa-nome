@@ -106,8 +106,13 @@ export const RECURRING_LABEL: Record<(typeof RECURRING_METHODS)[number], string>
   PIX: "Pix — cobrança mensal enviada por e-mail",
   BOLETO: "Boleto bancário enviado por e-mail",
 };
-export const LOAN_PAYMENT_METHODS = RECURRING_METHODS;
-export const LOAN_PAYMENT_LABEL = RECURRING_LABEL;
+export const LOAN_PAYMENT_METHODS = ["DEBITO_CONTA", "PIX", "BOLETO"] as const;
+export const LOAN_PAYMENT_LABEL: Record<(typeof LOAN_PAYMENT_METHODS)[number], string> = {
+  DEBITO_CONTA: "Débito automático em conta corrente",
+  PIX: "Pix — cobrança mensal enviada por e-mail",
+  BOLETO: "Boleto bancário enviado por e-mail",
+};
+export const ACCOUNT_TYPES = ["CORRENTE", "POUPANCA"] as const;
 export const emprestimoSchema = (maxCents: number, minCents: number) =>
   z.object({
     personal: personalSchema,
@@ -121,11 +126,27 @@ export const emprestimoSchema = (maxCents: number, minCents: number) =>
       purpose: optText(300),
       monthlyIncome: z.coerce.number().min(0).max(1_000_000).optional(),
       paymentMethod: z.enum(LOAN_PAYMENT_METHODS, { errorMap: () => ({ message: "Selecione a forma de pagamento." }) }),
+      /** Dados para débito automático em conta (não incluem senhas nem dados de cartão) */
+      bank: z
+        .object({
+          bankName: optText(60),
+          agency: z.string().transform(onlyDigits).optional().default(""),
+          account: z.string().trim().max(20).optional().default(""),
+          accountType: z.enum(["", ...ACCOUNT_TYPES]).optional().default(""),
+        })
+        .optional(),
+    }).superRefine((l, ctx) => {
+      if (l.paymentMethod !== "DEBITO_CONTA") return;
+      const b = l.bank ?? { bankName: "", agency: "", account: "", accountType: "" };
+      if (!b.bankName || b.bankName.length < 2) ctx.addIssue({ code: "custom", path: ["bank", "bankName"], message: "Informe o banco." });
+      if (!/^\d{3,5}$/.test(b.agency ?? "")) ctx.addIssue({ code: "custom", path: ["bank", "agency"], message: "Agência inválida (somente números, sem dígito)." });
+      if (!/^[0-9]{3,13}-?[0-9xX]?$/.test(b.account ?? "")) ctx.addIssue({ code: "custom", path: ["bank", "account"], message: "Conta inválida. Ex.: 123456-7" });
+      if (!b.accountType) ctx.addIssue({ code: "custom", path: ["bank", "accountType"], message: "Selecione o tipo de conta." });
     }),
     consents: z.object({
       ...baseConsents,
       creditAnalysis: mustAccept("Autorize a consulta de crédito para continuar."),
-      autoDebit: mustAccept("Autorize o envio das cobranças mensais para continuar."),
+      autoDebit: mustAccept("Autorize a cobrança das parcelas para continuar."),
       noGuarantee: mustAccept("Confirme que compreendeu as etapas de aprovação e liberação."),
     }),
   });

@@ -115,6 +115,7 @@ export default async function Tarifas() {
               ))}
             </div>
           </div>
+          <label className="block max-w-xs"><span className="label text-xs">Prazo de entrega na região</span><input name="deliveryWindow" defaultValue={plans.deliveryWindow} className="input" /></label>
           <label className="block"><span className="label text-xs">Aviso de preços exibido no site</span><textarea name="priceNotice" defaultValue={plans.priceNotice} rows={2} className="input" /></label>
           <Submit>Salvar planos LVB</Submit>
         </ActionForm>

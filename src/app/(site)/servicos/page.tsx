@@ -18,11 +18,7 @@ export default function ServicosPage() {
         <div className="grid gap-5 sm:grid-cols-2">
           {SERVICES.map((s) => <ServiceCard key={s.type} s={s} cta="Conhecer e contratar" />)}
         </div>
-        <div className="mt-8">
-          <Notice tone="info" title="Plataforma privada">
-            O Portal Consumidor é uma plataforma privada. Alguns serviços também podem ser realizados gratuitamente em canais públicos — indicamos essas alternativas em cada página. Já fez uma solicitação? <Link href="/acompanhar" className="font-semibold">Acompanhe aqui</Link>.
-          </Notice>
-        </div>
+        <p className="mt-8 text-sm text-muted">Já fez uma solicitação? <Link href="/acompanhar" className="font-semibold">Acompanhe aqui</Link>.</p>
       </Section>
     </>
   );

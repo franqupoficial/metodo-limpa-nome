@@ -1,11 +1,14 @@
 import Link from "next/link";
 
 export function LogoMark({ className = "h-9 w-9" }: { className?: string }) {
+  // "P" do Portal com acento verde e amarelo (cores do Brasil), sem reproduzir a bandeira ou símbolos oficiais.
   return (
     <svg viewBox="0 0 40 40" className={className} aria-hidden="true">
-      <rect width="40" height="40" rx="10" fill="#124a93" />
-      <path d="M11 29V11h9.5a6 6 0 0 1 0 12H15" fill="none" stroke="#fff" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="28.5" cy="28.5" r="3.2" fill="#f2b01e" />
+      <rect width="40" height="40" rx="10" fill="#0b2d5a" />
+      <path d="M26 2h4a8 8 0 0 1 8 8v4L26 2Z" fill="#009c3b" />
+      <path d="M11 30V10h9.5a6.5 6.5 0 0 1 0 13H15.5" fill="none" stroke="#fff" strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M29 22.5l5 5-5 5-5-5 5-5Z" fill="#ffdf00" stroke="#009c3b" strokeWidth="1.6" strokeLinejoin="round" />
+      <circle cx="29" cy="27.5" r="1.7" fill="#0b2d5a" />
     </svg>
   );
 }

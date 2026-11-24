@@ -171,7 +171,6 @@ export default async function ConsumidorPage() {
             </div>
             <Link href="/consumidor/solicitar" className="btn-primary">Contratar regularização</Link>
           </div>
-          <Notice tone="info">Portal Consumidor é uma empresa privada, sem vínculo com o Serasa, o SPC, a Boa Vista ou órgãos públicos. As marcas citadas pertencem aos respectivos titulares.</Notice>
         </div>
       </div>
     </>

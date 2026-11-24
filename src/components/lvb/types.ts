@@ -23,6 +23,7 @@ export interface ClientPlanSettings {
   termAdjustments: TermAdjustments;
   kmPackages: KmPackage[];
   priceNotice: string;
+  deliveryWindow: string;
   inclusions: { label: string; status: string }[];
   inclusionNotes: string;
   costs: { label: string; description: string }[];
@@ -30,6 +31,6 @@ export interface ClientPlanSettings {
 
 export const AVAILABILITY_LABEL = {
   AVAILABLE: "Disponível para reserva",
-  ON_REQUEST: "Reserva confirmada na contratação",
+  ON_REQUEST: "Disponível para locação",
   UNAVAILABLE: "Indisponível no momento",
 } as const;

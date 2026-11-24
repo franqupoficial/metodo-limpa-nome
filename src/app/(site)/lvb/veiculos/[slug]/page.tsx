@@ -44,6 +44,8 @@ export default async function VehiclePage({ params }: { params: Promise<{ slug: 
             <dl className="mt-5 grid grid-cols-2 gap-3 text-sm">
               <div className="rounded-lg bg-surface p-3"><dt className="text-xs text-muted">Prazos disponíveis</dt><dd className="font-semibold">{v.terms.join(", ")} meses</dd></div>
               <div className="rounded-lg bg-surface p-3"><dt className="text-xs text-muted">Quilometragem contratada</dt><dd className="font-semibold">{v.kmPerMonth.toLocaleString("pt-BR")} km/mês</dd></div>
+              <div className="rounded-lg bg-surface p-3"><dt className="text-xs text-muted">Entrega na sua região</dt><dd className="font-semibold">{settings.deliveryWindow}</dd></div>
+              <div className="rounded-lg bg-surface p-3"><dt className="text-xs text-muted">Incluso no valor</dt><dd className="font-semibold">Seguro, manutenção, assistência 24h e IPVA</dd></div>
             </dl>
             {v.availability !== "UNAVAILABLE" && <Link href={`/lvb/solicitar?veiculo=${v.slug}`} className="btn-lvb mt-6 w-full sm:w-auto">Alugar este veículo</Link>}
           </div>

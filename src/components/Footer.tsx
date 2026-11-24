@@ -7,7 +7,7 @@ export async function Footer() {
   const cols = [
     { title: "Serviços", links: [["/consumidor", "Regularização de apontamentos"], ["/cnpj", "Abra seu CNPJ"], ["/emprestimo", "Empréstimo para negativados"], ["/lvb", "LVB — Locação de veículos"]] },
     { title: "Informações", links: [["/informacoes", "Central de informações"], ["/noticias", "Notícias e conteúdos"], ["/perguntas-frequentes", "Perguntas frequentes"], ["/acompanhar", "Acompanhar solicitação"]] },
-    { title: "Institucional", links: [["/privacidade", "Política de privacidade"], ["/termos", "Termos de uso"], ["/lvb/politicas", "Políticas da locação LVB"], ["/contato", "Contato"]] },
+    { title: "Institucional", links: [["/sobre", "Sobre a empresa"], ["/privacidade", "Política de privacidade"], ["/termos", "Termos de uso"], ["/lvb/politicas", "Políticas da locação LVB"], ["/contato", "Contato"]] },
   ];
   return (
     <footer className="mt-16 bg-brand-900 text-brand-100">
@@ -15,7 +15,7 @@ export async function Footer() {
         <div className="space-y-4">
           <Logo light />
           <p className="text-sm leading-relaxed">
-            Plataforma privada de informação e intermediação de serviços. Não possui vínculo com órgãos públicos e não substitui os canais oficiais e gratuitos de atendimento.
+            Regularização de apontamentos, abertura de CNPJ, crédito e locação de veículos para quem trabalha com aplicativos — tudo em um só lugar, com atendimento humano e acompanhamento online.
           </p>
         </div>
         {cols.map((c) => (
@@ -33,7 +33,8 @@ export async function Footer() {
         <div className="container-portal flex flex-col gap-2 py-5 text-xs text-brand-200 sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {new Date().getFullYear()} {contact.companyName}
-            {contact.cnpj ? ` — CNPJ ${contact.cnpj}` : ""}. Todos os direitos reservados.
+            {contact.cnpj ? ` · CNPJ ${contact.cnpj}` : ""}
+            {contact.address ? ` · ${contact.address}` : ""}. Todos os direitos reservados.
           </p>
           <p>{contact.email} {contact.hours ? `· ${contact.hours}` : ""}</p>
         </div>

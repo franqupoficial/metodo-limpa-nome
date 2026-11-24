@@ -36,7 +36,7 @@ export default async function LvbHome() {
               <Link href="/lvb/veiculos" className="btn bg-accent text-lvb-900 hover:brightness-95">Ver catálogo <Icon name="arrow" className="h-4 w-4" /></Link>
               <Link href="/lvb/simulador" className="btn border border-white/40 text-white hover:bg-white/10">Simular plano</Link>
             </div>
-            <p className="mt-5 text-xs text-lvb-100">Operação privada de locação. Não é programa governamental. Locação mediante aprovação cadastral e contrato.</p>
+            <p className="mt-5 text-sm font-semibold text-accent">Entrega em 7 a 15 dias na sua região.</p>
           </div>
           <div className="hidden lg:block"><div className="overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/20"><CarIllustration category="Sedan" className="w-full" /></div></div>
         </div>
@@ -150,9 +150,6 @@ export default async function LvbHome() {
             <p className="mt-2 text-sm text-muted">Acompanhe o andamento com o protocolo e o código de acesso.</p>
             <Link href="/acompanhar" className="btn-secondary mt-5">Acompanhar solicitação</Link>
           </div>
-        </div>
-        <div className="container-portal mt-6">
-          <Notice tone="info">A LVB é uma operação privada de locação de veículos, integrante do Portal Consumidor. Não se trata de programa governamental, locação subsidiada ou veículo arrendado pelo governo.</Notice>
         </div>
       </section>
     </>

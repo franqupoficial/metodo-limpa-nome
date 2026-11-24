@@ -31,7 +31,6 @@ export default function Page() {
           ))}
         </ol>
         <div className="mt-8 space-y-4">
-          <Notice tone="info">A LVB é uma operação privada de locação. Não é programa governamental, locação subsidiada pelo governo ou veículo arrendado pelo governo.</Notice>
           <div className="flex flex-wrap gap-3"><Link href="/lvb/veiculos" className="btn-lvb">Ver catálogo</Link><Link href="/lvb/politicas" className="btn-secondary">Políticas da locação</Link></div>
         </div>
       </div>

@@ -91,7 +91,7 @@ export default async function RequestDetail({ params, searchParams }: { params: 
 
           {r.service === "EMPRESTIMO" && !r.anonymizedAt && (
             <Panel title="Proposta de crédito">
-              <DefList rows={[["Valor solicitado", formatMoney(r.amountCents)], ["Vencimento desejado", `Dia ${d.loan?.dueDay}`], ["Pagamento das parcelas", LOAN_PAYMENT_LABEL[d.loan?.paymentMethod as keyof typeof LOAN_PAYMENT_LABEL] ?? "—"], ["Renda informada", d.loan?.monthlyIncome ? formatMoney(Math.round(d.loan.monthlyIncome * 100)) : ""], ["Finalidade", d.loan?.purpose]]} />
+              <DefList rows={[["Valor solicitado", formatMoney(r.amountCents)], ["Vencimento desejado", `Dia ${d.loan?.dueDay}`], ["Pagamento das parcelas", LOAN_PAYMENT_LABEL[d.loan?.paymentMethod as keyof typeof LOAN_PAYMENT_LABEL] ?? "—"], ["Conta para débito automático", d.loan?.bank?.agency ? `${d.loan.bank.bankName} · agência ${d.loan.bank.agency} · conta ${d.loan.bank.account} (${d.loan.bank.accountType === "POUPANCA" ? "poupança" : "corrente"})` : "—"], ["Renda informada", d.loan?.monthlyIncome ? formatMoney(Math.round(d.loan.monthlyIncome * 100)) : ""], ["Finalidade", d.loan?.purpose]]} />
             </Panel>
           )}
 
