@@ -29,7 +29,7 @@ export function AtelierFinder({ whatsapp, compact = false, onDone }: { whatsapp:
     if (!panel.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     gsap.fromTo(panel.current.querySelectorAll(".af-anim"), { opacity: 0, y: 22, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: 0.7, ease: "power3.out", stagger: 0.06 });
   };
-  useEffect(animateIn, [step, items]);
+  useEffect(() => { animateIn(); }, [step, items]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     const go = () => { setStep(0); setSel({}); setItems(null); };
     window.addEventListener("lx:finder-start", go);

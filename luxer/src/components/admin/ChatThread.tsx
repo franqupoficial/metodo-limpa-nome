@@ -17,7 +17,7 @@ export function ChatThread({ id, initial }: { id: string; initial: M[] }) {
     const t = setInterval(tick, 4000);
     return () => { alive = false; clearInterval(t); };
   }, [id, msgs]);
-  useEffect(() => end.current?.scrollIntoView({ block: "end" }), [msgs.length]);
+  useEffect(() => { end.current?.scrollIntoView({ block: "end" }); }, [msgs.length]);
   return (
     <div className="h-[52vh] space-y-3 overflow-y-auto bg-zinc-50 p-4">
       {msgs.map((m) => (

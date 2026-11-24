@@ -40,7 +40,7 @@ export function CheckoutForm(p: Props) {
   const [pending, start] = useTransition();
   const set = (k: keyof typeof f, v: string | boolean) => setF((x) => ({ ...x, [k]: v }));
 
-  useEffect(() => track("begin_checkout", { currency: "BRL", value: (p.totals.subtotal - p.totals.discount) / 100, items: p.items.map((i) => ({ item_id: i.id, item_name: i.name, price: i.price / 100, quantity: i.qty })) }), [p.items, p.totals]);
+  useEffect(() => { track("begin_checkout", { currency: "BRL", value: (p.totals.subtotal - p.totals.discount) / 100, items: p.items.map((i) => ({ item_id: i.id, item_name: i.name, price: i.price / 100, quantity: i.qty })) }); }, [p.items, p.totals]);
 
   // CEP → endereço (ViaCEP) e cotação de frete
   useEffect(() => {

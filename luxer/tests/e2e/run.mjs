@@ -381,7 +381,7 @@ try {
       await m.screenshot({ path: path.join(OUT, `mobile${u.replace(/\W+/g, "-")}.png`) });
     }
     await m.click('button[aria-label="Abrir menu"]');
-    assert(await m.locator('nav >> text=Pedidos').first().isVisible(), "menu móvel do admin não abre");
+    assert(await m.locator('aside:visible >> text=Pedidos').first().isVisible(), "menu móvel do admin não abre");
     await m.context().close();
   });
 

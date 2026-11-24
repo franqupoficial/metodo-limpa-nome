@@ -47,7 +47,7 @@ export function Concierge({ greeting, quick, whatsapp, whatsappMessage, chatEnab
     const t = setInterval(() => void load(true), status === "AI" || status === null ? 15000 : 4000);
     return () => clearInterval(t);
   }, [open, view, status, load]);
-  useEffect(() => end.current?.scrollIntoView({ block: "end" }), [msgs.length, busy]);
+  useEffect(() => { end.current?.scrollIntoView({ block: "end" }); }, [msgs.length, busy]);
   useEffect(() => {
     if (open && panel.current && !window.matchMedia("(prefers-reduced-motion: reduce)").matches)
       gsap.fromTo(panel.current, { opacity: 0, y: 24, scale: 0.98 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power3.out" });

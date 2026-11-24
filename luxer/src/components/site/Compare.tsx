@@ -8,7 +8,7 @@ const read = (): string[] => { try { return JSON.parse(localStorage.getItem(KEY)
 /** Comparação de até 4 peças (lado a lado em /comparar). */
 export function CompareButton({ productId }: { productId: string }) {
   const [on, setOn] = useState(false);
-  useEffect(() => setOn(read().includes(productId)), [productId]);
+  useEffect(() => { setOn(read().includes(productId)); }, [productId]);
   return (
     <button
       onClick={() => {

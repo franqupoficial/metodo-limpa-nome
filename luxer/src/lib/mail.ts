@@ -52,7 +52,7 @@ export async function sendMail(m: MailMessage) {
   try {
     if (!mailConfigured()) {
       status = "dev";
-      console.info(`[mail:dev] Para: ${m.to} | ${m.subject}\n${text}`);
+      console.info(`[mail:dev] Para: ${m.to.replace(/^(.{2})[^@]*/, "$1***")} | ${m.subject}`);
     } else {
       await getTransporter().sendMail({ from: process.env.SMTP_FROM, to: m.to, subject: m.subject, text, html });
     }

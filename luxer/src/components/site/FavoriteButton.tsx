@@ -18,7 +18,7 @@ function writeLocal(v: string[]) {
 
 export function FavoriteButton({ productId, large = false }: { productId: string; large?: boolean }) {
   const [on, setOn] = useState(false);
-  useEffect(() => setOn(readLocal().includes(productId)), [productId]);
+  useEffect(() => { setOn(readLocal().includes(productId)); }, [productId]);
   async function toggle(e: React.MouseEvent) {
     e.preventDefault();
     const next = !on;

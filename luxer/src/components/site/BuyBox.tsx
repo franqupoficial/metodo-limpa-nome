@@ -27,7 +27,7 @@ export function BuyBox({ product, variants, optionName, price, whatsapp, sizeGui
   const pix = v?.priceCents ? Math.round(v.priceCents * (1 - price.pixPct / 100)) : price.pix;
   const soldOut = variants.every((x) => x.available <= 0);
 
-  useEffect(() => track("view_item", { currency: "BRL", value: price.price / 100, items: [{ item_id: product.ref ?? product.id, item_name: product.name, price: price.price / 100 }] }), [product, price.price]);
+  useEffect(() => { track("view_item", { currency: "BRL", value: price.price / 100, items: [{ item_id: product.ref ?? product.id, item_name: product.name, price: price.price / 100 }] }); }, [product, price.price]);
 
   function add(goCheckout: boolean) {
     if (!sel) return setMsg({ ok: false, text: `Escolha ${optionName ? `o ${optionName.toLowerCase()}` : "uma opção"}.` });
