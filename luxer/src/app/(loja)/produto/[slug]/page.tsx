@@ -67,7 +67,7 @@ export default async function ProductPage({ params }: P) {
   const ficha: [string, string | null | undefined][] = [["Referência", p.ref], ["Material", p.material], ["Quilatagem", p.karat], ["Tipo de ouro", p.goldType], ["Acabamento", p.finish], ["Pedras", p.stoneType], ["Quantidade de pedras", p.stoneCount?.toString()], ["Peso médio", p.weightG ? `${Number(p.weightG).toLocaleString("pt-BR")} g` : null], ["Gênero", p.gender]];
   const shownLabels = new Set(specs.map((x) => x.label.toLowerCase()));
   const crumbs = p.primaryCategory ? [...(p.primaryCategory.parent ? [p.primaryCategory.parent] : []), p.primaryCategory] : [];
-  const tryCat = tryOnCategoryFor(p.categories.map((c) => c.category.name).join(" ") + " " + (p.jewelryType ?? "") + " " + p.name);
+  const tryCat = tryOnCategoryFor(p.categories.map((c) => c.category.name).join(" ") + " " + (p.jewelryType ?? "") + " " + p.name, p.name);
   // provador AR em tempo real roda no aparelho (sem credencial); o de IA generativa depende do Gemini
   const canAR = p.tryOnEnabled && Boolean(tryCat && REGION_OF[tryCat]);
   const canTry = s.ai.tryOnEnabled && providerConfigured(s.ai.provider) && p.tryOnEnabled && tryCat && REGION_OF[tryCat] && s.ai.categories.includes(tryCat);

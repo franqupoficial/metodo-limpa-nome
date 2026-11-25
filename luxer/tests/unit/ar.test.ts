@@ -47,3 +47,29 @@ test("WASM do CDN na mesma versão do pacote instalado", () => {
   const src = readFileSync("src/components/luxe/ar/tracker.ts", "utf8");
   assert.ok(src.includes(`MEDIAPIPE_VERSION = "${pkg.version}"`), `tracker.ts deve usar ${pkg.version}`);
 });
+
+import { earPoses } from "../../src/components/luxe/ar/pose";
+test("brincos: dois lóbulos de frente; com a cabeça girada, a orelha do lado do nariz some", () => {
+  const face: P[] = Array.from({ length: 478 }, () => ({ x: 0.5, y: 0.5 }));
+  face[234] = { x: 0.35, y: 0.45 }; face[454] = { x: 0.65, y: 0.45 }; face[132] = { x: 0.37, y: 0.6 }; face[361] = { x: 0.63, y: 0.6 };
+  face[1] = { x: 0.5, y: 0.45 };
+  let e = earPoses(face, 1000, 1000);
+  assert.ok(e.left.visible && e.right.visible && e.left.x < 360 && e.right.x > 640);
+  face[1] = { x: 0.62, y: 0.45 };
+  e = earPoses(face, 1000, 1000);
+  assert.ok(e.left.visible && !e.right.visible);
+});
+
+import { rolesFor } from "../../src/components/luxe/ar/roles";
+const pc = (area: number, compact: boolean, aspect = 1) => ({ canvas: null as never, thumb: "", aspect, cx: 0, area, compact });
+
+test("usos oferecidos por peça: nunca anel como pingente nem colar para par de brincos", () => {
+  // conjunto anel + par de brincos de pérola
+  assert.deepEqual(rolesFor("ear", true, "Conjunto Pérola em Ouro 18 Kilates", [pc(900, true, 0.8), pc(300, true), pc(310, true)]), ["ear", "hand"]);
+  // conjunto colar (estendido na foto) + brincos
+  assert.deepEqual(rolesFor("ear", true, "Jogo Colar e Brinco Zircônia", [pc(2000, false, 1.6), pc(200, true), pc(205, true)]), ["ear", "neck"]);
+  // par de brincos: só brinco
+  assert.deepEqual(rolesFor("ear", false, "Brinco Argola", [pc(200, true), pc(205, true)]), ["ear"]);
+  // pingente: só colar
+  assert.deepEqual(rolesFor("neck", false, "Pingente Gota", [pc(500, true)]), ["neck"]);
+});

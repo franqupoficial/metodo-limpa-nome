@@ -57,7 +57,7 @@ export async function curate(occasion: Occasion, metal: Metal, piece: Piece, ran
   const cards = await toCards(rows);
   const tryOnOn = s.ai.tryOnEnabled && providerConfigured(s.ai.provider);
   return rows.map((r, i) => {
-    const cat = tryOnCategoryFor(r.categories.map((c) => c.category.name).join(" ") + " " + (r.jewelryType ?? "") + " " + r.name);
+    const cat = tryOnCategoryFor(r.categories.map((c) => c.category.name).join(" ") + " " + (r.jewelryType ?? "") + " " + r.name, r.name);
     const single = r.variants.length === 1 && !r.variants[0].option;
     return {
       ...cards[i],

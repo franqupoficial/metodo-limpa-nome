@@ -64,6 +64,13 @@ Backups: o PostgreSQL gerenciado faz backup automático (habilite PITR); para c�
 ## LUXER AI TRY-ON — provador com IA realista
 Botão **Experimentar com IA** na página de cada peça compatível (aparece quando há credencial do provedor). O cliente fotografa pela câmera (com contorno de enquadramento) ou envia da galeria, sem precisar de conta. Existe também o **provador AR ao vivo** (`/provador`, botões "Provar … (AR)"), que roda inteiramente no aparelho e não depende de credencial.
 
+**Provador AR (gratuito, no aparelho)** — nunca cola a foto do catálogo com fundo branco sobre a câmera:
+- **Recorte com alfa real** (`src/components/luxe/ar/matte.ts`): fundo do estúdio, sombra de contato e miolo de aros removidos; bordas suavizadas e descontaminadas (sem halo branco). Validação em todas as fotos do catálogo: `npx tsx scripts/validate-matte.ts <pasta-de-saída>`.
+- **Pérolas/madrepérola** (branco sobre branco, onde a cor não separa): recorte conservador + refino com o segmentador por ponto do MediaPipe (`magic_touch`, no aparelho); se o modelo não carregar, fica o recorte por cor.
+- **Peças separadas**: cada brinco do par e as peças de um conjunto viram miniaturas selecionáveis; "Usar como" só oferece usos coerentes (brinco, colar se houver colar, anel se houver anel).
+- **Rastreamento**: FaceLandmarker (lóbulos e colo) e HandLandmarker (anelar e pulso), escala/rotação dinâmicas, sombra e ajuste de brilho à cena; correntes estendidas na foto são desenhadas elo a elo contornando o pescoço.
+- **Ajustar**: tamanho, posição X/Y, rotação e brilho; a captura salva só vídeo + joia (sem interface).
+
 ### Arquitetura (híbrida: visão computacional no aparelho + IA generativa no servidor)
 1. **No navegador** — verificação de resolução, exposição e nitidez; para anéis e pulseiras, o **MediaPipe HandLandmarker** mede as 21 articulações da mão na foto: alerta se a mão não aparece, está pequena, cortada ou com o anelar dobrado, e envia os pontos ao servidor.
 2. **Detecção** (`src/lib/ai/tryon-pipeline.ts`) — com articulações: âncora anatômica na falange proximal do anelar (ou no pulso), largura do dedo/pulso em px e escala (px/mm, régua anatômica de 18 mm/55 mm) — sem chamada paga. Sem articulações (ou orelha/pescoço): modelo de visão devolve caixas e diagnóstico; foto inadequada é recusada sem custo de geração.

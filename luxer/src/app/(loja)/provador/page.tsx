@@ -23,7 +23,7 @@ export default async function TryOnPage({ searchParams }: { searchParams: Promis
     select: { slug: true, name: true, jewelryType: true, images: { take: 1, orderBy: { position: "asc" }, select: { thumbKey: true, key: true } }, categories: { select: { category: { select: { name: true } } } } },
     take: 800,
   });
-  const products = rows.map((r) => ({ slug: r.slug, name: r.name, image: mediaUrl(r.images[0]?.thumbKey ?? r.images[0]?.key ?? null), category: tryOnCategoryFor(r.categories.map((c) => c.category.name).join(" ") + " " + (r.jewelryType ?? "") + " " + r.name) ?? "" })).filter((p) => p.category && REGION_OF[p.category]);
+  const products = rows.map((r) => ({ slug: r.slug, name: r.name, image: mediaUrl(r.images[0]?.thumbKey ?? r.images[0]?.key ?? null), category: tryOnCategoryFor(r.categories.map((c) => c.category.name).join(" ") + " " + (r.jewelryType ?? "") + " " + r.name, r.name) ?? "" })).filter((p) => p.category && REGION_OF[p.category]);
   return (
     <>
       <Container className="pb-14 pt-14 text-center sm:pt-20">

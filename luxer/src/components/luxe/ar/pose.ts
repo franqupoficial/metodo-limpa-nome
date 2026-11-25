@@ -61,3 +61,24 @@ export function smoothPose(prev: Pose | null, next: Pose, alpha = 0.35): Pose {
   while (da < -Math.PI) da += Math.PI * 2;
   return { x: prev.x + (next.x - prev.x) * alpha, y: prev.y + (next.y - prev.y) * alpha, size: prev.size + (next.size - prev.size) * alpha, angle: prev.angle + da * alpha, visible: next.visible };
 }
+
+/**
+ * Brincos nos DOIS lóbulos. Cada orelha fica visível conforme o giro da cabeça:
+ * quando o nariz se aproxima de um lado do rosto, aquela orelha sai de vista.
+ * `size` = largura do rosto (régua de ~14 cm); `angle` = inclinação lateral da cabeça (roll).
+ */
+export function earPoses(lm: P[], w: number, h: number): { left: Pose; right: Pose } {
+  const l = px(lm[234], w, h), r = px(lm[454], w, h), nose = px(lm[1], w, h);
+  const faceW = dist(l, r);
+  const roll = Math.atan2(r.y - l.y, r.x - l.x);
+  const lobe = (edge: { x: number; y: number }, jawIdx: number, out: number) => {
+    const p = lerpP(edge, px(lm[jawIdx], w, h), 0.42);
+    return { x: p.x + out * faceW * 0.025 * Math.cos(roll), y: p.y + out * faceW * 0.025 * Math.sin(roll) };
+  };
+  const L = lobe(l, 132, -1), R = lobe(r, 361, 1);
+  const visL = Math.abs(nose.x - l.x) > faceW * 0.22, visR = Math.abs(r.x - nose.x) > faceW * 0.22;
+  return {
+    left: { x: L.x, y: L.y, angle: roll, size: faceW, visible: faceW > 30 && visL },
+    right: { x: R.x, y: R.y, angle: roll, size: faceW, visible: faceW > 30 && visR },
+  };
+}

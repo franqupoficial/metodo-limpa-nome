@@ -567,7 +567,7 @@ try {
     const cv = dlg.locator("canvas");
     await cv.waitFor();
     // rastreamento carregando ou, sem acesso aos modelos (rede deste ambiente), ajuste manual — nunca tela de erro
-    await m.waitForFunction(() => /Rastreando|Não encontramos|Ajuste manual/.test(document.querySelector('[aria-label="Provador virtual AR"]')?.textContent ?? ""), null, { timeout: 60000 });
+    await m.waitForFunction(() => /Rastreando|Não encontramos|Ajuste manual|Ajustad[oa]/.test(document.querySelector('[aria-label="Provador virtual AR"]')?.textContent ?? ""), null, { timeout: 60000 });
     await m.waitForTimeout(1500); // desenho estabilizado
     const painted = async () => m.evaluate(() => { const c = document.querySelector('[aria-label="Provador virtual AR"] canvas'); const d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 3; i < d.length; i += 4) if (d[i]) n++; return n; });
     const before = await painted();

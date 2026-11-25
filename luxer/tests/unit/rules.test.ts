@@ -91,5 +91,8 @@ test("provador: categoria da peça", () => {
   assert.equal(tryOnCategoryFor("Corrente Malha Cartier"), "correntes");
   assert.equal(tryOnCategoryFor("Brinco de Pérola"), "brincos");
   assert.equal(tryOnCategoryFor("Tornozeleira de Ouro"), null); // tornozelo não é região do provador
-  assert.equal(tryOnCategoryFor("Conjunto"), null);
+  assert.equal(tryOnCategoryFor("Brincos Anel Solitário Brinco Solitário de Pérola", "Brinco Solitário de Pérola com 8mm"), "brincos"); // o nome manda
+  assert.equal(tryOnCategoryFor("Anéis Jogo de Alianças", "Jogo de Alianças Lisas"), "aneis");
+  assert.equal(tryOnCategoryFor("Conjuntos", "Jogo Colar e Brinco Zircônia"), "conjuntos");
+  assert.equal(tryOnCategoryFor("Conjunto"), "conjuntos"); // conjuntos: peças separadas da foto no provador AR
 });

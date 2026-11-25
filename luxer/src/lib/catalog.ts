@@ -58,7 +58,7 @@ export async function toCards(rows: CardRow[]): Promise<ProductCard[]> {
     bestSeller: p.bestSeller,
     rating: p.ratingAvg ? Number(p.ratingAvg) : null,
     ratingCount: p.ratingCount,
-    ar: p.tryOnEnabled && Boolean(REGION_OF[tryOnCategoryFor(p.categories.map((c) => c.category.name).join(" ") + " " + (p.jewelryType ?? "") + " " + p.name) ?? ""]),
+    ar: p.tryOnEnabled && Boolean(REGION_OF[tryOnCategoryFor(p.categories.map((c) => c.category.name).join(" ") + " " + (p.jewelryType ?? "") + " " + p.name, p.name) ?? ""]),
   }));
 }
 

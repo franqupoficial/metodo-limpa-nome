@@ -47,7 +47,7 @@ export async function POST(req: Request) {
     include: { categories: { include: { category: { select: { name: true } } } } },
   });
   if (!product) return err(404, "Peça indisponível para o provador.");
-  const category = tryOnCategoryFor(product.categories.map((c) => c.category.name).join(" ") + " " + (product.jewelryType ?? "") + " " + product.name);
+  const category = tryOnCategoryFor(product.categories.map((c) => c.category.name).join(" ") + " " + (product.jewelryType ?? "") + " " + product.name, product.name);
   if (!category || !REGION_OF[category] || !s.categories.includes(category)) return err(400, "Esta peça não está disponível no provador.");
 
   // proteção de custo e abuso: limite por cliente, um processamento por vez, limite diário da loja e orçamento mensal
