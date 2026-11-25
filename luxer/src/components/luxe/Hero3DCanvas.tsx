@@ -7,13 +7,13 @@ import { PerformanceMonitor } from "@react-three/drei";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowDown } from "lucide-react";
-import { SolitaireRing } from "./three/SolitaireRing";
+import { Crucifix } from "./three/Crucifix";
 import { Studio } from "./three/Studio";
 import { useWebGL } from "./useWebGL";
 import { useStoreTheme } from "@/components/site/StoreTheme";
 import { studioFor } from "@/lib/store-theme";
 
-type Props = { priceFrom: string | null; models: number; href: string };
+type Props = { priceFrom: string | null; models: number; href: string; faithTotal?: number };
 
 const smooth = (a: number, b: number, x: number) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
 const mix = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -21,7 +21,7 @@ const mix = (a: number, b: number, t: number) => a + (b - a) * t;
 /**
  * Coreografia da câmera e do anel em função do progresso da rolagem (0–1):
  *  0–30%   o anel gira 180°;
- *  30–65%  close-up macro na cravação do diamante;
+ *  30–65%  close-up macro no cruzamento da cruz e no Cristo;
  *  65–100% o anel recua para a esquerda (para cima no celular), abrindo espaço para a especificação.
  */
 function Choreography({ progress, pointer }: { progress: MutableRefObject<number>; pointer: MutableRefObject<{ x: number; y: number }> }) {
@@ -49,10 +49,10 @@ function Choreography({ progress, pointer }: { progress: MutableRefObject<number
     look.current.set(0, mix(0.55, 1.5, macro), 0);
     camera.lookAt(look.current);
   });
-  return <SolitaireRing ref={ring} metal="amarelo" quality={size.width < 700 ? "low" : "high"} />;
+  return <Crucifix ref={ring} metal="amarelo" quality={size.width < 700 ? "low" : "high"} />;
 }
 
-export function Hero3DCanvas({ priceFrom, models, href }: Props) {
+export function Hero3DCanvas({ priceFrom, models, href, faithTotal = 0 }: Props) {
   const root = useRef<HTMLElement>(null);
   const progress = useRef(0);
   const pointer = useRef({ x: 0, y: 0 });
@@ -91,7 +91,7 @@ export function Hero3DCanvas({ priceFrom, models, href }: Props) {
   }, []);
 
   return (
-    <section ref={root} className="relative h-[400svh] bg-ivory text-ink" aria-label="LUXER — a arte do ouro eterno">
+    <section ref={root} className="relative h-[400svh] bg-ivory text-ink" aria-label="LUXER — fé esculpida em ouro">
       <div className="sticky top-0 h-svh overflow-hidden">
         {/* brilho de estúdio ao fundo */}
         <div aria-hidden className="lx-hero-bg absolute inset-0 transition-[background] duration-700" />
@@ -118,7 +118,7 @@ export function Hero3DCanvas({ priceFrom, models, href }: Props) {
 
         {/* índice editorial dos capítulos + fio de progresso (acompanham a rolagem) */}
         <ol aria-hidden className="pointer-events-none absolute left-[3.2vw] top-1/2 hidden -translate-y-1/2 flex-col gap-5 text-[10px] uppercase tracking-[0.38em] lg:flex">
-          {["Forma", "Cravação", "O solitário"].map((c, i) => (
+          {["Forma", "Detalhe", "O crucifixo"].map((c, i) => (
             <li key={c} className={`flex items-center gap-3 transition-all duration-500 ${chapter === i ? "text-ink" : "text-stone/60"}`}>
               <span className="font-serif text-[13px] normal-case tracking-normal tabular-nums">{["I", "II", "III"][i]}</span>
               <span className={`h-px bg-gold transition-all duration-500 ${chapter === i ? "w-8" : "w-3 opacity-40"}`} />
@@ -132,25 +132,27 @@ export function Hero3DCanvas({ priceFrom, models, href }: Props) {
         <div className="h3-title pointer-events-none absolute inset-x-0 bottom-[14vh] px-6 text-center">
           <div className="flex items-center justify-center gap-4 text-[10px] uppercase tracking-[0.5em] text-stone"><span aria-hidden className="h-px w-8 bg-gold/60 sm:w-14" />Luxer Joias · Curitiba<span aria-hidden className="h-px w-8 bg-gold/60 sm:w-14" /></div>
           <h1 className="mt-5 font-serif text-[2.6rem] font-normal leading-[1.02] tracking-tight sm:text-[4.6rem]">
-            LUXER <span className="text-gold">—</span> <span className="italic">A arte do ouro eterno</span>
+            LUXER <span className="text-gold">—</span> <span className="italic">Fé esculpida em ouro</span>
           </h1>
         </div>
         <div className="h3-hint absolute inset-x-0 bottom-6 flex flex-col items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-stone">
           Role para descobrir <ArrowDown className="h-4 w-4 animate-bounce" strokeWidth={1.25} />
         </div>
 
-        {/* fase 3: especificação + compra */}
+        {/* fase 3: especificação + compra (números reais do acervo de cruzes e crucifixos) */}
         <div className="h3-spec absolute inset-x-0 bottom-0 px-6 pb-[8vh] opacity-0 sm:inset-x-auto sm:bottom-auto sm:right-[7vw] sm:top-1/2 sm:w-[min(440px,40vw)] sm:-translate-y-1/2 sm:px-0 sm:pb-0">
-          <div className="text-[10px] uppercase tracking-[0.4em] text-gold">Solitário · Ouro 18k</div>
-          <h2 className="mt-4 font-serif text-[2.2rem] leading-[1.05] tracking-tight sm:text-[3rem]">O clássico que atravessa gerações.</h2>
+          <div className="text-[10px] uppercase tracking-[0.4em] text-gold">Luxer Fé · Ouro 18k</div>
+          <h2 className="mt-4 font-serif text-[2.2rem] leading-[1.05] tracking-tight sm:text-[3rem]">A fé que se leva junto ao peito.</h2>
           <dl className="mt-7 divide-y divide-ink/[0.08] border-y border-ink/[0.08] text-[13px] tracking-tight">
             <div className="flex justify-between gap-6 py-3"><dt className="text-stone">Metal</dt><dd>Ouro 18 quilates · 750</dd></div>
             <div className="flex justify-between gap-6 py-3"><dt className="text-stone">Garantia</dt><dd>Certificado e nota fiscal</dd></div>
-            {models > 0 && <div className="flex justify-between gap-6 py-3"><dt className="text-stone">Acervo</dt><dd>{models} modelos de solitário</dd></div>}
+            {models > 0 && <div className="flex justify-between gap-6 py-3"><dt className="text-stone">Cruzes e crucifixos</dt><dd>{models} modelos</dd></div>}
+            {faithTotal > 0 && <div className="flex justify-between gap-6 py-3"><dt className="text-stone">Luxer Fé</dt><dd>{faithTotal} peças de devoção</dd></div>}
             {priceFrom && <div className="flex justify-between gap-6 py-3"><dt className="text-stone">Investimento</dt><dd>a partir de {priceFrom}</dd></div>}
           </dl>
           <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-4">
-            <Link href={href} className="inline-flex items-center justify-center rounded-full bg-ink px-7 py-3.5 text-[12px] font-medium tracking-tight text-ivory transition-colors hover:bg-ink-2">Escolher meu solitário</Link>
+            <Link href={href} className="inline-flex items-center justify-center rounded-full bg-ink px-7 py-3.5 text-[12px] font-medium tracking-tight text-ivory transition-colors hover:bg-ink-2">Ver cruzes e crucifixos</Link>
+            <Link href="/luxer-fe" className="text-[12px] tracking-tight text-ink/80 underline-offset-4 hover:text-ink hover:underline">Explorar a Luxer Fé</Link>
             <button type="button" onClick={() => { document.getElementById("atelier")?.scrollIntoView({ behavior: "smooth", block: "start" }); window.dispatchEvent(new Event("lx:finder-start")); }} className="text-[12px] tracking-tight text-ink/80 underline-offset-4 hover:text-ink hover:underline">Descobrir minha joia ideal</button>
           </div>
         </div>

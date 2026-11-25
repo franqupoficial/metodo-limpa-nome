@@ -50,8 +50,12 @@ export default async function Home() {
               primary={{ label: cfg.ctaLabel ?? "Explorar a coleção", href: cfg.ctaUrl ?? "/busca" }} secondaryLabel="Descobrir minha joia ideal" />,
           );
         } else {
-          const sol = await prisma.product.aggregate({ where: { AND: [visibleWhere(), { categories: { some: { category: { slug: "anel-solitario" } } } }] }, _min: { priceCents: true }, _count: true });
-          out.push(<Hero3D key={sec.id} priceFrom={sol._min.priceCents ? formatMoney(sol._min.priceCents) : null} models={sol._count} href={sol._count ? "/categoria/anel-solitario" : "/categoria/aneis"} />);
+          // abertura de fé: crucifixo 3D com números reais de Cruz e Crucifixo (sem essa categoria, leva à Luxer Fé)
+          const [cruz, faithN] = await Promise.all([
+            prisma.product.aggregate({ where: { AND: [visibleWhere(), { categories: { some: { category: { slug: "cruz-e-crucifixo" } } } }] }, _min: { priceCents: true }, _count: true }),
+            faithTotal(),
+          ]);
+          out.push(<Hero3D key={sec.id} priceFrom={cruz._min.priceCents ? formatMoney(cruz._min.priceCents) : null} models={cruz._count} faithTotal={faithN} href={cruz._count ? "/categoria/cruz-e-crucifixo" : "/luxer-fe"} />);
           // seletor de metais: peça real do acervo em cada acabamento (solitário; senão, anel)
           const finish = async (color: Prisma.ProductWhereInput): Promise<FinishPiece> => {
             for (const slug of ["anel-solitario", "aneis"]) {
