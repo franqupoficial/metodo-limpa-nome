@@ -5,13 +5,15 @@ const isDev = process.env.NODE_ENV !== "production";
 // Scripts de terceiros só carregam quando configurados e consentidos (ver src/components/site/Analytics.tsx).
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com https://connect.facebook.net`,
+  // provador AR: MediaPipe (WASM no jsDelivr, modelos no Google Storage) — 'wasm-unsafe-eval' permite compilar WebAssembly
+  `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'${isDev ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com https://connect.facebook.net https://cdn.jsdelivr.net`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  "connect-src 'self' https://api.pagar.me https://viacep.com.br https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://connect.facebook.net https://www.facebook.com",
+  "connect-src 'self' https://cdn.jsdelivr.net https://storage.googleapis.com https://api.pagar.me https://viacep.com.br https://www.google-analytics.com https://*.google-analytics.com https://www.googletagmanager.com https://connect.facebook.net https://www.facebook.com",
   "frame-src https://www.youtube-nocookie.com https://www.youtube.com https://www.googletagmanager.com",
   "media-src 'self' blob: https:",
+  "worker-src 'self' blob:",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",

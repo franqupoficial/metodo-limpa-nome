@@ -5,14 +5,14 @@ import { getSettings } from "@/lib/settings";
 import { cardSelect, toCards, visibleWhere, type ProductCard } from "@/lib/catalog";
 import { mediaUrl } from "@/lib/media-url";
 import { plainExcerpt } from "@/lib/markdown";
-import { providerConfigured } from "@/lib/ai/tryon";
 import { HeroCarousel } from "@/components/site/HeroCarousel";
 import { ProductGrid } from "@/components/site/ProductCard";
 import { SectionHead, Container } from "@/components/site/Section";
 import { EditorialHero } from "@/components/site/EditorialHero";
 import { Hero3D } from "@/components/luxe/Hero3D";
+import { MetalConfigurator, type FinishPiece } from "@/components/luxe/MetalConfigurator";
+import { GuidedGiftFlow } from "@/components/luxe/GuidedGiftFlow";
 import { formatMoney } from "@/lib/format";
-import { AtelierFinder } from "@/components/site/AtelierFinder";
 
 export const dynamic = "force-dynamic";
 
@@ -51,6 +51,20 @@ export default async function Home() {
         } else {
           const sol = await prisma.product.aggregate({ where: { AND: [visibleWhere(), { categories: { some: { category: { slug: "anel-solitario" } } } }] }, _min: { priceCents: true }, _count: true });
           out.push(<Hero3D key={sec.id} priceFrom={sol._min.priceCents ? formatMoney(sol._min.priceCents) : null} models={sol._count} href={sol._count ? "/categoria/anel-solitario" : "/categoria/aneis"} />);
+          // seletor de metais: peça real do acervo em cada acabamento (solitário; senão, anel)
+          const finish = async (color: Prisma.ProductWhereInput): Promise<FinishPiece> => {
+            for (const slug of ["anel-solitario", "aneis"]) {
+              const p = await prisma.product.findFirst({ where: { AND: [visibleWhere(), { images: { some: {} } }, color, { categories: { some: { category: { OR: [{ slug }, { parent: { slug } }] } } } }] }, orderBy: [{ featured: "desc" }, { priceCents: "asc" }], select: { name: true, slug: true, priceCents: true, images: { take: 1, orderBy: { position: "asc" }, select: { thumbKey: true, key: true } } } });
+              if (p) return { name: p.name, slug: p.slug, price: formatMoney(p.priceCents), image: mediaUrl(p.images[0]?.thumbKey ?? p.images[0]?.key ?? null) };
+            }
+            return null;
+          };
+          const [amarelo, branco, rose] = await Promise.all([
+            finish({ color: { equals: "Amarelo", mode: "insensitive" } }),
+            finish({ color: { equals: "Branco", mode: "insensitive" } }),
+            finish({ OR: [{ color: { in: ["Rosé", "Rose", "rosé", "rose"] } }, { goldType: { contains: "rosé", mode: "insensitive" } }] }),
+          ]);
+          out.push(<MetalConfigurator key={`${sec.id}-metal`} pieces={{ amarelo, branco, rose }} whatsapp={s.contact.whatsapp} />);
         }
         // banners do painel seguem como faixa editorial logo após a abertura
         const banners = await prisma.banner.findMany({ where: { placement: "HOME_HERO", active: true, imageKey: { not: null }, AND: [{ OR: [{ startsAt: null }, { startsAt: { lte: now } }] }, { OR: [{ endsAt: null }, { endsAt: { gt: now } }] }] }, orderBy: { position: "asc" } });
@@ -59,9 +73,9 @@ export default async function Home() {
       }
       case "ATELIER":
         out.push(
-          <section key={sec.id} id="atelier" className="scroll-mt-20 border-t border-line py-24 sm:py-32"><Container>
-            <div className="mb-14 flex items-center gap-4 sm:mb-20"><span aria-hidden className="h-px w-8 bg-gold" /><span className="eyebrow text-stone">{sec.subtitle ?? "Atelier Concierge"}</span><span className="hidden text-[12px] text-stone sm:inline">— {sec.title ?? "Encontre a joia ideal em três escolhas"}</span></div>
-            <AtelierFinder whatsapp={s.contact.whatsapp} />
+          <section key={sec.id} id="atelier" className="scroll-mt-20 border-t border-white/[0.08] bg-[#050505] py-24 sm:py-32"><Container>
+            <div className="mb-14 text-[10px] uppercase tracking-[0.45em] text-[#86868b] sm:mb-20">{sec.subtitle ?? "Guided Luxury Concierge"}</div>
+            <GuidedGiftFlow whatsapp={s.contact.whatsapp} />
           </Container></section>,
         );
         break;
@@ -139,16 +153,16 @@ export default async function Home() {
         break;
       }
       case "TRYON": {
-        if (!s.ai.tryOnEnabled || !providerConfigured(s.ai.provider)) break;
+        // o provador AR roda no aparelho do cliente: a seção aparece sempre
         out.push(
           <section key={sec.id} className="border-t border-line py-24 sm:py-32"><Container>
             <div className={`grid items-center gap-12 ${cfg.imageKey ? "lg:grid-cols-2 lg:gap-24" : "mx-auto max-w-2xl text-center"}`}>
               {cfg.imageKey && <div className="aspect-[4/5] overflow-hidden bg-plate"><img src={mediaUrl(cfg.imageKey)!} alt="" className="h-full w-full object-cover" loading="lazy" /></div>}
               <div>
-                <div className="eyebrow text-stone">{sec.subtitle ?? "Luxer AI Try-on"}</div>
+                <div className="eyebrow text-stone">{sec.subtitle ?? "Luxer AR · ao vivo"}</div>
                 <h2 className="display mt-5 text-[2.35rem] sm:text-[3.2rem]">{sec.title}</h2>
-                <p className={`mt-6 max-w-md text-[14px] leading-relaxed text-ink/60 ${cfg.imageKey ? "" : "mx-auto"}`}>{cfg.text ?? "Envie uma foto, escolha a peça e veja uma simulação realista de como ela fica em você — colares, correntes, pingentes, brincos, pulseiras e anéis."}</p>
-                <Link href="/provador" className="btn-gold mt-10">{cfg.ctaLabel ?? "Experimentar agora"}</Link>
+                <p className={`mt-6 max-w-md text-[14px] leading-relaxed text-ink/60 ${cfg.imageKey ? "" : "mx-auto"}`}>{cfg.text ?? "Abra a câmera e veja anéis, pulseiras, brincos e colares acompanhando você em tempo real. Tudo processado no seu aparelho."}</p>
+                <Link href="/provador" className="btn-gold mt-10">{cfg.ctaLabel ?? "Abrir o provador"}</Link>
               </div>
             </div>
           </Container></section>,

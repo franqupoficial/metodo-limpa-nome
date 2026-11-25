@@ -503,19 +503,26 @@ try {
     await c.context().close();
   });
 
-  await step(19, "Atelier Concierge: curadoria guiada com produtos reais", async () => {
+  await step(19, "Compra guiada: ocasião → metal → faixa de investimento com peças reais", async () => {
     await shop.goto(BASE + "/");
     await shop.click('button:has-text("Descobrir minha joia ideal")');
-    await shop.click("#atelier >> text=Fé & proteção");
-    await shop.click("#atelier >> text=Ouro Amarelo 18k");
-    await shop.click('#atelier button:has-text("Colares & pingentes")');
+    await shop.click('#atelier button:has-text("Presente especial")');
+    await shop.click('#atelier button:has-text("Ouro Amarelo 18k")');
+    await shop.click('#atelier button:has-text("Até R$ 1.500")');
     await shop.locator("#atelier >> text=Seleção curada para você").waitFor({ timeout: 60000 });
     await shop.locator("#atelier article").first().waitFor({ timeout: 60000 });
     const n = await shop.locator("#atelier article").count();
     assert(n >= 3, `curadoria retornou ${n} peças`);
-    assert(await shop.locator("#atelier >> text=Devoção em ouro").first().isVisible(), "justificativa consultiva ausente");
+    const prices = await shop.locator("#atelier article .tabular-nums").allInnerTexts();
+    assert(prices.every((t) => Number(t.replace(/[^\d,]/g, "").replace(",", ".")) < 1500), "peça fora da faixa de investimento: " + prices.join(" | "));
+    assert(await shop.locator("#atelier >> text=Ideal para presentear").first().isVisible(), "justificativa consultiva ausente");
     const wa = await shop.locator('#atelier a:has-text("Tirar dúvidas com especialista")').first().getAttribute("href");
-    assert(wa?.includes("wa.me") && decodeURIComponent(wa).includes("Fé & proteção"), "WhatsApp sem intenção pré-preenchida");
+    assert(wa?.includes("wa.me") && decodeURIComponent(wa).includes("Presente especial"), "WhatsApp sem intenção pré-preenchida");
+    // seletor de metais: troca de acabamento com peça real ou "sob encomenda" honesto
+    await shop.click('button[role="radio"]:has-text("Ouro Branco · Ródio")');
+    await shop.locator("text=Do acervo, neste acabamento").first().waitFor();
+    await shop.click('button[role="radio"]:has-text("Ouro Rosé 18k")');
+    await shop.locator("text=Rosé").first().waitFor();
   });
 
   await step(20, "Remarketing: campanha de recuperação com cupom único e atribuição", async () => {
@@ -535,6 +542,39 @@ try {
     assert(r.status === 302 && (r.headers.get("location") ?? "").includes("utm_medium=remarketing"), "clique não rastreado");
     assert((await db.automationSend.findUnique({ where: { id: sends[0].id } })).clickedAt, "clique não registrado");
   });
+  await step(21, "Provador AR: privacidade → foto da galeria → joia sobreposta → ajuste → captura → compra", async () => {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, acceptDownloads: true });
+    const m = await ctx.newPage();
+    await m.goto(`${BASE}/produto/${productSlug}`);
+    await m.click('button:has-text("Provar na mão (AR)")');
+    const dlg = m.locator('[role="dialog"][aria-label="Provador virtual AR"]');
+    await dlg.locator("text=processada no seu aparelho").waitFor();
+    await dlg.locator('input[type="file"]').setInputFiles(photoFile);
+    const cv = dlg.locator("canvas");
+    await cv.waitFor();
+    // rastreamento carregando ou, sem acesso aos modelos (rede deste ambiente), ajuste manual — nunca tela de erro
+    await m.waitForFunction(() => /Rastreando|Não encontramos|Ajuste manual/.test(document.querySelector('[aria-label="Provador virtual AR"]')?.textContent ?? ""), null, { timeout: 60000 });
+    await m.waitForTimeout(1500); // desenho estabilizado
+    const painted = async () => m.evaluate(() => { const c = document.querySelector('[aria-label="Provador virtual AR"] canvas'); const d = c.getContext("2d").getImageData(0, 0, c.width, c.height).data; let n = 0; for (let i = 3; i < d.length; i += 4) if (d[i]) n++; return n; });
+    const before = await painted();
+    assert(before > 200, "joia não foi desenhada sobre a foto");
+    await dlg.locator('button:has-text("Ajustar")').click();
+    await dlg.locator('input[type="range"]').first().fill("1.6");
+    await m.waitForTimeout(900);
+    const after = await painted();
+    assert(after > before * 1.5, `o controle de tamanho não alterou a joia (${before} → ${after})`);
+    const [dl] = await Promise.all([m.waitForEvent("download"), dlg.locator('button[aria-label="Capturar foto"]').click()]);
+    assert(dl.suggestedFilename().startsWith("luxer-"), "captura não foi gerada");
+    const wa = await dlg.locator('a:has-text("Consultar Especialista LUXER no WhatsApp")').getAttribute("href");
+    assert(decodeURIComponent(wa).includes(`Anel Teste ${REF}`), "WhatsApp sem o nome da joia");
+    await dlg.locator('button:has-text("Comprar agora")').click();
+    const opt = dlg.locator("button[aria-pressed]:not([disabled])").first();
+    if (await opt.count()) { await opt.click(); await dlg.locator('button:has-text("Comprar agora")').click(); }
+    await m.waitForURL(/\/carrinho/, { timeout: 30000 });
+    assert(await m.locator(`text=Anel Teste ${REF}`).first().isVisible(), "peça provada não entrou na sacola");
+    await ctx.close();
+  });
+
 
   if (errors.length) console.log("Erros de JavaScript no navegador:\n  " + [...new Set(errors)].join("\n  "));
 } finally {

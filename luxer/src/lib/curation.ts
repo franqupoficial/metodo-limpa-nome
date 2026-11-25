@@ -6,7 +6,10 @@ import { getSettings } from "./settings";
 import { providerConfigured } from "./ai/tryon";
 import { tryOnCategoryFor } from "./ai/categories";
 
-export const OCCASIONS = { presente: "Presente inesquecível", uso: "Uso pessoal & sofisticação", noivado: "Noivado & celebração", fe: "Fé & proteção" } as const;
+export const OCCASIONS = { presente: "Presente inesquecível", aniversario: "Aniversário", uso: "Uso pessoal & sofisticação", noivado: "Noivado & celebração", fe: "Fé & proteção" } as const;
+/** Faixas de investimento (centavos) do fluxo guiado. */
+export const RANGES = { "ate-1500": [0, 150000], "1500-4000": [150000, 400000], "4000-10000": [400000, 1000000], "acima-10000": [1000000, null] } as const;
+export type Range = keyof typeof RANGES;
 export const METALS = { amarelo: "Ouro amarelo 18k", branco: "Ouro branco 18k", rose: "Ouro rosé", todos: "Todos os acabamentos" } as const;
 export const PIECES = { aneis: "Anéis", brincos: "Brincos", colares: "Colares & pingentes", pulseiras: "Pulseiras", todas: "Curadoria completa" } as const;
 export type Occasion = keyof typeof OCCASIONS;
@@ -24,7 +27,7 @@ const METAL_WHERE: Record<Metal, Prisma.ProductWhereInput> = {
 
 function justify(p: { material: string | null; stoneType: string | null; weightG: unknown; color: string | null }, occasion: Occasion, metalMatched: boolean, metal: Metal) {
   const parts: string[] = [];
-  parts.push({ presente: "Ideal para presentear", uso: "Elegância para o dia a dia", noivado: "Para celebrar o “sim”", fe: "Devoção em ouro" }[occasion]);
+  parts.push({ presente: "Ideal para presentear", aniversario: "Para celebrar a data", uso: "Elegância para o dia a dia", noivado: "Para celebrar o “sim”", fe: "Devoção em ouro" }[occasion]);
   if (/18/.test(p.material ?? "")) parts.push("Ouro 18k certificado");
   if (p.stoneType) parts.push(p.stoneType.replace(/\.$/, ""));
   if (p.weightG) parts.push(`${Number(p.weightG).toLocaleString("pt-BR")} g`);
@@ -32,7 +35,7 @@ function justify(p: { material: string | null; stoneType: string | null; weightG
   return parts.slice(0, 3).join(" • ");
 }
 
-export async function curate(occasion: Occasion, metal: Metal, piece: Piece) {
+export async function curate(occasion: Occasion, metal: Metal, piece: Piece, range?: Range) {
   const s = await getSettings();
   const slugs = PIECE_CATS[piece];
   const cats = slugs.length ? await prisma.category.findMany({ where: { OR: [{ slug: { in: slugs } }, { parent: { slug: { in: slugs } } }] }, select: { id: true } }) : [];
@@ -40,8 +43,9 @@ export async function curate(occasion: Occasion, metal: Metal, piece: Piece) {
   if (cats.length) base.push({ categories: { some: { categoryId: { in: cats.map((c) => c.id) } } } });
   if (occasion === "fe") base.push({ categories: { some: { category: { faith: true } } } });
   if (occasion === "noivado" && (piece === "aneis" || piece === "todas")) base.push({ categories: { some: { category: { slug: { in: ENGAGEMENT } } } } });
-  if (occasion === "presente") base.push({ priceCents: { gte: 150000 } });
-  const order: Prisma.ProductOrderByWithRelationInput[] = [{ featured: "desc" }, { bestSeller: "desc" }, { salesCount: "desc" }, { ratingCount: "desc" }, { priceCents: occasion === "presente" || occasion === "noivado" ? "desc" : "asc" }];
+  if (range) { const [min, max] = RANGES[range]; base.push({ priceCents: { gte: min, ...(max ? { lt: max } : {}) } }); }
+  else if (occasion === "presente") base.push({ priceCents: { gte: 150000 } });
+  const order: Prisma.ProductOrderByWithRelationInput[] = [{ featured: "desc" }, { bestSeller: "desc" }, { salesCount: "desc" }, { ratingCount: "desc" }, { priceCents: occasion === "presente" || occasion === "noivado" || occasion === "aniversario" ? "desc" : "asc" }];
   const sel = { ...cardSelect, color: true, stoneType: true, weightG: true, tryOnEnabled: true, jewelryType: true, categories: { select: { category: { select: { name: true } } } }, variants: { where: { active: true }, select: { id: true, option: true, stock: true, reserved: true } } } satisfies Prisma.ProductSelect;
   let rows = await prisma.product.findMany({ where: { AND: [...base, METAL_WHERE[metal]] }, orderBy: order, take: 6, select: sel });
   const matched = new Set(rows.map((r) => r.id));

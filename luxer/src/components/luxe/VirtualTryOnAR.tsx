@@ -1,0 +1,326 @@
+"use client";
+import Link from "next/link";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { createPortal } from "react-dom";
+import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
+import { X, Camera, ImageUp, Info, ShoppingBag, MessageCircle, SlidersHorizontal, SwitchCamera, Loader2, ShieldCheck } from "lucide-react";
+import { addToCart } from "@/app/(loja)/_actions/cart";
+import { METALS, type Metal } from "./three/metals";
+import { ringPose, wristPose, earPose, neckPose, smoothPose, type Pose, type ARRegion, type P } from "./ar/pose";
+import { drawBand, drawPhoto, trimPhoto, stoneFor, type Adjust } from "./ar/draw";
+import { createTracker, type Tracker } from "./ar/tracker";
+
+export type ARProduct = {
+  slug: string; name: string; image: string | null; category: string; color: string | null; stone: string;
+  karat: string | null; weightG: string | null; widthMm: number | null; heightMm: number | null; lengthMm: number | null;
+  optionName: string | null; variants: { id: string; option: string | null; available: number }[];
+};
+
+const REGION: Record<string, ARRegion> = { aneis: "hand", pulseiras: "wrist", brincos: "ear", colares: "neck", correntes: "neck", pingentes: "neck" };
+const LABEL: Record<ARRegion, { button: string; where: string; show: string }> = {
+  hand: { button: "Provar na mão (AR)", where: "a mão", show: "Mostre o dorso da mão, dedos abertos" },
+  wrist: { button: "Provar no pulso (AR)", where: "o pulso", show: "Mostre a mão e o pulso" },
+  ear: { button: "Provar na orelha (AR)", where: "a orelha", show: "Vire levemente o rosto, orelha visível" },
+  neck: { button: "Provar no colo (AR)", where: "o colo", show: "Rosto e pescoço de frente" },
+};
+const metalOf = (c: string | null): Metal => (/branco/i.test(c ?? "") && !/amarel/i.test(c ?? "") ? "branco" : /ros/i.test(c ?? "") && !/amarel/i.test(c ?? "") ? "rose" : "amarelo");
+const ADJ0: Adjust = { scale: 1, rotate: 0, light: 1, dx: 0, dy: 0 };
+
+/** Provador AR em tempo real: rastreamento no aparelho (MediaPipe), joia acompanhando a mão, o pulso, a orelha ou o colo. */
+export function VirtualTryOnModal({ product, whatsapp, sizeGuide, onClose }: { product: ARProduct; whatsapp: string; sizeGuide: boolean; onClose: () => void }) {
+  const region = REGION[product.category] ?? "hand";
+  const realMetal = metalOf(product.color);
+  const [step, setStep] = useState<"privacy" | "live">("privacy");
+  const [source, setSource] = useState<"camera" | "photo">("camera");
+  const [facing, setFacing] = useState<"user" | "environment">(region === "hand" || region === "wrist" ? "environment" : "user");
+  const [tracking, setTracking] = useState<"loading" | "ready" | "manual">("loading");
+  const [found, setFound] = useState(false);
+  const [photoMiss, setPhotoMiss] = useState(false);
+  const [metal, setMetal] = useState<Metal>(realMetal);
+  const [adj, setAdj] = useState<Adjust>(ADJ0);
+  const [panel, setPanel] = useState<null | "adjust" | "info">(null);
+  const [variant, setVariant] = useState<string | null>(product.variants.length === 1 && !product.variants[0].option ? product.variants[0].id : null);
+  const [msg, setMsg] = useState<string | null>(null);
+  const [camErr, setCamErr] = useState<string | null>(null);
+  const [pending, start] = useTransition();
+  const router = useRouter();
+
+  const video = useRef<HTMLVideoElement>(null);
+  const still = useRef<HTMLImageElement | null>(null);
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const stream = useRef<MediaStream | null>(null);
+  const tracker = useRef<Tracker | null>(null);
+  const pose = useRef<Pose | null>(null);
+  const photo = useRef<HTMLCanvasElement | null>(null);
+  const live = useRef({ metal, adj });
+  live.current = { metal, adj };
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const stopCamera = useCallback(() => { stream.current?.getTracks().forEach((t) => t.stop()); stream.current = null; }, []);
+  useEffect(() => () => { stopCamera(); tracker.current?.close(); }, [stopCamera]);
+
+  // foto real da peça (aparada) para brincos e colares
+  useEffect(() => {
+    if (region === "hand" || region === "wrist" || !product.image) return;
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => { photo.current = trimPhoto(img, region === "ear"); };
+    img.src = product.image;
+  }, [product.image, region]);
+
+  async function loadTracker() {
+    setTracking("loading");
+    try {
+      tracker.current = await createTracker(region);
+      setTracking("ready");
+    } catch (e) {
+      console.warn("[ar] rastreamento indisponível", e);
+      setTracking("manual"); // sem rastreamento: ajuste manual (arrastar, escala, rotação)
+    }
+  }
+
+  async function openCamera(face = facing) {
+    setCamErr(null);
+    stopCamera();
+    if (!navigator.mediaDevices?.getUserMedia) { setCamErr("Este navegador não permite usar a câmera. Use uma foto da galeria."); return; }
+    try {
+      const s = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: face }, width: { ideal: 1280 }, height: { ideal: 1280 } }, audio: false });
+      stream.current = s;
+      still.current = null;
+      setSource("camera"); setStep("live"); pose.current = null;
+      requestAnimationFrame(() => { if (video.current) { video.current.srcObject = s; video.current.play().catch(() => {}); } });
+      if (!tracker.current) loadTracker();
+    } catch {
+      setCamErr("Não conseguimos acessar a câmera. Verifique a permissão do navegador ou use uma foto da galeria.");
+    }
+  }
+  function openPhoto(f: File) {
+    stopCamera();
+    const img = new Image();
+    img.onload = () => { still.current = img; pose.current = null; setPhotoMiss(false); setSource("photo"); setStep("live"); if (!tracker.current) loadTracker(); };
+    img.src = URL.createObjectURL(f);
+  }
+
+  // laço de renderização: detecta, suaviza (lerp) e desenha a joia sobre o quadro
+  useEffect(() => {
+    if (step !== "live") return;
+    let raf = 0, lastT = -1, lastFound = false, photoDetected = false;
+    const frame = () => {
+      raf = requestAnimationFrame(frame);
+      const cv = canvas.current;
+      const src = source === "camera" ? video.current : still.current;
+      if (!cv || !src) return;
+      const w = source === "camera" ? (src as HTMLVideoElement).videoWidth : (src as HTMLImageElement).naturalWidth;
+      const h = source === "camera" ? (src as HTMLVideoElement).videoHeight : (src as HTMLImageElement).naturalHeight;
+      if (!w || !h) return;
+      if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+      const ctx = cv.getContext("2d")!;
+      let next: Pose | null = null;
+      const tr = tracker.current;
+      const t = source === "camera" ? (src as HTMLVideoElement).currentTime : 0;
+      if (tr && (source === "camera" ? t !== lastT : !photoDetected)) {
+        lastT = t; photoDetected = true;
+        try {
+          const lm: P[] | null = tr.detect(src, performance.now());
+          if (lm) next = region === "hand" ? ringPose(lm, w, h) : region === "wrist" ? wristPose(lm, w, h) : region === "ear" ? earPose(lm, w, h) : neckPose(lm, w, h);
+          else if (source === "photo") setPhotoMiss(true); // foto sem a região: o cliente posiciona a joia à mão
+          else if (pose.current) pose.current = { ...pose.current, visible: false };
+        } catch { /* quadro inválido: mantém a última pose */ }
+      }
+      if ((!tr || (source === "photo" && photoDetected && !next)) && !pose.current) {
+        // modo manual: joia no centro, o cliente ajusta
+        const base = region === "hand" || region === "wrist" ? Math.min(w, h) * 0.16 : Math.min(w, h) * 0.5;
+        pose.current = { x: w / 2, y: h / 2, size: base, angle: region === "hand" || region === "wrist" ? -Math.PI / 2 : 0, visible: true };
+      }
+      if (next) pose.current = smoothPose(pose.current, next, source === "camera" ? 0.35 : 1);
+      const f = Boolean(pose.current?.visible);
+      if (f !== lastFound) { lastFound = f; setFound(f); }
+      ctx.clearRect(0, 0, w, h);
+      if (!pose.current?.visible) return;
+      const { metal: mt, adj: a } = live.current;
+      if (region === "hand") drawBand(ctx, pose.current, mt, a, "ring", stoneFor(product.stone));
+      else if (region === "wrist") drawBand(ctx, pose.current, mt, a, "bracelet", null);
+      else if (photo.current) drawPhoto(ctx, pose.current, photo.current, product.heightMm ?? product.lengthMm ?? (region === "ear" ? 16 : 22), mt, a, region === "ear" ? "earring" : "pendant");
+    };
+    raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(raf);
+  }, [step, source, region, product.stone, product.heightMm, product.lengthMm]);
+
+  // arrastar a joia (ajuste fino ou modo manual)
+  const drag = useRef<{ x: number; y: number } | null>(null);
+  const onPointer = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const cv = canvas.current!;
+    if (e.type === "pointerdown") { drag.current = { x: e.clientX, y: e.clientY }; cv.setPointerCapture(e.pointerId); return; }
+    if (e.type === "pointerup" || e.type === "pointercancel") { drag.current = null; return; }
+    if (!drag.current) return;
+    const r = cv.getBoundingClientRect(), k = Math.max(cv.width / r.width, cv.height / r.height);
+    const mirror = source === "camera" && facing === "user" ? -1 : 1;
+    const dx = (e.clientX - drag.current.x) * k * mirror, dy = (e.clientY - drag.current.y) * k;
+    drag.current = { x: e.clientX, y: e.clientY };
+    setAdj((a) => ({ ...a, dx: a.dx + dx, dy: a.dy + dy }));
+  };
+
+  function capture() {
+    const cv = canvas.current, src = source === "camera" ? video.current : still.current;
+    if (!cv || !src) return;
+    const out = document.createElement("canvas");
+    out.width = cv.width; out.height = cv.height;
+    const o = out.getContext("2d")!;
+    if (source === "camera" && facing === "user") { o.translate(out.width, 0); o.scale(-1, 1); }
+    o.drawImage(src, 0, 0, out.width, out.height);
+    o.drawImage(cv, 0, 0);
+    out.toBlob((b) => {
+      if (!b) return;
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(b); a.download = `luxer-${product.slug.slice(0, 40)}.jpg`; a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    }, "image/jpeg", 0.92);
+  }
+
+  const v = product.variants.find((x) => x.id === variant);
+  const hasOptions = product.variants.some((x) => x.option);
+  const soldOut = product.variants.every((x) => x.available <= 0);
+  function buy() {
+    if (!variant) { setPanel("info"); setMsg(`Escolha ${product.optionName ? `o ${product.optionName.toLowerCase()}` : "uma opção"} para continuar.`); return; }
+    start(async () => {
+      const r = await addToCart(variant, 1);
+      if (r.ok) { stopCamera(); router.push("/carrinho"); } else setMsg(r.message);
+    });
+  }
+  const waText = `Olá! Estou provando a joia "${product.name}"${v?.option ? ` (${product.optionName ?? "opção"} ${v.option})` : ""} no provador virtual da Luxer. Pode me ajudar?`;
+  const wa = whatsapp ? `https://wa.me/${whatsapp}?text=${encodeURIComponent(waText)}` : null;
+  const mirror = source === "camera" && facing === "user";
+  const pill = "flex items-center gap-2 rounded-full border border-white/10 bg-black/45 px-3.5 py-2 text-[12px] tracking-tight text-white backdrop-blur-md";
+
+  return (
+    <div className="fixed inset-0 z-[90] flex items-stretch justify-center bg-black/70 backdrop-blur-sm sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-label="Provador virtual AR" onClick={() => { stopCamera(); onClose(); }}>
+      <motion.div initial={{ opacity: 0, y: 24, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
+        className="relative flex h-[100dvh] w-full flex-col overflow-hidden bg-[#050505] text-[#f5f5f7] sm:h-[min(92vh,900px)] sm:max-w-[520px] sm:rounded-[28px] sm:border sm:border-white/[0.08]" onClick={(e) => e.stopPropagation()}>
+        <button type="button" onClick={() => { stopCamera(); onClose(); }} className="absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-md" aria-label="Fechar provador"><X className="h-5 w-5" strokeWidth={1.25} /></button>
+
+        {step === "privacy" && (
+          <div className="flex flex-1 flex-col justify-end px-7 pb-9 pt-16">
+            <div className="flex flex-1 items-center justify-center">
+              {product.image && <div className="relative h-44 w-44 overflow-hidden rounded-[32px] bg-white p-4"><img src={product.image} alt="" className="h-full w-full object-contain" /></div>}
+            </div>
+            <div className="text-[10px] uppercase tracking-[0.4em] text-[#d4af37]">Provador virtual · AR</div>
+            <h2 className="mt-3 font-serif text-[2rem] leading-[1.08] tracking-tight">{product.name}</h2>
+            <div className="mt-6 flex gap-3 rounded-2xl border border-white/[0.08] bg-[#0e0e10] p-4 text-[13px] leading-relaxed tracking-tight text-[#86868b]">
+              <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-[#d4af37]" strokeWidth={1.25} />
+              <p>A câmera é processada <b className="font-medium text-[#f5f5f7]">no seu aparelho</b>, em tempo real. Nenhuma imagem é enviada ou armazenada.</p>
+            </div>
+            <button type="button" onClick={() => openCamera()} className="mt-6 flex items-center justify-center gap-2 rounded-full bg-[#f5f5f7] py-4 text-[14px] font-medium tracking-tight text-[#050505]"><Camera className="h-5 w-5" strokeWidth={1.25} />Concordar e abrir câmera</button>
+            <button type="button" onClick={() => fileRef.current?.click()} className="mt-3 flex items-center justify-center gap-2 rounded-full border border-white/15 py-4 text-[14px] tracking-tight"><ImageUp className="h-5 w-5" strokeWidth={1.25} />Usar foto da galeria</button>
+            {camErr && <p role="alert" className="mt-4 text-center text-[12px] text-red-400">{camErr}</p>}
+          </div>
+        )}
+        <input ref={fileRef} type="file" accept="image/*" className="sr-only" aria-label="Escolher foto" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) openPhoto(f); }} />
+
+        {step === "live" && (
+          <>
+            <div className="relative min-h-0 flex-1 overflow-hidden bg-black">
+              <div className={`absolute inset-0 ${mirror ? "-scale-x-100" : ""}`}>
+                {source === "camera" ? <video ref={video} playsInline muted className="absolute inset-0 h-full w-full object-cover" /> : still.current && <img src={still.current.src} alt="Sua foto" className="absolute inset-0 h-full w-full object-cover" />}
+                <canvas ref={canvas} onPointerDown={onPointer} onPointerMove={onPointer} onPointerUp={onPointer} onPointerCancel={onPointer} className="absolute inset-0 h-full w-full touch-none object-cover" aria-label="Joia sobreposta — arraste para ajustar" />
+              </div>
+              {/* topo: estado do rastreamento + medida + metal */}
+              <div className="pointer-events-none absolute inset-x-4 top-4 flex items-start justify-between gap-3 pr-12">
+                <div className={pill}>
+                  {tracking === "loading" ? <><Loader2 className="h-4 w-4 animate-spin" strokeWidth={1.25} />Carregando IA de rastreamento…</>
+                    : tracking === "manual" ? <>Ajuste manual: arraste a joia</>
+                    : photoMiss && source === "photo" ? <>Não encontramos {LABEL[region].where}: arraste a joia</>
+                    : found ? <><span className="h-1.5 w-1.5 rounded-full bg-[#d4af37]" />Rastreando {LABEL[region].where}</>
+                    : <>{LABEL[region].show}</>}
+                </div>
+              </div>
+              <div className="absolute right-4 top-16 flex flex-col items-end gap-2">
+                {region === "hand" && <button type="button" onClick={() => setPanel("info")} className={pill}>{v?.option ? `${product.optionName ?? "Aro"} ${v.option}` : `Escolher ${(product.optionName ?? "aro").toLowerCase()}`}</button>}
+                <div className="flex gap-1.5 rounded-full border border-white/10 bg-black/45 p-1.5 backdrop-blur-md" role="radiogroup" aria-label="Metal">
+                  {(["amarelo", "branco", "rose"] as Metal[]).map((m) => <button key={m} type="button" role="radio" aria-checked={metal === m} aria-label={METALS[m].label} onClick={() => setMetal(m)} className={`h-7 w-7 rounded-full ${metal === m ? "ring-2 ring-white ring-offset-2 ring-offset-black" : ""}`} style={{ background: METALS[m].swatch }} />)}
+                </div>
+                {metal !== realMetal && <div className={`${pill} max-w-[220px] text-[11px]`}>Esta peça é feita em {METALS[realMetal].short.toLowerCase()}. Outros acabamentos sob consulta.</div>}
+              </div>
+              {source === "camera" && <button type="button" onClick={() => { const f = facing === "user" ? "environment" : "user"; setFacing(f); openCamera(f); }} className={`${pill} absolute bottom-4 left-4`} aria-label="Trocar câmera"><SwitchCamera className="h-4 w-4" strokeWidth={1.25} /></button>}
+              <button type="button" onClick={() => setPanel(panel === "adjust" ? null : "adjust")} className={`${pill} absolute bottom-4 right-4`} aria-expanded={panel === "adjust"}><SlidersHorizontal className="h-4 w-4" strokeWidth={1.25} />Ajustar</button>
+
+              <AnimatePresence>
+                {panel && (
+                  <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", stiffness: 320, damping: 34 }}
+                    className="absolute inset-x-0 bottom-0 z-10 max-h-[70%] overflow-y-auto rounded-t-[24px] border-t border-white/[0.08] bg-[#0e0e10]/95 px-6 pb-6 pt-4 backdrop-blur-xl">
+                    <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20" />
+                    {panel === "adjust" ? (
+                      <div className="space-y-5 text-[12px] tracking-tight">
+                        {([["scale", "Tamanho", 0.5, 1.8, 0.01], ["rotate", "Rotação", -45, 45, 1], ["light", "Luz", 0.6, 1.5, 0.01]] as const).map(([k, l, min, max, st]) => (
+                          <label key={k} className="block"><span className="mb-2 flex justify-between text-[#86868b]"><span>{l}</span><span className="tabular-nums text-[#f5f5f7]">{k === "rotate" ? `${adj[k]}°` : `${Math.round(adj[k] * 100)}%`}</span></span>
+                            <input type="range" min={min} max={max} step={st} value={adj[k]} onChange={(e) => setAdj({ ...adj, [k]: Number(e.target.value) })} className="w-full accent-[#d4af37]" /></label>
+                        ))}
+                        <button type="button" onClick={() => setAdj(ADJ0)} className="text-[#86868b] underline underline-offset-4">Restaurar ajustes</button>
+                      </div>
+                    ) : (
+                      <div className="text-[13px] tracking-tight">
+                        <div className="font-serif text-xl">{product.name}</div>
+                        <dl className="mt-4 divide-y divide-white/[0.08] border-y border-white/[0.08]">
+                          {product.karat && <div className="flex justify-between py-2.5"><dt className="text-[#86868b]">Quilates</dt><dd>{product.karat}</dd></div>}
+                          {product.weightG && <div className="flex justify-between py-2.5"><dt className="text-[#86868b]">Peso médio</dt><dd>{product.weightG} g</dd></div>}
+                          {product.widthMm && <div className="flex justify-between py-2.5"><dt className="text-[#86868b]">Largura</dt><dd>{product.widthMm} mm</dd></div>}
+                          {product.heightMm && <div className="flex justify-between py-2.5"><dt className="text-[#86868b]">Altura</dt><dd>{product.heightMm} mm</dd></div>}
+                          {product.lengthMm && <div className="flex justify-between py-2.5"><dt className="text-[#86868b]">Comprimento</dt><dd>{product.lengthMm} mm</dd></div>}
+                          <div className="flex justify-between py-2.5"><dt className="text-[#86868b]">Metal</dt><dd>{METALS[realMetal].label}</dd></div>
+                        </dl>
+                        {hasOptions && (
+                          <div className="mt-5">
+                            <div className="mb-2 text-[#86868b]">{product.optionName ?? "Opção"}</div>
+                            <div className="flex flex-wrap gap-2">{product.variants.map((x) => <button key={x.id} type="button" disabled={x.available <= 0} onClick={() => { setVariant(x.id); setMsg(null); }} aria-pressed={variant === x.id} className={`h-10 min-w-10 rounded-full border px-3 tabular-nums ${variant === x.id ? "border-[#f5f5f7] bg-[#f5f5f7] text-[#050505]" : "border-white/15"} disabled:opacity-30 disabled:line-through`}>{x.option}</button>)}</div>
+                            {sizeGuide && region === "hand" && <Link href="/p/guia-de-tamanhos" target="_blank" className="mt-3 inline-block text-[#86868b] underline underline-offset-4">Guia de aros</Link>}
+                          </div>
+                        )}
+                        <p className="mt-4 text-[11px] leading-relaxed text-[#86868b]">{region === "hand" || region === "wrist" ? "Prova em AR: aro desenhado no acabamento da peça, em escala aproximada. O desenho exato está nas fotos da página." : "Prova em AR com a fotografia da peça, em escala aproximada."} A medida do aro não é estimada pela câmera — consulte o guia ou um especialista.</p>
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+            {/* barra inferior fixa */}
+            <div className="border-t border-white/[0.08] bg-[#050505] px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4">
+              {msg && <p role="status" className="mb-3 text-center text-[12px] text-[#d4af37]">{msg}</p>}
+              <div className="flex items-center gap-3">
+                <button type="button" onClick={capture} aria-label="Capturar foto" className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/15"><Camera className="h-5 w-5" strokeWidth={1.25} /></button>
+                <button type="button" onClick={() => setPanel(panel === "info" ? null : "info")} aria-label="Informações e medidas" className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/15"><Info className="h-5 w-5" strokeWidth={1.25} /></button>
+                <button type="button" onClick={buy} disabled={pending || soldOut} className="flex h-12 flex-1 items-center justify-center gap-2 rounded-full bg-[#f5f5f7] text-[14px] font-medium tracking-tight text-[#050505] disabled:opacity-40"><ShoppingBag className="h-5 w-5" strokeWidth={1.25} />{soldOut ? "Esgotado" : pending ? "Adicionando…" : "Comprar agora"}</button>
+              </div>
+              {wa && <a href={wa} target="_blank" rel="noopener noreferrer" className="mt-3 flex items-center justify-center gap-2 text-[12px] tracking-tight text-[#86868b] hover:text-[#f5f5f7]"><MessageCircle className="h-4 w-4" strokeWidth={1.25} />Consultar Especialista LUXER no WhatsApp</a>}
+            </div>
+          </>
+        )}
+      </motion.div>
+    </div>
+  );
+}
+
+/** Botão "Provar na mão / pulso (AR)" — na página do produto e na vitrine (abre sozinho com ?ar=1). */
+export function ARButton({ product, whatsapp, sizeGuide = false, className = "" }: { product: ARProduct; whatsapp: string; sizeGuide?: boolean; className?: string }) {
+  const [open, setOpen] = useState(false);
+  const region = REGION[product.category] ?? "hand";
+  useEffect(() => { if (new URLSearchParams(window.location.search).get("ar") === "1") setOpen(true); }, []);
+  useEffect(() => {
+    if (!open) return;
+    document.documentElement.style.overflow = "hidden";
+    const k = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    window.addEventListener("keydown", k);
+    return () => { document.documentElement.style.overflow = ""; window.removeEventListener("keydown", k); };
+  }, [open]);
+  return (
+    <>
+      <button type="button" onClick={() => setOpen(true)} className={`group flex w-full items-center justify-between gap-4 rounded-2xl border border-white/[0.1] bg-[#0e0e10] px-5 py-4 text-left transition-colors hover:border-[#d4af37]/60 ${className}`}>
+        <span className="flex items-center gap-4">
+          <Camera className="h-5 w-5 text-[#d4af37]" strokeWidth={1.25} />
+          <span><span className="block text-[14px] font-medium tracking-tight text-[#f5f5f7]">{LABEL[region].button}</span><span className="mt-0.5 block text-[12px] tracking-tight text-[#86868b]">Em tempo real, pela câmera, no seu aparelho</span></span>
+        </span>
+        <span aria-hidden className="text-[10px] uppercase tracking-[0.3em] text-[#d4af37]">Ao vivo</span>
+      </button>
+      {open && createPortal(<VirtualTryOnModal product={product} whatsapp={whatsapp} sizeGuide={sizeGuide} onClose={() => setOpen(false)} />, document.body)}
+    </>
+  );
+}

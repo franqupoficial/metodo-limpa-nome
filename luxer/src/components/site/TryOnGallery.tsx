@@ -17,10 +17,10 @@ export function TryOnGallery({ products }: { products: P[] }) {
       </div>
       <div className="grid grid-cols-2 gap-x-3 gap-y-10 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4">
         {list.map((p) => (
-          <Link key={p.slug} href={`/produto/${p.slug}?provar=1`} className="group block">
+          <Link key={p.slug} href={`/produto/${p.slug}?ar=1`} className="group block">
             <div className="aspect-[4/5] overflow-hidden bg-plate">{p.image && <img src={p.image} alt="" loading="lazy" className="h-full w-full object-contain p-[8%] transition duration-700 group-hover:scale-[1.04]" />}</div>
             <div className="mt-3 line-clamp-2 font-serif text-[1.02rem] leading-snug">{p.name}</div>
-            <div className="mt-1.5 text-[10px] uppercase tracking-[0.22em] text-gold-2">Provar com IA</div>
+            <div className="mt-1.5 text-[10px] uppercase tracking-[0.22em] text-gold-2">Provar ao vivo (AR)</div>
           </Link>
         ))}
       </div>

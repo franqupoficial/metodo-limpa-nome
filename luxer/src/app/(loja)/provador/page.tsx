@@ -1,6 +1,4 @@
 import { prisma } from "@/lib/db";
-import { getSettings } from "@/lib/settings";
-import { geminiConfigured } from "@/lib/ai/tryon";
 import { tryOnCategoryFor, REGION_OF } from "@/lib/ai/categories";
 import { visibleWhere } from "@/lib/catalog";
 import { mediaUrl } from "@/lib/media-url";
@@ -10,32 +8,28 @@ import { TryOnGallery } from "@/components/site/TryOnGallery";
 export const metadata = { title: "LUXER AI — Provador virtual de joias", description: "Experimente anéis, brincos, colares e pulseiras com a sua foto, com inteligência artificial." };
 
 const STEPS = [
-  ["Enquadre", "A câmera guia a posição da mão, orelha, pescoço ou pulso. Também é possível usar uma foto da galeria."],
-  ["Localizamos", "A LUXER AI identifica a região do corpo e o ponto exato onde a joia é usada."],
-  ["Aplicamos a peça real", "A fotografia original da joia é a referência obrigatória: desenho, pedras, cor e acabamento."],
-  ["Verificamos", "Uma inspeção automática compara o resultado com a peça. Se não for fiel, não entregamos."],
+  ["Escolha a peça", "Anéis, alianças, pulseiras, brincos, colares e pingentes do acervo."],
+  ["Abra a câmera", "Ou use uma foto da galeria. Tudo é processado no seu aparelho; nada é enviado."],
+  ["A joia acompanha você", "A IA de rastreamento encontra a mão, o pulso, a orelha ou o colo e posiciona a peça em tempo real."],
+  ["Capture e compre", "Salve a foto para enviar a alguém, escolha o tamanho e compre sem sair da prova."],
 ];
 
 export default async function TryOnPage({ searchParams }: { searchParams: Promise<{ produto?: string }> }) {
-  const s = await getSettings();
   const { produto } = await searchParams;
-  const available = s.ai.tryOnEnabled && geminiConfigured();
-  let products: { slug: string; name: string; image: string | null; category: string }[] = [];
-  if (available) {
-    const rows = await prisma.product.findMany({
-      where: { AND: [visibleWhere(), { tryOnEnabled: true }, { images: { some: {} } }, ...(produto ? [{ slug: produto }] : [])] },
-      orderBy: [{ featured: "desc" }, { salesCount: "desc" }, { priceCents: "desc" }],
-      select: { slug: true, name: true, jewelryType: true, images: { take: 1, orderBy: { position: "asc" }, select: { thumbKey: true, key: true } }, categories: { select: { category: { select: { name: true } } } } },
-      take: 800,
-    });
-    products = rows.map((r) => ({ slug: r.slug, name: r.name, image: mediaUrl(r.images[0]?.thumbKey ?? r.images[0]?.key ?? null), category: tryOnCategoryFor(r.categories.map((c) => c.category.name).join(" ") + " " + (r.jewelryType ?? "") + " " + r.name) ?? "" })).filter((p) => p.category && REGION_OF[p.category] && s.ai.categories.includes(p.category));
-  }
+  // provador AR roda no aparelho do cliente: sempre disponível para as categorias compatíveis
+  const rows = await prisma.product.findMany({
+    where: { AND: [visibleWhere(), { tryOnEnabled: true }, { images: { some: {} } }, ...(produto ? [{ slug: produto }] : [])] },
+    orderBy: [{ featured: "desc" }, { salesCount: "desc" }, { priceCents: "desc" }],
+    select: { slug: true, name: true, jewelryType: true, images: { take: 1, orderBy: { position: "asc" }, select: { thumbKey: true, key: true } }, categories: { select: { category: { select: { name: true } } } } },
+    take: 800,
+  });
+  const products = rows.map((r) => ({ slug: r.slug, name: r.name, image: mediaUrl(r.images[0]?.thumbKey ?? r.images[0]?.key ?? null), category: tryOnCategoryFor(r.categories.map((c) => c.category.name).join(" ") + " " + (r.jewelryType ?? "") + " " + r.name) ?? "" })).filter((p) => p.category && REGION_OF[p.category]);
   return (
     <>
       <Container className="pb-14 pt-14 text-center sm:pt-20">
-        <div className="eyebrow text-gold-2">Luxer AI</div>
+        <div className="eyebrow text-gold-2">Luxer AR · ao vivo</div>
         <h1 className="display mt-4 text-[2.7rem] sm:text-[4.2rem]">Provador virtual</h1>
-        <p className="mx-auto mt-5 max-w-xl text-[14px] leading-relaxed text-ink/60">Veja anéis, brincos, colares e pulseiras da Luxer em você, a partir da sua própria foto.</p>
+        <p className="mx-auto mt-5 max-w-xl text-[14px] leading-relaxed text-ink/60">Prove anéis, pulseiras, brincos e colares em tempo real, pela câmera do seu celular ou computador.</p>
       </Container>
       <Container className="border-t border-line py-14">
         <ol className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
@@ -43,8 +37,7 @@ export default async function TryOnPage({ searchParams }: { searchParams: Promis
         </ol>
       </Container>
       <Container className="border-t border-line pb-24 pt-14">
-        {!available ? <p className="mx-auto max-w-xl py-10 text-center text-[14px] text-ink/70">{s.ai.unavailableMessage}</p>
-          : products.length ? <><h2 className="mb-8 text-center font-serif text-[1.6rem]">Escolha a peça</h2><TryOnGallery products={products} /></>
+        {products.length ? <><h2 className="mb-8 text-center font-serif text-[1.6rem]">Escolha a peça</h2><TryOnGallery products={products} /></>
           : <p className="py-10 text-center text-[14px] text-ink/70">Nenhuma peça disponível para o provador no momento.</p>}
       </Container>
     </>

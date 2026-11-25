@@ -21,6 +21,7 @@ import { Container, SectionHead } from "@/components/site/Section";
 import { ReviewForm, ReportForm } from "@/components/site/ReviewForms";
 import { tryOnCategoryFor, REGION_OF } from "@/lib/ai/categories";
 import { TryOnButton } from "@/components/site/TryOnStudio";
+import { ARButton } from "@/components/luxe/VirtualTryOnAR";
 
 type P = { params: Promise<{ slug: string }> };
 
@@ -67,6 +68,8 @@ export default async function ProductPage({ params }: P) {
   const shownLabels = new Set(specs.map((x) => x.label.toLowerCase()));
   const crumbs = p.primaryCategory ? [...(p.primaryCategory.parent ? [p.primaryCategory.parent] : []), p.primaryCategory] : [];
   const tryCat = tryOnCategoryFor(p.categories.map((c) => c.category.name).join(" ") + " " + (p.jewelryType ?? "") + " " + p.name);
+  // provador AR em tempo real roda no aparelho (sem credencial); o de IA generativa depende do Gemini
+  const canAR = p.tryOnEnabled && Boolean(tryCat && REGION_OF[tryCat]);
   const canTry = s.ai.tryOnEnabled && providerConfigured() && p.tryOnEnabled && tryCat && REGION_OF[tryCat] && s.ai.categories.includes(tryCat);
   const youtube = p.videos.map((v) => v.url.match(/[?&]v=([\w-]+)/)?.[1]).filter(Boolean) as string[];
   const files = p.videos.filter((v) => /\.(mp4|webm)/i.test(v.url));
@@ -109,6 +112,7 @@ export default async function ProductPage({ params }: P) {
               <div className="flex gap-2"><FavoriteButton productId={p.id} large /><CompareButton productId={p.id} /></div>
             </div>
             <div className="my-7 h-px bg-line" />
+            {canAR && <ARButton className={canTry ? "mb-3" : "mb-8"} whatsapp={s.contact.whatsapp} sizeGuide={sizeGuide > 0} product={{ slug: p.slug, name: p.name, image: mediaUrl(p.images[0]?.key ?? null), category: tryCat!, color: p.color, stone: `${p.stoneType ?? ""} ${p.name}`, karat: p.karat, weightG: p.weightG ? Number(p.weightG).toLocaleString("pt-BR") : null, widthMm: p.widthMm ? Number(p.widthMm) : null, heightMm: p.heightMm ? Number(p.heightMm) : null, lengthMm: p.lengthMm ? Number(p.lengthMm) : null, optionName: p.optionName, variants: variants.map((v) => ({ id: v.id, option: v.option, available: v.available })) }} />}
             {canTry && <TryOnButton className="mb-8" consentText={s.ai.consentText} product={{ slug: p.slug, name: p.name, image: mediaUrl(p.images[0]?.thumbKey ?? p.images[0]?.key ?? null), category: tryCat!, optionName: p.optionName, variants: variants.map((v) => ({ id: v.id, option: v.option, available: v.available })) }} />}
             <BuyBox product={{ id: p.id, name: p.name, ref: p.ref, slug: p.slug }} variants={variants} optionName={p.optionName} whatsapp={s.contact.whatsapp} sizeGuide={sizeGuide > 0}
               price={{ price: price.price, compareAt: price.compareAt, pix: price.pix, installments: price.installments, installmentValue: price.installmentValue, pixPct: s.payment.pixDiscountBps / 100 }} />
