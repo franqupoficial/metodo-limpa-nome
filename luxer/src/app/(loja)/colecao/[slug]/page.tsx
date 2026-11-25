@@ -19,7 +19,7 @@ export default async function CollectionPage({ params, searchParams }: P) {
   return (
     <CatalogView base={`/colecao/${c.slug}`} sp={sp} params={{ collectionId: c.id }} facetWhere={{ id: { in: ids } }}
       header={c.image ? (
-        <section className="relative h-[50svh] min-h-[360px] bg-ink"><img src={mediaUrl(c.image)!} alt="" className="h-full w-full object-cover opacity-80" /><div className="absolute inset-0 flex items-center justify-center bg-black/30 text-center text-ivory"><div><div className="eyebrow text-gold">{c.headline ?? "Coleção"}</div><h1 className="display mt-3 text-6xl">{c.name}</h1>{c.description && <p className="mx-auto mt-4 max-w-xl text-sm">{c.description}</p>}</div></div></section>
-      ) : <PageTitle eyebrow={c.headline ?? "Coleção"} title={c.name} text={c.description} dark={c.faith} />} />
+        <section className="mx-auto grid max-w-[1440px] items-center gap-10 px-5 pb-14 pt-10 sm:px-8 lg:grid-cols-2 lg:gap-20 lg:px-12 lg:pt-14"><div className="aspect-[4/5] overflow-hidden lg:order-2"><img src={mediaUrl(c.image)!} alt="" className="h-full w-full object-cover" /></div><div className="lg:pl-8"><div className="eyebrow text-stone">{c.headline ?? "Coleção"}</div><h1 className="display mt-4 text-[2.8rem] sm:text-[4.4rem]">{c.name}</h1>{c.description && <p className="mt-6 max-w-md text-[15px] leading-relaxed text-ink/65">{c.description}</p>}</div></section>
+      ) : <PageTitle eyebrow={c.headline ?? "Coleção"} title={c.name} text={c.description} />} />
   );
 }

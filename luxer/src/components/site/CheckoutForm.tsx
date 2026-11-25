@@ -105,10 +105,10 @@ export function CheckoutForm(p: Props) {
 
   const L = ({ children }: { children: React.ReactNode }) => <span className="eyebrow mb-1.5 block text-stone">{children}</span>;
   return (
-    <form onSubmit={submit} className="grid gap-12 lg:grid-cols-[1.5fr_1fr]">
-      <div className="space-y-12">
+    <form onSubmit={submit} className="grid gap-14 lg:grid-cols-[1.5fr_1fr] lg:gap-20">
+      <div className="space-y-14">
         <section>
-          <h2 className="display mb-6 text-3xl"><span className="text-gold-2">1.</span> Identificação</h2>
+          <h2 className="mb-7 flex items-baseline gap-4 border-b border-line pb-4"><span className="text-[11px] tabular-nums tracking-[0.2em] text-gold">01</span><span className="display text-[1.9rem]">Identificação</span></h2>
           {!p.customer?.logged && <p className="mb-5 text-sm text-stone">Já tem conta? <Link href="/conta/entrar?voltar=/checkout" className="text-ink underline">Entrar</Link> · ou continue como visitante.</p>}
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="sm:col-span-2"><L>Nome completo</L><input required autoComplete="name" value={f.name} onChange={(e) => set("name", e.target.value)} className="field" /></label>
@@ -120,7 +120,7 @@ export function CheckoutForm(p: Props) {
         </section>
 
         <section>
-          <h2 className="display mb-6 text-3xl"><span className="text-gold-2">2.</span> Entrega</h2>
+          <h2 className="mb-7 flex items-baseline gap-4 border-b border-line pb-4"><span className="text-[11px] tabular-nums tracking-[0.2em] text-gold">02</span><span className="display text-[1.9rem]">Entrega</span></h2>
           <div className="grid gap-4 sm:grid-cols-6">
             <label className="sm:col-span-2"><L>CEP</L><input required inputMode="numeric" autoComplete="postal-code" value={f.postalCode} onChange={(e) => set("postalCode", maskCep(e.target.value))} className="field" /></label>
             <label className="sm:col-span-4"><L>Rua</L><input required autoComplete="address-line1" value={f.street} onChange={(e) => set("street", e.target.value)} className="field" /></label>
@@ -134,8 +134,8 @@ export function CheckoutForm(p: Props) {
             {!ship && <p className="text-sm text-stone">Informe o CEP para ver as opções de entrega.</p>}
             {ship?.error && <p className="text-sm text-red-700">{ship.error}</p>}
             {ship?.options.map((o) => (
-              <label key={o.id} className={`flex cursor-pointer items-center justify-between gap-3 border px-4 py-3.5 text-sm ${shipId === o.id ? "border-ink" : "border-line"}`}>
-                <span className="flex items-center gap-3"><input type="radio" name="ship" checked={shipId === o.id} onChange={() => setShipId(o.id)} /> {o.name}{o.carrier && o.carrier !== "Luxer" ? ` · ${o.carrier}` : ""} <span className="text-stone">— até {o.days} dias úteis</span></span>
+              <label key={o.id} className={`flex cursor-pointer items-center justify-between gap-3 border bg-white px-4 py-4 text-[13px] transition-colors ${shipId === o.id ? "border-ink" : "border-line hover:border-ink/40"}`}>
+                <span className="flex items-center gap-3"><input type="radio" name="ship" checked={shipId === o.id} onChange={() => setShipId(o.id)} className="accent-[#0b0b0c]" /> {o.name}{o.carrier && o.carrier !== "Luxer" ? ` · ${o.carrier}` : ""} <span className="text-stone">— até {o.days} dias úteis</span></span>
                 <span>{p.totals.freeShipping || o.priceCents === 0 ? "Grátis" : brl(o.priceCents)}</span>
               </label>
             ))}
@@ -144,10 +144,10 @@ export function CheckoutForm(p: Props) {
         </section>
 
         <section>
-          <h2 className="display mb-6 text-3xl"><span className="text-gold-2">3.</span> Pagamento</h2>
+          <h2 className="mb-7 flex items-baseline gap-4 border-b border-line pb-4"><span className="text-[11px] tabular-nums tracking-[0.2em] text-gold">03</span><span className="display text-[1.9rem]">Pagamento</span></h2>
           <div className="grid gap-3 sm:grid-cols-2">
-            {p.payment.pixEnabled && <button type="button" onClick={() => setMethod("PIX")} className={`border px-5 py-4 text-left ${method === "PIX" ? "border-ink bg-ink text-ivory" : "border-line"}`}><div className="font-medium">Pix</div><div className={`text-xs ${method === "PIX" ? "text-gold-soft" : "text-gold-2"}`}>{p.payment.pixPct.toLocaleString("pt-BR")}% de desconto · aprovação imediata</div></button>}
-            {p.payment.cardEnabled && <button type="button" onClick={() => setMethod("CREDIT_CARD")} className={`border px-5 py-4 text-left ${method === "CREDIT_CARD" ? "border-ink bg-ink text-ivory" : "border-line"}`}><div className="font-medium">Cartão de crédito</div><div className="text-xs opacity-70">até {p.payment.maxInstallments}x</div></button>}
+            {p.payment.pixEnabled && <button type="button" onClick={() => setMethod("PIX")} className={`border bg-white px-5 py-4 text-left transition-colors ${method === "PIX" ? "border-ink" : "border-line hover:border-ink/40"}`}><div className="flex items-center gap-2.5 text-sm"><span className={`h-2.5 w-2.5 rounded-full border ${method === "PIX" ? "border-ink bg-ink" : "border-stone"}`} />Pix</div><div className="mt-1 pl-5 text-xs text-stone">{p.payment.pixPct.toLocaleString("pt-BR")}% de desconto · aprovação imediata</div></button>}
+            {p.payment.cardEnabled && <button type="button" onClick={() => setMethod("CREDIT_CARD")} className={`border bg-white px-5 py-4 text-left transition-colors ${method === "CREDIT_CARD" ? "border-ink" : "border-line hover:border-ink/40"}`}><div className="flex items-center gap-2.5 text-sm"><span className={`h-2.5 w-2.5 rounded-full border ${method === "CREDIT_CARD" ? "border-ink bg-ink" : "border-stone"}`} />Cartão de crédito</div><div className="mt-1 pl-5 text-xs text-stone">até {p.payment.maxInstallments}x</div></button>}
           </div>
           {method === "PIX" && <p className="mt-4 text-sm text-stone">O QR Code e o código “copia e cola” aparecem na próxima tela. O pedido é confirmado automaticamente após o pagamento.</p>}
           {method === "CREDIT_CARD" && (
@@ -163,29 +163,29 @@ export function CheckoutForm(p: Props) {
         </section>
       </div>
 
-      <aside className="h-fit space-y-5 bg-sand p-7 lg:sticky lg:top-36">
-        <h2 className="display text-2xl">Resumo do pedido</h2>
-        <ul className="space-y-2 text-sm">{p.items.map((i) => <li key={i.id} className="flex justify-between gap-3"><span className="line-clamp-1">{i.qty}× {i.name}</span><span>{brl(i.price * i.qty)}</span></li>)}</ul>
-        <dl className="space-y-2 border-t border-line pt-4 text-sm">
+      <aside className="h-fit space-y-6 border-t border-ink pt-7 lg:sticky lg:top-28">
+        <h2 className="eyebrow text-ink">Resumo do pedido</h2>
+        <ul className="space-y-2.5 text-[13px]">{p.items.map((i) => <li key={i.id} className="flex justify-between gap-3"><span className="line-clamp-1">{i.qty}× {i.name}</span><span>{brl(i.price * i.qty)}</span></li>)}</ul>
+        <dl className="space-y-2.5 border-t border-line pt-5 text-[13px] tabular-nums">
           <div className="flex justify-between"><dt>Subtotal</dt><dd>{brl(p.totals.subtotal)}</dd></div>
-          {p.totals.discount > 0 && <div className="flex justify-between text-emerald-800"><dt>Cupom</dt><dd>− {brl(p.totals.discount)}</dd></div>}
-          {method === "PIX" && p.totals.pixSavings > 0 && <div className="flex justify-between text-emerald-800"><dt>Desconto Pix</dt><dd>− {brl(p.totals.pixSavings)}</dd></div>}
+          {p.totals.discount > 0 && <div className="flex justify-between"><dt>Cupom</dt><dd>− {brl(p.totals.discount)}</dd></div>}
+          {method === "PIX" && p.totals.pixSavings > 0 && <div className="flex justify-between"><dt>Desconto Pix</dt><dd>− {brl(p.totals.pixSavings)}</dd></div>}
           <div className="flex justify-between"><dt>Frete</dt><dd>{opt ? (shipping === 0 ? "Grátis" : brl(shipping)) : "—"}</dd></div>
           {method === "CREDIT_CARD" && plan && plan.total > base && <div className="flex justify-between"><dt>Juros</dt><dd>{brl(plan.total - base)}</dd></div>}
-          <div className="flex justify-between border-t border-line pt-3 text-lg"><dt>Total</dt><dd className="font-serif text-2xl">{brl(total)}</dd></div>
+          <div className="flex items-baseline justify-between border-t border-line pt-4"><dt className="eyebrow">Total</dt><dd className="text-2xl font-light">{brl(total)}</dd></div>
         </dl>
         {!p.customer?.logged && (
           <div className="space-y-2 text-sm">
-            <label className="flex items-center gap-2"><input type="checkbox" checked={f.createAccount} onChange={(e) => set("createAccount", e.target.checked)} /> Criar conta para acompanhar pedidos</label>
+            <label className="flex items-center gap-2"><input type="checkbox" checked={f.createAccount} onChange={(e) => set("createAccount", e.target.checked)} className="accent-[#0b0b0c]" /> Criar conta para acompanhar pedidos</label>
             {f.createAccount && <input type="password" autoComplete="new-password" placeholder="Senha (8+ caracteres, letras e números)" value={f.password} onChange={(e) => set("password", e.target.value)} className="field" />}
           </div>
         )}
-        <label className="flex items-start gap-2 text-xs"><input type="checkbox" checked={f.marketingOptIn} onChange={(e) => set("marketingOptIn", e.target.checked)} className="mt-0.5" /> Quero receber novidades e ofertas por e-mail (opcional).</label>
-        <label className="flex items-start gap-2 text-xs"><input type="checkbox" required checked={f.acceptTerms} onChange={(e) => set("acceptTerms", e.target.checked)} className="mt-0.5" /> Li e aceito os <Link href="/p/termos-e-garantias" target="_blank" className="underline">termos</Link>, a <Link href="/p/politica-de-troca" target="_blank" className="underline">política de troca</Link> e a <Link href="/privacidade" target="_blank" className="underline">política de privacidade</Link>.</label>
-        {error && <p role="alert" className="bg-red-50 p-3 text-sm text-red-800">{error}</p>}
+        <label className="flex items-start gap-2 text-xs"><input type="checkbox" checked={f.marketingOptIn} onChange={(e) => set("marketingOptIn", e.target.checked)} className="mt-0.5 accent-[#0b0b0c]" /> Quero receber novidades e ofertas por e-mail (opcional).</label>
+        <label className="flex items-start gap-2 text-xs"><input type="checkbox" required checked={f.acceptTerms} onChange={(e) => set("acceptTerms", e.target.checked)} className="mt-0.5 accent-[#0b0b0c]" /> <span>Li e aceito os <Link href="/p/termos-e-garantias" target="_blank" className="underline underline-offset-2">termos</Link>, a <Link href="/p/politica-de-troca" target="_blank" className="underline underline-offset-2">política de troca</Link> e a <Link href="/privacidade" target="_blank" className="underline underline-offset-2">política de privacidade</Link>.</span></label>
+        {error && <p role="alert" className="border-l border-red-700 pl-3 text-[13px] text-red-800">{error}</p>}
         <button disabled={pending || !p.enabled} className="btn-gold w-full">{pending ? "Processando…" : method === "PIX" ? "Gerar Pix" : "Pagar com cartão"}</button>
         {!p.enabled && <p className="text-xs text-red-700">Pagamentos online em configuração. Fale conosco pelo WhatsApp para concluir sua compra.</p>}
-        <p className="text-center text-[11px] text-stone">🔒 Ambiente seguro · Pagamento processado pela Pagar.me</p>
+        <p className="text-center text-[11px] text-stone">Ambiente seguro · Pagamento processado pela Pagar.me</p>
       </aside>
     </form>
   );

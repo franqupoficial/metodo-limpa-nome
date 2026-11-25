@@ -13,8 +13,8 @@ export default async function Privacy() {
   return (
     <>
       <PageTitle eyebrow="LGPD" title="Privacidade e cookies" />
-      <Container className="max-w-3xl py-14">
-        {page && <><Markdown source={page.content} /><div className="gold-rule my-10" /></>}
+      <Container className="max-w-2xl pb-24 pt-6">
+        {page && <><Markdown source={page.content} /><div className="mx-auto my-14 h-px w-12 bg-gold" /></>}
         <Markdown source={`## Quais dados tratamos e por quê
 - **Cadastro e pedidos** (nome, e-mail, telefone, CPF e endereço): para processar a compra, emitir nota fiscal, entregar e prestar atendimento. O CPF e os endereços são armazenados criptografados.
 - **Pagamento**: os dados do cartão são enviados diretamente à Pagar.me e não são armazenados pela ${s.store.name}. Guardamos apenas bandeira e os 4 últimos dígitos.

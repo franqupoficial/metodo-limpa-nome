@@ -44,20 +44,24 @@ export function BuyBox({ product, variants, optionName, price, whatsapp, sizeGui
 
   return (
     <div>
-      <div className="space-y-1">
-        {price.compareAt && <div className="text-sm text-stone line-through">{brl(price.compareAt)}</div>}
-        <div className="font-serif text-4xl">{brl(unit)}</div>
-        <div className="text-sm"><span className="font-medium text-gold-2">{brl(pix)} no Pix</span> <span className="text-stone">({price.pixPct.toLocaleString("pt-BR")}% de desconto)</span></div>
-        {price.installments > 1 && <div className="text-sm text-stone">ou {price.installments}x de {brl(Math.ceil(unit / price.installments))} sem juros no cartão</div>}
+      <div>
+        <div className="flex items-baseline gap-3 tabular-nums">
+          <span className="text-[1.6rem] font-light tracking-tight">{brl(unit)}</span>
+          {price.compareAt && <span className="text-sm text-stone line-through">{brl(price.compareAt)}</span>}
+        </div>
+        <div className="mt-2 space-y-0.5 text-[13px] text-ink/65">
+          <div>{brl(pix)} no Pix <span className="text-stone">· {price.pixPct.toLocaleString("pt-BR")}% de desconto</span></div>
+          {price.installments > 1 && <div>ou {price.installments}x de {brl(Math.ceil(unit / price.installments))} sem juros no cartão</div>}
+        </div>
       </div>
 
       {hasOptions && (
         <fieldset className="mt-8">
-          <legend className="eyebrow mb-3 flex w-full justify-between text-stone"><span>{optionName ?? "Opção"}{v ? `: ${v.option}` : ""}</span>{sizeGuide && (optionName ?? "").toLowerCase().includes("tamanho") && <Link href="/p/guia-de-tamanhos" className="normal-case tracking-normal underline">Guia de tamanhos</Link>}</legend>
+          <legend className="eyebrow mb-4 flex w-full justify-between text-stone"><span>{optionName ?? "Opção"}{v ? `: ${v.option}` : ""}</span>{sizeGuide && (optionName ?? "").toLowerCase().includes("tamanho") && <Link href="/p/guia-de-tamanhos" className="normal-case tracking-normal underline">Guia de tamanhos</Link>}</legend>
           <div className="flex flex-wrap gap-2">
             {variants.map((x) => (
               <button key={x.id} type="button" disabled={x.available <= 0} onClick={() => { setSel(x.id); setMsg(null); }} aria-pressed={sel === x.id}
-                className={`min-w-12 border px-3 py-2.5 text-sm transition ${sel === x.id ? "border-ink bg-ink text-gold-soft" : "border-line hover:border-ink"} disabled:cursor-not-allowed disabled:text-stone/50 disabled:line-through`}>
+                className={`h-11 min-w-11 border px-3 text-[13px] tabular-nums transition-colors ${sel === x.id ? "border-ink bg-ink text-ivory" : "border-line bg-white hover:border-ink"} disabled:cursor-not-allowed disabled:border-line disabled:bg-transparent disabled:text-stone/45 disabled:line-through`}>
                 {x.option}
               </button>
             ))}
@@ -66,15 +70,15 @@ export function BuyBox({ product, variants, optionName, price, whatsapp, sizeGui
       )}
 
       <div className="mt-8 flex gap-3">
-        <div className="flex items-center border border-line">
-          <button type="button" onClick={() => setQty(Math.max(1, qty - 1))} className="px-3 py-3" aria-label="Diminuir">−</button>
+        <div className="flex items-center border border-line bg-white">
+          <button type="button" onClick={() => setQty(Math.max(1, qty - 1))} className="h-full px-3.5 text-stone transition-colors hover:text-ink" aria-label="Diminuir">−</button>
           <span className="w-8 text-center text-sm tabular-nums" aria-live="polite">{qty}</span>
-          <button type="button" onClick={() => setQty(Math.min(10, qty + 1))} className="px-3 py-3" aria-label="Aumentar">+</button>
+          <button type="button" onClick={() => setQty(Math.min(10, qty + 1))} className="h-full px-3.5 text-stone transition-colors hover:text-ink" aria-label="Aumentar">+</button>
         </div>
         <button type="button" onClick={() => add(true)} disabled={pending || soldOut} className="btn-gold flex-1">{soldOut ? "Esgotado" : pending ? "Adicionando…" : "Comprar"}</button>
       </div>
       {!soldOut && <button type="button" onClick={() => add(false)} disabled={pending} className="btn-line mt-3 w-full">Adicionar à sacola</button>}
-      {msg && <p role="status" className={`mt-3 text-sm ${msg.ok ? "text-emerald-700" : "text-red-700"}`}>{msg.text} {msg.ok && <Link href="/carrinho" className="underline">Ver sacola</Link>}</p>}
+      {msg && <p role="status" className={`mt-4 text-[13px] ${msg.ok ? "text-ink" : "text-red-700"}`}>{msg.text} {msg.ok && <Link href="/carrinho" className="underline underline-offset-4">Ver sacola</Link>}</p>}
       {soldOut && whatsapp && <a href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(`Olá! Tenho interesse na peça ${product.name}${product.ref ? ` (ref. ${product.ref})` : ""}. Ela volta a ficar disponível?`)}`} target="_blank" rel="noopener noreferrer" className="btn-line mt-3 w-full">Avise-me pelo WhatsApp</a>}
     </div>
   );

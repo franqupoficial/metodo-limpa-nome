@@ -3,7 +3,7 @@ import { getCartView } from "@/lib/cart";
 import { getCustomer } from "@/lib/customer-auth";
 import { prisma } from "@/lib/db";
 import { pagarmeConfigured } from "@/lib/payments/pagarme";
-import { Container } from "@/components/site/Section";
+import { Container, PageHeading } from "@/components/site/Section";
 import { CheckoutForm } from "@/components/site/CheckoutForm";
 
 export const metadata = { title: "Finalizar compra", robots: { index: false } };
@@ -16,8 +16,8 @@ export default async function Checkout() {
   const pk = process.env.NEXT_PUBLIC_PAGARME_PUBLIC_KEY || null;
   const pay = cart.payment;
   return (
-    <Container className="py-12 sm:py-16">
-      <h1 className="display mb-10 text-5xl">Finalizar compra</h1>
+    <Container className="pb-24 pt-10 sm:pt-16">
+      <PageHeading eyebrow="Pagamento seguro" title="Finalizar compra" />
       <CheckoutForm
         customer={c ? { name: c.name, email: c.email, phone: c.phone ?? "", logged: true } : null}
         address={addr ? { postalCode: addr.postalCode, street: addr.street, number: addr.number, complement: addr.complement ?? "", district: addr.district, city: addr.city, state: addr.state } : null}

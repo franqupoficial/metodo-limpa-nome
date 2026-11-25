@@ -63,9 +63,9 @@ export function Consent({ ids }: { ids: Ids }) {
       </>}
       {choice === "yes" && ids.metaPixelId && <Script id="fbp" strategy="afterInteractive">{`!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${ids.metaPixelId}');fbq('track','PageView');`}</Script>}
       {choice === null && any && (
-        <div role="dialog" aria-label="Preferências de cookies" className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-2xl border border-line bg-ivory p-5 shadow-2xl sm:inset-x-6 sm:bottom-6">
-          <p className="text-sm leading-relaxed text-ink/80">Usamos cookies essenciais para o funcionamento da loja e, com a sua permissão, cookies de medição e publicidade (Google e Meta) para entender o uso do site e personalizar ofertas. <Link href="/privacidade" className="underline">Saiba mais</Link>.</p>
-          <div className="mt-4 flex flex-wrap gap-2"><button onClick={() => save("yes")} className="btn-gold !py-3">Aceitar</button><button onClick={() => save("no")} className="btn-line !py-3">Somente essenciais</button></div>
+        <div role="dialog" aria-label="Preferências de cookies" className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-2xl border border-line bg-ivory p-6 sm:inset-x-6 sm:bottom-6">
+          <p className="text-[13px] leading-relaxed text-ink/75">Usamos cookies essenciais para o funcionamento da loja e, com a sua permissão, cookies de medição e publicidade (Google e Meta) para entender o uso do site e personalizar ofertas. <Link href="/privacidade" className="underline underline-offset-4">Saiba mais</Link>.</p>
+          <div className="mt-5 flex flex-wrap items-center gap-6"><button onClick={() => save("yes")} className="btn-gold !py-3">Aceitar</button><button onClick={() => save("no")} className="link-line text-ink">Somente essenciais</button></div>
         </div>
       )}
     </>

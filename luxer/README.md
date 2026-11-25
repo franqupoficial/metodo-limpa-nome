@@ -55,7 +55,7 @@ O painel mostra o estado de cada integração em **Configurações → Integraç
 Backups: o PostgreSQL gerenciado faz backup automático (habilite PITR); para cópias extras, `pg_dump` agendado.
 
 ## Módulos
-**Loja**: abertura cinematográfica (GSAP + canvas + tilt 3D + temperatura do ouro), Atelier Concierge (compra guiada em 3 escolhas com produtos reais), catálogo com busca sem acento e sinônimos, filtros, comparação, favoritos, produto com zoom/vídeos/avaliações reais, frete, sacola, cupons, checkout Pix/cartão, página do pedido com QR Code, conta do cliente (pedidos, endereços, LGPD), Luxer Fé, provador virtual, páginas do CMS, feed Google Merchant, sitemap, GA4/GTM/Meta Pixel com consentimento.
+**Loja**: direção de arte editorial de alta joalheria (off-white, catálogo em branco natural, preto e dourado fosco só como detalhe, fotografia original sem recortes); abertura preparada para fotografia lifestyle ou vídeo macro cadastrados no painel (sem eles, usa a fotografia original de peças reais), Atelier Concierge (compra guiada em 3 escolhas com produtos reais), catálogo com busca sem acento e sinônimos, filtros, comparação, favoritos, produto com zoom/vídeos/avaliações reais, frete, sacola, cupons, checkout Pix/cartão, página do pedido com QR Code, conta do cliente (pedidos, endereços, LGPD), Luxer Fé, provador virtual, páginas do CMS, feed Google Merchant, sitemap, GA4/GTM/Meta Pixel com consentimento.
 
 **Concierge Luxer** (botão flutuante): curadoria guiada, respostas rápidas (aro, certificado, prazos, pagamento — editáveis), chat com IA (Claude) que consulta o catálogo e o status de pedidos, e transferência para a equipe, que continua a conversa em **/admin/atendimento**.
 

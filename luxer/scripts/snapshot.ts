@@ -30,6 +30,8 @@ async function exportSnapshot() {
   data.automationFlow = (data.automationFlow as { trigger: string }[]).filter((f) => f.trigger !== "MANUAL").map((f) => ({ ...f, active: false }));
   // estoque físico vem da planilha; reservas de pedidos de teste não
   data.productVariant = (data.productVariant as { reserved: number }[]).map((v) => ({ ...v, reserved: 0 }));
+  // recortes automáticos não são usados pela loja (direção de arte: somente fotografia original)
+  data.productImage = (data.productImage as Record<string, unknown>[]).map((i) => ({ ...i, cutoutKey: null }));
   writeFileSync(FILE, gzipSync(JSON.stringify(data)));
   console.log(`Snapshot: ${Object.entries(data).map(([k, v]) => `${k}=${v.length}`).join(" ")}`);
 }

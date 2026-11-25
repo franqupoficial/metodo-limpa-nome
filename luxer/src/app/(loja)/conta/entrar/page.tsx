@@ -11,19 +11,19 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
   const { voltar } = await searchParams;
   if (await getCustomer()) redirect(voltar?.startsWith("/") ? voltar : "/conta");
   return (
-    <Container className="grid max-w-5xl gap-16 py-16 md:grid-cols-2">
+    <Container className="grid max-w-5xl gap-16 pb-24 pt-14 sm:pt-20 md:grid-cols-2 md:gap-24">
       <section>
-        <h1 className="display text-4xl">Entrar</h1>
+        <h1 className="display text-[2.6rem]">Entrar</h1>
         <SiteForm action={loginCustomer} className="mt-8 space-y-4">
           <input type="hidden" name="voltar" value={voltar ?? ""} />
           <Lbl label="E-mail"><input name="email" type="email" required autoComplete="email" className="field" /></Lbl>
           <Lbl label="Senha"><input name="password" type="password" required autoComplete="current-password" className="field" /></Lbl>
           <SiteSubmit>Entrar</SiteSubmit>
-          <Link href="/conta/recuperar" className="block text-center text-xs underline">Esqueci minha senha</Link>
+          <Link href="/conta/recuperar" className="block text-center text-[11px] text-stone underline underline-offset-4 hover:text-ink">Esqueci minha senha</Link>
         </SiteForm>
       </section>
       <section>
-        <h2 className="display text-4xl">Criar conta</h2>
+        <h2 className="display text-[2.6rem]">Criar conta</h2>
         <p className="mt-2 text-sm text-stone">Acompanhe pedidos, salve endereços e favoritos. Compras feitas como visitante com o mesmo e-mail aparecem na sua conta.</p>
         <SiteForm action={registerCustomer} className="mt-6 space-y-4">
           <input type="hidden" name="voltar" value={voltar ?? ""} />

@@ -20,8 +20,7 @@
     "backup": "bash scripts/backup.sh",
     "vercel-build": "prisma generate && prisma migrate deploy && tsx --conditions=react-server scripts/snapshot.ts --restore && tsx --conditions=react-server prisma/seed.ts && next build",
     "snapshot:export": "tsx --conditions=react-server scripts/snapshot.ts",
-    "snapshot:restore": "tsx --conditions=react-server scripts/snapshot.ts --restore",
-    "cutouts": "tsx --conditions=react-server scripts/cutouts.ts"
+    "snapshot:restore": "tsx --conditions=react-server scripts/snapshot.ts --restore"
   },
   "engines": {
     "node": ">=20.9"

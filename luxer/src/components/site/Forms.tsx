@@ -16,7 +16,7 @@ export function SiteForm({ action, children, className = "space-y-4", reset = fa
   return (
     <form onSubmit={onSubmit} className={className} key={reset && state?.ok ? Math.random() : undefined}>
       <PendingContext.Provider value={pending}>{children}</PendingContext.Provider>
-      {state?.message && <p role="status" className={`text-sm ${state.ok ? "text-emerald-700" : "text-red-700"}`}>{state.message}</p>}
+      {state?.message && <p role="status" className={`text-[13px] ${state.ok ? "text-ink" : "text-red-700"}`}>{state.message}</p>}
     </form>
   );
 }

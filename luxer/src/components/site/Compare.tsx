@@ -19,9 +19,9 @@ export function CompareButton({ productId }: { productId: string }) {
         window.dispatchEvent(new Event("lx:compare"));
       }}
       aria-pressed={on} title="Comparar" aria-label={on ? "Remover da comparação" : "Adicionar à comparação"}
-      className={`flex h-11 w-11 items-center justify-center rounded-full ${on ? "bg-ink text-gold" : "bg-white/80"}`}
+      className={`flex h-12 w-12 items-center justify-center border transition-colors ${on ? "border-ink bg-ink text-ivory" : "border-line hover:border-ink"}`}
     >
-      <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.5}><path d="M8 3v18M16 3v18M3 8h5M16 16h5" /></svg>
+      <svg viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth={1.2}><path d="M8 3v18M16 3v18M3 8h5M16 16h5" /></svg>
     </button>
   );
 }
@@ -35,5 +35,5 @@ export function CompareBar() {
     return () => window.removeEventListener("lx:compare", up);
   }, []);
   if (n < 2) return null;
-  return <Link href="/comparar" className="fixed bottom-5 left-5 z-40 bg-ink px-5 py-3 text-[11px] uppercase tracking-[0.2em] text-gold-soft shadow-xl">Comparar ({n})</Link>;
+  return <Link href="/comparar" className="fixed bottom-5 left-5 z-40 bg-ink px-5 py-3.5 text-[10.5px] uppercase tracking-[0.22em] text-ivory">Comparar ({n})</Link>;
 }

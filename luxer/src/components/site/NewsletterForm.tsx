@@ -13,17 +13,17 @@ export function NewsletterForm({ source, consentText, dark = false }: { source: 
     setState({ ok: r.ok, msg: r.ok ? "Inscrição confirmada. Obrigado!" : r.error });
     if (r.ok) (e.target as HTMLFormElement).reset();
   }
-  const field = dark ? "border-white/25 bg-transparent text-ivory placeholder:text-ivory/40 focus:border-gold" : "border-line bg-white";
+  const field = dark ? "border-0 border-b border-white/25 bg-transparent px-0 text-ivory placeholder:text-ivory/40 focus:border-ivory" : "border-0 border-b border-ink/30 bg-transparent px-0 placeholder:text-stone/70 focus:border-ink";
   return (
     <form onSubmit={submit} className="w-full">
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <input name="email" type="email" required placeholder="Seu e-mail" aria-label="E-mail" className={`min-w-0 flex-1 border px-4 py-3.5 text-sm outline-none ${field}`} />
-        <button disabled={busy} className={dark ? "btn-line border-gold text-gold" : "btn-gold"}>{busy ? "Enviando…" : "Inscrever"}</button>
+      <div className="flex items-end gap-4">
+        <input name="email" type="email" required placeholder="Seu e-mail" aria-label="E-mail" className={`min-w-0 flex-1 py-3 text-sm outline-none transition-colors ${field}`} />
+        <button disabled={busy} className={`link-line shrink-0 pb-3.5 ${dark ? "text-ivory" : "text-ink"}`}>{busy ? "Enviando…" : "Inscrever"}</button>
       </div>
-      <label className={`mt-3 flex items-start gap-2 text-[11px] leading-snug ${dark ? "text-ivory/55" : "text-stone"}`}>
-        <input type="checkbox" name="consent" required className="mt-0.5" /> {consentText}
+      <label className={`mt-4 flex items-start gap-2.5 text-[11px] leading-snug ${dark ? "text-ivory/50" : "text-stone"}`}>
+        <input type="checkbox" name="consent" required className="mt-0.5 accent-[#a88f63]" /> {consentText}
       </label>
-      {state && <p role="status" className={`mt-2 text-xs ${state.ok ? "text-emerald-500" : "text-red-400"}`}>{state.msg}</p>}
+      {state && <p role="status" className={`mt-2 text-xs ${state.ok ? (dark ? "text-ivory" : "text-ink") : "text-red-500"}`}>{state.msg}</p>}
     </form>
   );
 }

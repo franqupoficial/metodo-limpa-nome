@@ -19,19 +19,21 @@ export default async function FaithPage({ searchParams }: { searchParams: Promis
   return (
     <CatalogView base="/luxer-fe" sp={sp} params={{ faith: true }} facetWhere={{ OR: [{ categories: { some: { category: { faith: true } } } }, { collections: { some: { collection: { faith: true } } } }] }}
       header={<>
-        <section className="relative overflow-hidden bg-ink text-ivory">
-          {banner && <img src={mediaUrl(banner.imageKey)!} alt="" className="absolute inset-0 h-full w-full object-cover opacity-40" />}
-          <Container className="relative py-20 text-center sm:py-28">
-            <div className="eyebrow text-gold">Luxer Fé</div>
-            <h1 className="display mt-4 text-5xl sm:text-7xl">{banner?.title ?? "Joias que carregam devoção"}</h1>
-            <p className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-ivory/70">{banner?.subtitle ?? "Nossa Senhora, Divino Espírito Santo, crucifixos, medalhas, escapulários e pingentes religiosos — em ouro 18 quilates."}</p>
+        <section>
+          <Container className={banner ? "grid items-center gap-10 pb-12 pt-10 lg:grid-cols-2 lg:gap-20 lg:pt-14" : "pb-10 pt-14 text-center sm:pb-12 sm:pt-20"}>
+            {banner && <div className="aspect-[4/5] overflow-hidden lg:order-2"><img src={mediaUrl(banner.imageKey)!} alt="" className="h-full w-full object-cover" /></div>}
+            <div className={banner ? "lg:pl-8" : ""}>
+              <div className="eyebrow text-stone">Luxer Fé</div>
+              <h1 className="display mt-4 text-[2.7rem] sm:text-[4.2rem]">{banner?.title ?? "Joias que carregam devoção"}</h1>
+              <p className={`mt-5 max-w-xl text-[14px] leading-relaxed text-ink/60 ${banner ? "" : "mx-auto"}`}>{banner?.subtitle ?? "Nossa Senhora, Divino Espírito Santo, crucifixos, medalhas, escapulários e pingentes religiosos — em ouro 18 quilates."}</p>
+            </div>
           </Container>
         </section>
         {(shown.length > 0 || cols.length > 0) && (
-          <div className="border-b border-line bg-ivory"><Container><div className="flex gap-3 overflow-x-auto py-5 [scrollbar-width:none]">
-            {cols.map((c) => <Link key={c.id} href={`/colecao/${c.slug}`} className="whitespace-nowrap border border-gold px-4 py-2 text-[11px] uppercase tracking-[0.2em] text-gold-2 hover:bg-gold hover:text-ink">{c.name}</Link>)}
-            {shown.map((c) => <Link key={c.id} href={`/categoria/${c.slug}`} className="whitespace-nowrap border border-line px-4 py-2 text-[11px] uppercase tracking-[0.2em] hover:border-gold hover:text-gold-2">{c.name}</Link>)}
-          </div></Container></div>
+          <Container><div className="overflow-x-auto pb-8 [scrollbar-width:none]"><div className="mx-auto flex w-max gap-7 text-[10.5px] uppercase tracking-[0.22em]">
+            {cols.map((c) => <Link key={c.id} href={`/colecao/${c.slug}`} className="whitespace-nowrap border-b border-gold pb-1.5 text-ink">{c.name}</Link>)}
+            {shown.map((c) => <Link key={c.id} href={`/categoria/${c.slug}`} className="whitespace-nowrap border-b border-transparent pb-1.5 text-ink/55 transition-colors hover:text-ink">{c.name}</Link>)}
+          </div></div></Container>
         )}
       </>} />
   );

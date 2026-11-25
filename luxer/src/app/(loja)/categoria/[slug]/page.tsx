@@ -28,7 +28,7 @@ export default async function CategoryPage({ params, searchParams }: P) {
       sp={sp}
       params={{ categoryId: c.id }}
       facetWhere={{ categories: { some: { categoryId: c.id } } }}
-      header={<PageTitle eyebrow={c.parent?.name ?? (c.faith ? "Luxer Fé" : "Joias Luxer")} title={c.name} text={c.description} dark={c.faith} />}
+      header={<PageTitle eyebrow={c.parent?.name ?? (c.faith ? "Luxer Fé" : "Joias Luxer")} title={c.name} text={c.description} />}
       subnav={siblings.length ? [{ name: `Todos — ${root.name}`, slug: root.slug, active: !c.parent }, ...siblings.map((s) => ({ name: s.name, slug: s.slug, active: s.id === c.id }))] : undefined}
     />
   );

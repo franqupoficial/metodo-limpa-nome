@@ -83,36 +83,38 @@ export function Concierge({ greeting, quick, whatsapp, whatsappMessage, chatEnab
   return (
     <>
       <button type="button" onClick={() => { setOpen(!open); setView("home"); }} aria-expanded={open} aria-label="Concierge Luxer"
-        className="group fixed bottom-5 right-5 z-[55] flex h-14 w-14 items-center justify-center rounded-full bg-[#0b0b0c] text-[var(--color-atelier)] shadow-[0_10px_30px_rgba(0,0,0,.35)] ring-1 ring-[var(--color-atelier)]/50 transition hover:scale-105 sm:bottom-7 sm:right-7">
-        {open ? <span className="text-2xl leading-none">×</span> : (
-          <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={1.3} aria-hidden><path d="M12 3l2.1 4.6L19 8.3l-3.6 3.4.9 4.9L12 14.3l-4.3 2.3.9-4.9L5 8.3l4.9-.7z" /></svg>
+        className="group fixed bottom-5 right-5 z-[55] flex h-12 w-12 items-center justify-center rounded-full bg-ink text-ivory shadow-[0_8px_24px_-8px_rgba(11,11,12,.45)] transition-transform duration-300 hover:-translate-y-0.5 sm:bottom-7 sm:right-7">
+        {open ? <span className="text-xl font-light leading-none">×</span> : (
+          <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.2} aria-hidden><path d="M4.5 6.5h15v9.5h-8.5l-4 3v-3H4.5z" /></svg>
         )}
-        <span className="pointer-events-none absolute right-16 hidden whitespace-nowrap bg-[#0b0b0c] px-3 py-1.5 text-[10px] uppercase tracking-[0.22em] text-[var(--color-atelier)] opacity-0 transition group-hover:opacity-100 sm:block">Concierge Luxer</span>
+        <span className="pointer-events-none absolute right-14 hidden whitespace-nowrap bg-ivory px-3 py-1.5 text-[10px] uppercase tracking-[0.22em] text-ink opacity-0 transition group-hover:opacity-100 sm:block">Concierge Luxer</span>
       </button>
 
       {open && (
-        <div ref={panel} role="dialog" aria-label="Concierge Luxer" className="fixed inset-x-0 bottom-0 z-[56] flex max-h-[88svh] flex-col overflow-hidden rounded-t-2xl bg-[#0b0b0c]/95 text-ivory shadow-2xl ring-1 ring-white/10 backdrop-blur-xl sm:inset-x-auto sm:bottom-24 sm:right-7 sm:w-[400px] sm:rounded-2xl">
-          <header className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+        <div ref={panel} role="dialog" aria-label="Concierge Luxer" className="fixed inset-x-0 bottom-0 z-[56] flex max-h-[88svh] flex-col overflow-hidden border border-line bg-ivory text-ink shadow-[0_30px_60px_-30px_rgba(11,11,12,.35)] sm:inset-x-auto sm:bottom-24 sm:right-7 sm:w-[400px]">
+          <header className="flex items-center justify-between border-b border-line px-6 py-5">
             <div className="flex items-center gap-3">
-              {view !== "home" && <button onClick={() => { setView("home"); setAskHuman(false); }} className="text-ivory/60 hover:text-ivory" aria-label="Voltar">←</button>}
-              <div><div className="font-serif text-lg tracking-[0.2em]">CONCIERGE</div><div className="text-[10px] uppercase tracking-[0.25em] text-[var(--color-atelier)]">Luxer Joias</div></div>
+              {view !== "home" && <button onClick={() => { setView("home"); setAskHuman(false); }} className="text-stone hover:text-ink" aria-label="Voltar">←</button>}
+              <div><div className="font-serif text-xl">Concierge Luxer</div><div className="mt-0.5 text-[10px] uppercase tracking-[0.24em] text-stone">Atendimento de joalheria</div></div>
             </div>
-            <button onClick={() => setOpen(false)} className="text-xl text-ivory/60 hover:text-ivory" aria-label="Fechar">×</button>
+            <button onClick={() => setOpen(false)} className="text-xl font-light text-stone hover:text-ink" aria-label="Fechar">×</button>
           </header>
 
-          <div className="flex-1 overflow-y-auto p-5">
+          <div className="flex-1 overflow-y-auto px-6 py-6">
             {view === "home" && (
-              <div className="space-y-5">
-                <p className="text-sm leading-relaxed text-ivory/75">{greeting}</p>
-                <button onClick={() => setView("finder")} className="lx-glass w-full rounded-sm p-4 text-left transition hover:border-[var(--color-atelier)]">
-                  <div className="font-serif text-lg">✦ Descobrir minha joia ideal</div><div className="text-xs text-ivory/50">Curadoria em 3 toques</div>
+              <div className="space-y-6">
+                <p className="text-[14px] leading-relaxed text-ink/70">{greeting}</p>
+                <div className="border-t border-line">
+                <button onClick={() => setView("finder")} className="group flex w-full items-center justify-between gap-4 border-b border-line py-4 text-left">
+                  <span><span className="block font-serif text-lg">Descobrir minha joia ideal</span><span className="block text-xs text-stone">Curadoria em três escolhas</span></span><span aria-hidden className="h-px w-5 bg-ink/30 transition-all group-hover:w-8 group-hover:bg-gold" />
                 </button>
-                {chatEnabled && <button onClick={() => setView("chat")} className="lx-glass w-full rounded-sm p-4 text-left transition hover:border-[var(--color-atelier)]">
-                  <div className="font-serif text-lg">Conversar com o Concierge</div><div className="text-xs text-ivory/50">Dúvidas, sugestões e status de pedido · atendimento humano quando precisar</div>
+                {chatEnabled && <button onClick={() => setView("chat")} className="group flex w-full items-center justify-between gap-4 border-b border-line py-4 text-left">
+                  <span><span className="block font-serif text-lg">Conversar com o Concierge</span><span className="block text-xs text-stone">Dúvidas, sugestões e status de pedido · atendimento humano quando precisar</span></span><span aria-hidden className="h-px w-5 shrink-0 bg-ink/30 transition-all group-hover:w-8 group-hover:bg-gold" />
                 </button>}
-                {quick.length > 0 && <div><div className="mb-2 text-[10px] uppercase tracking-[0.25em] text-ivory/40">Dúvidas rápidas</div>
-                  <div className="flex flex-wrap gap-2">{quick.map((q) => <button key={q.title} onClick={() => { setAnswer(q); setView("answer"); }} className="rounded-full border border-white/15 px-3 py-1.5 text-xs text-ivory/80 hover:border-[var(--color-atelier)] hover:text-ivory">{q.title}</button>)}</div></div>}
-                {whatsapp && <a href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(whatsappMessage)}`} target="_blank" rel="noopener noreferrer" className="block text-center text-[11px] uppercase tracking-[0.22em] text-ivory/50 hover:text-ivory">Prefere WhatsApp? Fale com a equipe →</a>}
+                </div>
+                {quick.length > 0 && <div><div className="mb-3 text-[10px] uppercase tracking-[0.24em] text-stone">Dúvidas rápidas</div>
+                  <div className="flex flex-wrap gap-x-5 gap-y-2.5">{quick.map((q) => <button key={q.title} onClick={() => { setAnswer(q); setView("answer"); }} className="text-[13px] text-ink/75 underline-offset-4 hover:text-ink hover:underline">{q.title}</button>)}</div></div>}
+                {whatsapp && <a href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(whatsappMessage)}`} target="_blank" rel="noopener noreferrer" className="link-line !text-[10px] text-ink">Prefere WhatsApp? Fale com a equipe</a>}
               </div>
             )}
 
@@ -121,59 +123,59 @@ export function Concierge({ greeting, quick, whatsapp, whatsappMessage, chatEnab
             {view === "answer" && answer && (
               <div className="space-y-4">
                 <h3 className="font-serif text-2xl">{answer.title}</h3>
-                <p className="text-sm leading-relaxed text-ivory/80">{answer.answer}</p>
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {chatEnabled && <button onClick={() => setView("chat")} className="lx-ghost !px-4 !py-2.5 !text-[10px]">Perguntar mais</button>}
-                  {answer.title.toLowerCase().includes("aro") && <Link href="/categoria/aneis" onClick={() => setOpen(false)} className="lx-ghost !px-4 !py-2.5 !text-[10px]">Ver anéis</Link>}
+                <p className="text-[14px] leading-relaxed text-ink/75">{answer.answer}</p>
+                <div className="flex flex-wrap gap-6 pt-3">
+                  {chatEnabled && <button onClick={() => setView("chat")} className="link-line !text-[10px] text-ink">Perguntar mais</button>}
+                  {answer.title.toLowerCase().includes("aro") && <Link href="/categoria/aneis" onClick={() => setOpen(false)} className="link-line !text-[10px] text-ink">Ver anéis</Link>}
                 </div>
               </div>
             )}
 
             {view === "chat" && (
               <div className="space-y-3">
-                {msgs.length === 0 && <div className="rounded-2xl bg-white/[0.06] px-4 py-3 text-sm text-ivory/80">{greeting}</div>}
+                {msgs.length === 0 && <div className="bg-white px-4 py-3 text-[13px] leading-relaxed text-ink/80">{greeting}</div>}
                 {msgs.map((m) => (
                   <div key={m.id} className={`flex ${m.role === "USER" ? "justify-end" : m.role === "SYSTEM" ? "justify-center" : "justify-start"}`}>
-                    {m.role === "SYSTEM" ? <span className="px-3 text-center text-[11px] text-[var(--color-atelier)]/80">{m.body}</span> : (
-                      <div className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${m.role === "USER" ? "bg-[var(--color-atelier)] text-[#0b0b0c]" : "bg-white/[0.07] text-ivory/90"}`}>
-                        {m.role === "AGENT" && <div className="mb-0.5 text-[10px] uppercase tracking-[0.2em] text-[var(--color-atelier)]">{m.agent} · equipe Luxer</div>}
+                    {m.role === "SYSTEM" ? <span className="px-3 text-center text-[11px] text-stone">{m.body}</span> : (
+                      <div className={`max-w-[85%] px-4 py-2.5 text-[13px] leading-relaxed ${m.role === "USER" ? "bg-ink text-ivory" : "bg-white text-ink/85"}`}>
+                        {m.role === "AGENT" && <div className="mb-0.5 text-[10px] uppercase tracking-[0.2em] text-gold-2">{m.agent} · equipe Luxer</div>}
                         <div className="whitespace-pre-wrap">{m.body}</div>
                         {m.products.length > 0 && <div className="mt-3 space-y-2">{m.products.map((p) => (
-                          <Link key={p.slug} href={`/produto/${p.slug}`} onClick={() => setOpen(false)} className="flex items-center gap-3 rounded-lg bg-black/30 p-2 hover:bg-black/50">
-                            {p.image && <img src={p.image} alt="" className="h-12 w-12 rounded bg-ivory object-cover mix-blend-normal" />}
-                            <span className="min-w-0 text-xs"><span className="line-clamp-2">{p.name}</span><span className="text-ivory/60">{brl(p.price)} · {brl(p.pix)} no Pix</span></span>
+                          <Link key={p.slug} href={`/produto/${p.slug}`} onClick={() => setOpen(false)} className="flex items-center gap-3 border-t border-line pt-2 transition-opacity hover:opacity-75">
+                            {p.image && <img src={p.image} alt="" className="h-14 w-12 bg-white object-contain" />}
+                            <span className="min-w-0 text-xs"><span className="line-clamp-2 font-serif text-[14px]">{p.name}</span><span className="text-stone">{brl(p.price)} · {brl(p.pix)} no Pix</span></span>
                           </Link>
                         ))}</div>}
                       </div>
                     )}
                   </div>
                 ))}
-                {busy && <div className="flex justify-start"><div className="rounded-2xl bg-white/[0.07] px-4 py-2.5 text-sm text-ivory/50">digitando…</div></div>}
-                {(status === "WAITING_HUMAN" || status === "HUMAN") && <p className="text-center text-[11px] text-ivory/45">Você está com a equipe Luxer. As respostas aparecem aqui — pode fechar e voltar depois.</p>}
-                {status === "WAITING_HUMAN" && needsContact && !askHuman && <button onClick={() => setAskHuman(true)} className="w-full text-center text-[11px] underline text-ivory/60">Deixar meu contato para retorno</button>}
+                {busy && <div className="flex justify-start"><div className="bg-white px-4 py-2.5 text-[13px] text-stone">digitando…</div></div>}
+                {(status === "WAITING_HUMAN" || status === "HUMAN") && <p className="text-center text-[11px] text-stone">Você está com a equipe Luxer. As respostas aparecem aqui — pode fechar e voltar depois.</p>}
+                {status === "WAITING_HUMAN" && needsContact && !askHuman && <button onClick={() => setAskHuman(true)} className="w-full text-center text-[11px] text-stone underline underline-offset-4">Deixar meu contato para retorno</button>}
                 {askHuman && (
-                  <form onSubmit={human} className="lx-glass space-y-2 rounded-sm p-4">
-                    <p className="text-xs text-ivory/70">Para a equipe continuar o atendimento:</p>
-                    <input value={contact.name} onChange={(e) => setContact({ ...contact, name: e.target.value })} placeholder="Seu nome" className="w-full rounded bg-white/10 px-3 py-2 text-sm outline-none placeholder:text-ivory/35" />
-                    <input value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} type="email" placeholder="E-mail" className="w-full rounded bg-white/10 px-3 py-2 text-sm outline-none placeholder:text-ivory/35" />
-                    <input value={contact.phone} onChange={(e) => setContact({ ...contact, phone: e.target.value })} inputMode="tel" placeholder="WhatsApp (opcional)" className="w-full rounded bg-white/10 px-3 py-2 text-sm outline-none placeholder:text-ivory/35" />
-                    <p className="text-[10px] text-ivory/40">Usaremos seus dados apenas para responder a este atendimento.</p>
-                    <button disabled={busy} className="lx-liquid w-full !py-2.5">Chamar atendente</button>
+                  <form onSubmit={human} className="space-y-3 border-t border-line pt-4">
+                    <p className="text-xs text-ink/70">Para a equipe continuar o atendimento:</p>
+                    <input value={contact.name} onChange={(e) => setContact({ ...contact, name: e.target.value })} placeholder="Seu nome" className="field !py-2.5 text-sm" />
+                    <input value={contact.email} onChange={(e) => setContact({ ...contact, email: e.target.value })} type="email" placeholder="E-mail" className="field !py-2.5 text-sm" />
+                    <input value={contact.phone} onChange={(e) => setContact({ ...contact, phone: e.target.value })} inputMode="tel" placeholder="WhatsApp (opcional)" className="field !py-2.5 text-sm" />
+                    <p className="text-[10px] text-stone">Usaremos seus dados apenas para responder a este atendimento.</p>
+                    <button disabled={busy} className="btn-gold w-full !py-3">Chamar atendente</button>
                   </form>
                 )}
-                {err && <p className="text-xs text-red-300">{err}</p>}
+                {err && <p className="text-xs text-red-700">{err}</p>}
                 <div ref={end} />
               </div>
             )}
           </div>
 
           {view === "chat" && (
-            <div className="border-t border-white/10 p-3">
-              <form onSubmit={send} className="flex gap-2">
-                <input value={text} onChange={(e) => setText(e.target.value)} maxLength={1500} placeholder="Escreva sua mensagem…" aria-label="Mensagem" className="min-w-0 flex-1 rounded-full bg-white/10 px-4 py-2.5 text-sm outline-none placeholder:text-ivory/35 focus:ring-1 focus:ring-[var(--color-atelier)]" />
-                <button disabled={busy || !text.trim()} className="rounded-full bg-[var(--color-atelier)] px-4 text-sm font-medium text-[#0b0b0c] disabled:opacity-40">Enviar</button>
+            <div className="border-t border-line px-6 py-4">
+              <form onSubmit={send} className="flex items-end gap-4">
+                <input value={text} onChange={(e) => setText(e.target.value)} maxLength={1500} placeholder="Escreva sua mensagem…" aria-label="Mensagem" className="min-w-0 flex-1 border-b border-ink/25 bg-transparent py-2 text-[14px] outline-none transition-colors placeholder:text-stone/70 focus:border-ink" />
+                <button disabled={busy || !text.trim()} className="pb-2 text-[10.5px] uppercase tracking-[0.22em] text-ink disabled:opacity-30">Enviar</button>
               </form>
-              {status === "AI" || status === null ? <button onClick={() => setAskHuman(true)} className="mt-2 w-full text-center text-[11px] text-ivory/50 hover:text-ivory">Prefere falar com uma pessoa? <u>Chamar atendente</u></button> : null}
+              {status === "AI" || status === null ? <button onClick={() => setAskHuman(true)} className="mt-3 w-full text-center text-[11px] text-stone hover:text-ink">Prefere falar com uma pessoa? <u className="underline-offset-4">Chamar atendente</u></button> : null}
             </div>
           )}
         </div>

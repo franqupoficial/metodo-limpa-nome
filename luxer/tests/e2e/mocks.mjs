@@ -6,6 +6,8 @@ import http from "node:http";
 export const pagarme = { orders: new Map(), requests: [] };
 const json = (res, code, body) => { res.writeHead(code, { "Content-Type": "application/json" }); res.end(JSON.stringify(body)); };
 const read = (req) => new Promise((r) => { let b = ""; req.on("data", (c) => (b += c)); req.on("end", () => r(b)); });
+// IDs únicos entre execuções (o banco de teste guarda pagamentos de execuções anteriores, e providerOrderId é único)
+const RUN = Date.now().toString(36);
 let seq = 0;
 
 export function startPagarme(port = 4010) {
@@ -19,7 +21,7 @@ export function startPagarme(port = 4010) {
         const o = JSON.parse(body);
         const itemsTotal = o.items.reduce((a, i) => a + i.amount * i.quantity, 0) + (o.shipping?.amount ?? 0);
         if (!o.customer?.document || o.customer.document.length !== 11) return json(res, 422, { message: "customer.document inválido" });
-        const id = `or_mock${++seq}`, chId = `ch_mock${seq}`;
+        const id = `or_mock${RUN}${++seq}`, chId = `ch_mock${RUN}${seq}`;
         const pm = o.payments[0].payment_method;
         const charge = { id: chId, status: pm === "pix" ? "pending" : "paid", amount: itemsTotal, payment_method: pm, paid_at: pm === "pix" ? undefined : new Date().toISOString(),
           last_transaction: pm === "pix" ? { id: `tran_${seq}`, status: "waiting_payment", qr_code: `00020101021226860014br.gov.bcb.pix2564pix.mock/${id}5204000053039865406${(itemsTotal / 100).toFixed(2)}5802BR6304ABCD`, qr_code_url: "https://example.invalid/qr.png", expires_at: new Date(Date.now() + 3600e3).toISOString() } : { id: `tran_${seq}`, status: "captured", card: { brand: "Visa", last_four_digits: "1111" } } };

@@ -26,8 +26,8 @@ export default async function TryOnPage({ searchParams }: { searchParams: Promis
   }
   return (
     <>
-      <PageTitle dark eyebrow="LUXER AI TRY-ON" title="Provador virtual" text="Envie uma foto, escolha a joia e veja uma simulação realista gerada por inteligência artificial." />
-      <Container className="py-14">
+      <PageTitle eyebrow="Luxer AI Try-on" title="Provador virtual" text="Envie uma foto, escolha a joia e veja uma simulação realista gerada por inteligência artificial." />
+      <Container className="border-t border-line pb-24 pt-14">
         {!available || !products.length ? <p className="mx-auto max-w-xl py-16 text-center text-stone">{s.ai.unavailableMessage}</p> : <TryOn products={products} initial={produto} consentText={s.ai.consentText} disclaimer={s.ai.disclaimer} />}
       </Container>
     </>

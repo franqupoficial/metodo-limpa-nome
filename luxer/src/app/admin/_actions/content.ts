@@ -75,7 +75,12 @@ export async function saveHomeSection(_: ActionState, fd: FormData): Promise<Act
     } else {
       const f = fd.get("image");
       const imageKey = f instanceof File && f.size > 0 ? (await storeMedia(f, "home", admin.id)).key : undefined;
-      const prev = (s.config as Record<string, unknown>) ?? {};
+      const fm = fd.get("mobileImage");
+      const mobileKey = fm instanceof File && fm.size > 0 ? (await storeMedia(fm, "home", admin.id)).key : undefined;
+      const videoUrl = optStr(fd, "videoUrl");
+      if (videoUrl && !/^https:\/\/\S+\.(mp4|webm)(\?\S*)?$/i.test(videoUrl)) return fail("Informe um link https direto para um arquivo .mp4 ou .webm.");
+      const prev = { ...((s.config as Record<string, unknown>) ?? {}) };
+      if (bool(fd, "removeMedia")) { delete prev.imageKey; delete prev.mobileKey; }
       const config = {
         ...prev,
         limit: int(fd, "limit") ?? (prev.limit as number | undefined),
@@ -85,6 +90,8 @@ export async function saveHomeSection(_: ActionState, fd: FormData): Promise<Act
         refs: str(fd, "refs") ? str(fd, "refs").split(/[,\s]+/).filter(Boolean) : undefined,
         collectionSlug: optStr(fd, "collectionSlug") ?? undefined,
         ...(imageKey ? { imageKey } : {}),
+        ...(mobileKey ? { mobileKey } : {}),
+        ...(s.type === "HERO" ? { videoUrl: videoUrl ?? undefined } : {}),
       };
       await prisma.homeSection.update({ where: { id }, data: { title: optStr(fd, "title"), subtitle: optStr(fd, "subtitle"), active: bool(fd, "active"), config: JSON.parse(JSON.stringify(config)) } });
     }

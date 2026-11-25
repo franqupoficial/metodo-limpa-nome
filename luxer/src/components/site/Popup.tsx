@@ -25,15 +25,15 @@ export function Popup({ popup, consentText }: { popup: P | null; consentText: st
   }, [popup, path]);
   if (!popup || !show) return null;
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-ink/60 p-4" onClick={() => setShow(false)}>
+    <div className="fixed inset-0 z-[60] flex animate-[fade-in_.4s_ease] items-center justify-center bg-ink/40 p-4" onClick={() => setShow(false)}>
       <div role="dialog" aria-modal="true" aria-label={popup.title} className="relative grid w-full max-w-3xl overflow-hidden bg-ivory sm:grid-cols-2" onClick={(e) => e.stopPropagation()}>
-        <button className="absolute right-3 top-3 z-10 h-9 w-9 bg-white/80 text-lg" onClick={() => setShow(false)} aria-label="Fechar">×</button>
+        <button className="absolute right-2 top-2 z-10 h-10 w-10 text-xl font-light text-ink/70 hover:text-ink" onClick={() => setShow(false)} aria-label="Fechar">×</button>
         {popup.image && <img src={popup.image} alt="" className="hidden h-full w-full object-cover sm:block" />}
-        <div className="p-8 sm:p-10">
-          <div className="eyebrow text-gold-2">Luxer Joias</div>
-          <h2 className="display mt-3 text-3xl">{popup.title}</h2>
+        <div className="p-9 sm:p-12">
+          <div className="eyebrow text-stone">Luxer Joias</div>
+          <h2 className="display mt-4 text-[2.1rem]">{popup.title}</h2>
           {popup.body && <p className="mt-3 text-sm leading-relaxed text-ink/70">{popup.body}</p>}
-          {popup.couponCode && <div className="mt-5 border border-dashed border-gold px-4 py-3 text-center font-mono text-lg tracking-widest">{popup.couponCode}</div>}
+          {popup.couponCode && <div className="mt-6 border-y border-gold py-3 text-center text-lg tracking-[0.3em]">{popup.couponCode}</div>}
           {popup.collectEmail && <div className="mt-5" onSubmit={() => fetch("/api/popup", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: popup.id, ev: "conversion" }) })}><NewsletterForm source={`popup:${popup.id}`} consentText={consentText} /></div>}
           {popup.ctaUrl && popup.ctaLabel && <Link href={popup.ctaUrl} onClick={() => setShow(false)} className="btn-gold mt-5">{popup.ctaLabel}</Link>}
         </div>

@@ -5,7 +5,6 @@ import { cardSelect, toCards, visibleWhere } from "./catalog";
 import { getSettings } from "./settings";
 import { providerConfigured } from "./ai/tryon";
 import { tryOnCategoryFor } from "./ai/categories";
-import { cutoutUrl } from "./cutout";
 
 export const OCCASIONS = { presente: "Presente inesquecível", uso: "Uso pessoal & sofisticação", noivado: "Noivado & celebração", fe: "Fé & proteção" } as const;
 export const METALS = { amarelo: "Ouro amarelo 18k", branco: "Ouro branco 18k", rose: "Ouro rosé", todos: "Todos os acabamentos" } as const;
@@ -53,13 +52,11 @@ export async function curate(occasion: Occasion, metal: Metal, piece: Piece) {
   }
   const cards = await toCards(rows);
   const tryOnOn = s.ai.tryOnEnabled && providerConfigured(s.ai.provider);
-  const cutouts = await Promise.all(rows.map((r) => (r.images[0] ? cutoutUrl(r.images[0].id) : null)));
   return rows.map((r, i) => {
     const cat = tryOnCategoryFor(r.categories.map((c) => c.category.name).join(" ") + " " + (r.jewelryType ?? "") + " " + r.name);
     const single = r.variants.length === 1 && !r.variants[0].option;
     return {
       ...cards[i],
-      cutout: cutouts[i],
       why: justify(r, occasion, matched.has(r.id), metal),
       tryOn: Boolean(tryOnOn && r.tryOnEnabled && cat && s.ai.categories.includes(cat)),
       quickVariantId: single && cards[i].available ? r.variants[0].id : null,

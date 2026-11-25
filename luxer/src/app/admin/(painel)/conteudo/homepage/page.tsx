@@ -7,9 +7,9 @@ import { saveHomeSection, addHomeSection, deleteHomeSection } from "../../../_ac
 
 export const metadata = { title: "Homepage" };
 const TYPES: Record<string, string> = {
-  HERO: "Abertura cinematográfica (título: “linha 1 | linha 2”; banners do painel aparecem logo abaixo)", ATELIER: "Atelier Concierge (compra guiada)", CATEGORIES: "Categorias", BESTSELLERS: "Mais vendidos", NEW: "Novidades", COLLECTIONS: "Coleções especiais",
+  HERO: "Abertura (título: “linha 1 | linha 2”; foto lifestyle ou vídeo macro; banners aparecem logo abaixo)", ATELIER: "Atelier Concierge (compra guiada)", CATEGORIES: "Categorias", BESTSELLERS: "Mais vendidos", NEW: "Novidades", COLLECTIONS: "Coleções especiais",
   FAITH: "Luxer Fé", RECOMMENDED: "Produtos recomendados", PRODUCTS: "Vitrine manual (referências)", TRYON: "Provador virtual", STORY: "História da marca",
-  REVIEWS: "Avaliações", INSTAGRAM: "Instagram", NEWSLETTER: "Newsletter", EDITORIAL: "Bloco editorial (imagem + texto)",
+  REVIEWS: "Avaliações", INSTAGRAM: "Instagram", NEWSLETTER: "Newsletter (o formulário já aparece no rodapé de todas as páginas; esta seção não é exibida)", EDITORIAL: "Bloco editorial (imagem + texto)",
 };
 
 export default async function HomeEditor() {
@@ -20,7 +20,7 @@ export default async function HomeEditor() {
       <PageHeader title="Homepage" subtitle="Ordem, títulos e conteúdo de cada seção. Os banners do destaque principal são editados em Marketing → Banners." actions={<a href="/" target="_blank" className="btn">Ver homepage</a>} />
       <div className="space-y-3">
         {sections.map((s, i) => {
-          const cfg = (s.config ?? {}) as { limit?: number; text?: string; ctaLabel?: string; ctaUrl?: string; refs?: string[]; collectionSlug?: string; imageKey?: string };
+          const cfg = (s.config ?? {}) as { limit?: number; text?: string; ctaLabel?: string; ctaUrl?: string; refs?: string[]; collectionSlug?: string; imageKey?: string; mobileKey?: string; videoUrl?: string };
           return (
             <Collapsible key={s.id} title={`${i + 1}. ${TYPES[s.type] ?? s.type}${s.title ? ` — “${s.title}”` : ""}${s.active ? "" : " (oculta)"}`}>
               <div className="mb-3 flex gap-1">
@@ -39,7 +39,12 @@ export default async function HomeEditor() {
                 {["STORY", "TRYON", "EDITORIAL", "FAITH", "HERO"].includes(s.type) && <>
                   <Field label="Texto do botão"><input name="ctaLabel" defaultValue={cfg.ctaLabel ?? ""} className="input" /></Field>
                   <Field label="Link do botão"><input name="ctaUrl" defaultValue={cfg.ctaUrl ?? ""} className="input" /></Field>
-                  <Field label="Imagem"><input type="file" name="image" accept="image/*" className="text-sm" />{cfg.imageKey && <img src={mediaUrl(cfg.imageKey)!} alt="" className="mt-2 h-20 rounded object-cover" />}</Field>
+                  <Field label={s.type === "HERO" ? "Fotografia lifestyle (desktop, horizontal)" : "Imagem"} hint={s.type === "HERO" ? "Ideal: 2400×1350 px ou maior, joia em uso real. Sem ela, a abertura mostra a fotografia original de peças do catálogo." : undefined}><input type="file" name="image" accept="image/*" className="text-sm" />{cfg.imageKey && <img src={mediaUrl(cfg.imageKey)!} alt="" className="mt-2 h-20 rounded object-cover" />}</Field>
+                  {s.type === "HERO" && <>
+                    <Field label="Fotografia lifestyle (celular, vertical)" hint="Ideal: 1080×1620 px. Opcional."><input type="file" name="mobileImage" accept="image/*" className="text-sm" />{cfg.mobileKey && <img src={mediaUrl(cfg.mobileKey)!} alt="" className="mt-2 h-20 rounded object-cover" />}</Field>
+                    <Field label="Vídeo macro (URL .mp4 ou .webm)" hint="Opcional. Reproduz sem som, em loop; a fotografia desktop vira a capa do vídeo."><input name="videoUrl" defaultValue={cfg.videoUrl ?? ""} placeholder="https://…/luxer-macro.mp4" className="input" /></Field>
+                    {(cfg.imageKey || cfg.mobileKey) && <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="removeMedia" /> Remover fotografias da abertura</label>}
+                  </>}
                 </>}
                 {s.type === "INSTAGRAM" && <p className="text-xs text-zinc-500 sm:col-span-2">As fotos do Instagram são definidas em Configurações → Marketing (publicações com imagem e link). Sem fotos cadastradas, a seção mostra apenas o link do perfil.</p>}
                 {s.type === "REVIEWS" && <p className="text-xs text-zinc-500 sm:col-span-2">Mostra somente avaliações reais aprovadas na moderação. Sem avaliações, a seção não aparece.</p>}

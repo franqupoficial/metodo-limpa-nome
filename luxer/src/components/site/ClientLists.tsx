@@ -20,8 +20,8 @@ export function FavoritesList({ logged }: { logged: boolean }) {
     return () => window.removeEventListener("lx:favs", load);
   }, [logged]);
   if (!items) return <p className="text-stone">Carregando…</p>;
-  if (!items.length) return <div className="py-16 text-center"><p className="font-serif text-2xl">Você ainda não tem favoritos.</p><p className="mt-2 text-sm text-stone">Toque no coração das peças para salvá-las aqui.</p><Link href="/" className="btn-gold mt-8">Descobrir joias</Link></div>;
-  return <div className="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 lg:grid-cols-4">{items.map((p) => <ProductCard key={p.id} p={p} />)}</div>;
+  if (!items.length) return <div className="py-16 text-center"><p className="font-serif text-2xl text-ink/80">Você ainda não tem favoritos.</p><p className="mt-3 text-[13px] text-stone">Toque no coração das peças para salvá-las aqui.</p><Link href="/" className="btn-gold mt-10">Descobrir joias</Link></div>;
+  return <div className="grid grid-cols-2 gap-x-3 gap-y-12 sm:gap-x-6 sm:gap-y-16 lg:grid-cols-4">{items.map((p) => <ProductCard key={p.id} p={p} />)}</div>;
 }
 
 const brl = (c: number) => (c / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -39,13 +39,13 @@ export function CompareTable() {
     setItems((x) => x?.filter((i) => i.id !== id) ?? null);
   };
   if (!items) return <p className="text-stone">Carregando…</p>;
-  if (items.length < 2) return <p className="py-16 text-center text-stone">Adicione ao menos duas peças à comparação (ícone ⫴ na página do produto).</p>;
+  if (items.length < 2) return <p className="py-16 text-center text-stone">Adicione ao menos duas peças à comparação (botão “comparar” na página do produto).</p>;
   const labels = [...new Set(items.flatMap((i) => (i.specs ?? []).map((s) => s.label)))].filter((l) => !["Cor", "Material", "Pedras", "Peso médio"].includes(l));
   const row = (label: string, fn: (i: Item) => React.ReactNode) => <tr className="border-b border-line"><th className="w-40 py-3 pr-4 text-left align-top text-xs font-normal uppercase tracking-[0.15em] text-stone">{label}</th>{items.map((i) => <td key={i.id} className="px-3 py-3 align-top text-sm">{fn(i) ?? "—"}</td>)}</tr>;
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[640px] table-fixed">
-        <thead><tr><th className="w-40" />{items.map((i) => <th key={i.id} className="px-3 pb-6 text-left align-top font-normal"><Link href={`/produto/${i.slug}`}><div className="aspect-square bg-sand">{i.image && <img src={i.image} alt="" className="h-full w-full object-cover mix-blend-multiply" />}</div><div className="mt-3 font-serif text-lg leading-snug">{i.name}</div></Link><button onClick={() => remove(i.id)} className="mt-2 text-xs text-stone underline">remover</button></th>)}</tr></thead>
+        <thead><tr><th className="w-40" />{items.map((i) => <th key={i.id} className="px-3 pb-6 text-left align-top font-normal"><Link href={`/produto/${i.slug}`}><div className="aspect-[4/5] bg-white">{i.image && <img src={i.image} alt="" className="h-full w-full object-contain p-[6%]" />}</div><div className="mt-3 font-serif text-lg leading-snug">{i.name}</div></Link><button onClick={() => remove(i.id)} className="mt-2 text-[11px] text-stone underline underline-offset-4 hover:text-ink">remover</button></th>)}</tr></thead>
         <tbody>
           {row("Preço", (i) => brl(i.price.price))}
           {row("No Pix", (i) => brl(i.price.pix))}

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCustomer } from "@/lib/customer-auth";
-import { Container } from "@/components/site/Section";
+import { Container, PageHeading } from "@/components/site/Section";
 import { AccountNav } from "@/components/site/AccountNav";
 import { SiteForm, SiteSubmit, Lbl } from "@/components/site/Forms";
 import { updateProfile, requestDeletion } from "../../_actions/account";
@@ -11,9 +11,8 @@ export default async function Data() {
   const c = await getCustomer();
   if (!c) redirect("/conta/entrar");
   return (
-    <Container className="max-w-5xl py-14">
-      <h1 className="display text-5xl">Meus dados</h1>
-      <div className="mt-8"><AccountNav current="/conta/dados" /></div>
+    <Container className="max-w-5xl pb-24 pt-10 sm:pt-16">
+      <PageHeading eyebrow="Minha conta" title="Meus dados"><div className="mt-8"><AccountNav current="/conta/dados" /></div></PageHeading>
       <div className="grid gap-14 md:grid-cols-2">
         <SiteForm action={updateProfile}>
           <Lbl label="Nome"><input name="name" defaultValue={c.name} required className="field" /></Lbl>
@@ -24,12 +23,12 @@ export default async function Data() {
           <SiteSubmit className="btn-gold">Salvar</SiteSubmit>
         </SiteForm>
         <section className="space-y-6">
-          <div><h2 className="display text-2xl">Seus direitos (LGPD)</h2><p className="mt-2 text-sm text-stone">Você pode baixar uma cópia dos seus dados ou pedir a exclusão a qualquer momento.</p></div>
+          <div><h2 className="display text-[1.7rem]">Seus direitos (LGPD)</h2><p className="mt-2 text-sm text-stone">Você pode baixar uma cópia dos seus dados ou pedir a exclusão a qualquer momento.</p></div>
           <a href="/api/conta/dados" className="btn-line">Baixar meus dados (JSON)</a>
-          <SiteForm action={requestDeletion} className="space-y-3 border border-line p-5">
+          <SiteForm action={requestDeletion} className="space-y-4 border-t border-line pt-6">
             <p className="text-sm">Para solicitar a exclusão da conta e dos dados pessoais, digite <b>EXCLUIR</b>.</p>
             <input name="confirm" className="field" />
-            <SiteSubmit className="btn-line border-red-700 text-red-700">Solicitar exclusão</SiteSubmit>
+            <SiteSubmit className="btn-line text-red-800">Solicitar exclusão</SiteSubmit>
           </SiteForm>
         </section>
       </div>

@@ -88,46 +88,46 @@ export default async function ProductPage({ params }: P) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
-      <Container className="py-6">
-        <nav className="text-[11px] uppercase tracking-[0.18em] text-stone" aria-label="Trilha">
-          <Link href="/" className="hover:text-gold-2">Início</Link>{crumbs.map((c) => <span key={c.id}> / <Link href={`/categoria/${c.slug}`} className="hover:text-gold-2">{c.name}</Link></span>)}
+      <Container className="py-5 sm:py-7">
+        <nav className="text-[10px] uppercase tracking-[0.22em] text-stone" aria-label="Trilha">
+          <Link href="/" className="transition-colors hover:text-ink">Início</Link>{crumbs.map((c) => <span key={c.id}><span className="mx-2 text-line">/</span><Link href={`/categoria/${c.slug}`} className="transition-colors hover:text-ink">{c.name}</Link></span>)}
         </nav>
       </Container>
-      <Container className="pb-20">
-        <div className="grid gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
+      <Container className="pb-24">
+        <div className="grid gap-10 lg:grid-cols-[1.25fr_1fr] lg:gap-20">
           <div>
             <ProductGallery name={p.name} videos={p.videos.map((v) => v.url)} images={p.images.map((i) => ({ src: mediaUrl(i.key)!, thumb: mediaUrl(i.thumbKey ?? i.key)!, alt: i.alt ?? p.name }))} />
           </div>
-          <div className="lg:sticky lg:top-36 lg:self-start">
+          <div className="lg:sticky lg:top-32 lg:self-start lg:pt-4">
             <div className="flex items-start justify-between gap-4">
               <div>
-                {p.ref && <div className="eyebrow text-stone">Ref. {p.ref}</div>}
-                <h1 className="display mt-2 text-3xl sm:text-[2.6rem]">{p.name}</h1>
-                {rating && <a href="#avaliacoes" className="mt-2 inline-flex items-center gap-2 text-sm"><span className="text-gold">{"★".repeat(Math.round(rating))}</span><span className="text-stone">{rating.toFixed(1).replace(".", ",")} ({p.ratingCount})</span></a>}
+                {p.ref && <div className="text-[10px] uppercase tracking-[0.26em] text-stone">Ref. {p.ref}</div>}
+                <h1 className="display mt-3 text-[2rem] leading-[1.1] sm:text-[2.5rem]">{p.name}</h1>
+                {rating && <a href="#avaliacoes" className="mt-3 inline-flex items-center gap-2 text-xs"><span className="tracking-[0.15em] text-gold">{"★".repeat(Math.round(rating))}</span><span className="text-stone">{rating.toFixed(1).replace(".", ",")} ({p.ratingCount})</span></a>}
               </div>
               <div className="flex gap-2"><FavoriteButton productId={p.id} large /><CompareButton productId={p.id} /></div>
             </div>
-            <div className="gold-rule my-6" />
+            <div className="my-7 h-px bg-line" />
             <BuyBox product={{ id: p.id, name: p.name, ref: p.ref, slug: p.slug }} variants={variants} optionName={p.optionName} whatsapp={s.contact.whatsapp} sizeGuide={sizeGuide > 0}
               price={{ price: price.price, compareAt: price.compareAt, pix: price.pix, installments: price.installments, installmentValue: price.installmentValue, pixPct: s.payment.pixDiscountBps / 100 }} />
-            {canTry && <Link href={`/provador?produto=${p.slug}`} className="mt-3 flex items-center justify-center gap-2 border border-gold/60 bg-ink py-3.5 text-[11px] uppercase tracking-[0.24em] text-gold-soft hover:bg-ink-2">✦ Experimentar com Luxer AI</Link>}
-            <div className="mt-8 border-t border-line pt-6"><div className="eyebrow mb-3 text-stone">Calcular frete e prazo</div><ShippingCalc productId={p.id} /></div>
-            <ul className="mt-8 grid grid-cols-3 gap-3 border-t border-line pt-6 text-center text-[11px] leading-snug text-stone">
-              <li>Ouro 18k<br />certificado</li><li>Nota fiscal<br />e garantia</li><li>Compra<br />segura</li>
+            {canTry && <Link href={`/provador?produto=${p.slug}`} className="link-line mt-6 text-ink">Experimentar no provador virtual</Link>}
+            <div className="mt-9 border-t border-line pt-7"><div className="eyebrow mb-4 text-stone">Frete e prazo</div><ShippingCalc productId={p.id} /></div>
+            <ul className="mt-9 space-y-2.5 border-t border-line pt-7 text-[13px] text-ink/70">
+              <li className="flex gap-3"><span aria-hidden className="mt-2 h-px w-3 shrink-0 bg-gold" />Ouro 18k com certificado de garantia</li>
+              <li className="flex gap-3"><span aria-hidden className="mt-2 h-px w-3 shrink-0 bg-gold" />Nota fiscal e embalagem Luxer</li>
+              <li className="flex gap-3"><span aria-hidden className="mt-2 h-px w-3 shrink-0 bg-gold" />Pagamento seguro via Pix ou cartão</li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-20 grid gap-12 lg:grid-cols-2">
+        <div className="mt-24 grid gap-16 border-t border-line pt-16 lg:grid-cols-2 lg:gap-24">
           <section>
-            <h2 className="display text-3xl">Sobre a peça</h2>
-            <div className="gold-rule my-5 w-16" />
+            <h2 className="eyebrow mb-6 text-stone">Sobre a peça</h2>
             {p.description ? <Markdown source={p.description} /> : <p className="text-stone">Consulte nossa equipe para mais detalhes desta peça.</p>}
             {s.policies.warrantyText && <p className="mt-5 text-sm text-stone">{s.policies.warrantyText}</p>}
           </section>
           <section>
-            <h2 className="display text-3xl">Especificações</h2>
-            <div className="gold-rule my-5 w-16" />
+            <h2 className="eyebrow mb-6 text-stone">Especificações</h2>
             <dl className="divide-y divide-line text-sm">
               {ficha.filter(([l, v]) => v && !shownLabels.has(l.toLowerCase())).map(([l, v]) => <div key={l} className="flex justify-between gap-6 py-3"><dt className="text-stone">{l}</dt><dd className="text-right">{v}</dd></div>)}
               {[...specs, ...extra].map((x) => <div key={x.label} className="flex justify-between gap-6 py-3"><dt className="text-stone">{x.label}</dt><dd className="text-right">{x.value}</dd></div>)}
@@ -137,13 +137,13 @@ export default async function ProductPage({ params }: P) {
         </div>
 
         {(youtube.length > 0 || files.length > 0) && (
-          <section className="mt-20"><h2 className="display mb-6 text-3xl">Vídeos</h2><div className="grid gap-5 md:grid-cols-2">
+          <section className="mt-24"><h2 className="eyebrow mb-6 text-stone">Vídeos</h2><div className="grid gap-5 md:grid-cols-2">
             {youtube.map((id) => <iframe key={id} className="aspect-video w-full" src={`https://www.youtube-nocookie.com/embed/${id}`} title={`Vídeo de ${p.name}`} loading="lazy" allow="encrypted-media; picture-in-picture" allowFullScreen />)}
-            {files.map((v) => <video key={v.id} src={v.url} controls playsInline className="aspect-video w-full bg-ink" preload="metadata" />)}
+            {files.map((v) => <video key={v.id} src={v.url} controls playsInline className="aspect-video w-full bg-white" preload="metadata" />)}
           </div></section>
         )}
 
-        <section id="avaliacoes" className="mt-20 border-t border-line pt-14">
+        <section id="avaliacoes" className="mt-24 border-t border-line pt-16">
           <div className="grid gap-10 lg:grid-cols-[1fr_2fr]">
             <div>
               <h2 className="display text-3xl">Avaliações</h2>
@@ -153,11 +153,11 @@ export default async function ProductPage({ params }: P) {
             <ul className="space-y-8">
               {p.reviews.map((r) => (
                 <li key={r.id} className="border-b border-line pb-8">
-                  <div className="flex items-center gap-3"><span className="text-gold">{"★".repeat(r.rating)}</span>{r.verified && <span className="text-[10px] uppercase tracking-[0.2em] text-emerald-700">Compra verificada</span>}</div>
+                  <div className="flex items-center gap-3"><span className="text-gold">{"★".repeat(r.rating)}</span>{r.verified && <span className="text-[10px] uppercase tracking-[0.2em] text-stone">Compra verificada</span>}</div>
                   {r.title && <div className="mt-2 font-serif text-xl">{r.title}</div>}
                   <p className="mt-2 text-sm leading-relaxed text-ink/80">{r.body}</p>
                   <div className="mt-2 text-xs text-stone">{r.authorName} · {formatDate(r.createdAt)}</div>
-                  {r.reply && <div className="mt-4 border-l-2 border-gold pl-4 text-sm"><b>Resposta da Luxer:</b> {r.reply}</div>}
+                  {r.reply && <div className="mt-4 border-l border-gold pl-4 text-sm text-ink/80"><span className="eyebrow mb-1 block text-stone">Resposta da Luxer</span>{r.reply}</div>}
                   <ReportForm reviewId={r.id} />
                 </li>
               ))}
@@ -165,7 +165,7 @@ export default async function ProductPage({ params }: P) {
           </div>
         </section>
 
-        {related.length > 0 && <section className="mt-24"><SectionHead eyebrow="Você também pode gostar" title="Produtos relacionados" /><ProductGrid items={related} /></section>}
+        {related.length > 0 && <section className="mt-28 border-t border-line pt-16"><SectionHead eyebrow="Você também pode gostar" title="Peças relacionadas" /><ProductGrid items={related} /></section>}
       </Container>
     </>
   );

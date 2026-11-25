@@ -30,9 +30,9 @@ export function FavoriteButton({ productId, large = false }: { productId: string
   }
   return (
     <button onClick={toggle} aria-pressed={on} aria-label={on ? "Remover dos favoritos" : "Adicionar aos favoritos"}
-      className={`flex items-center justify-center rounded-full bg-white/80 backdrop-blur transition hover:bg-white ${large ? "h-11 w-11" : "h-9 w-9"}`}>
-      <svg viewBox="0 0 24 24" className={large ? "h-5 w-5" : "h-4 w-4"} fill={on ? "#b8955a" : "none"} stroke={on ? "#b8955a" : "#0b0b0c"} strokeWidth={1.5}>
-        <path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.5 3 4.5 6.8 4.5c2.1 0 3.6 1.1 4.2 2.4.6-1.3 2.1-2.4 4.2-2.4 3.8 0 5.9 4 4.4 7.3C19.5 16.4 12 21 12 21z" />
+      className={`flex items-center justify-center transition-opacity ${large ? "h-12 w-12 border border-line hover:border-ink" : "h-9 w-9"}`}>
+      <svg viewBox="0 0 24 24" className={large ? "h-[18px] w-[18px]" : "h-4 w-4"} fill={on ? "#0b0b0c" : "none"} stroke="#0b0b0c" strokeWidth={1.2}>
+        <path d="M12 20s-7-4.4-8.9-8.6C1.7 8.3 3.6 4.8 7 4.8c2 0 3.3 1 4 2.2.7-1.2 2-2.2 4-2.2 3.4 0 5.3 3.5 3.9 6.6C19 15.6 12 20 12 20z" />
       </svg>
     </button>
   );

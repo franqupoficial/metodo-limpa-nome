@@ -2,7 +2,7 @@
 // executa os 15 cenários de aceite no navegador (Playwright) e confere o banco a cada etapa.
 // Uso: npm run build && node tests/e2e/run.mjs   (requer DATABASE_URL de um banco de TESTE)
 import { spawn } from "node:child_process";
-import { readdirSync, readFileSync, existsSync, mkdirSync } from "node:fs";
+import { readdirSync, readFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { PrismaClient } from "@prisma/client";
@@ -29,6 +29,8 @@ async function step(n, name, fn) {
     console.log(`✔ ${n}. ${name}`);
   } catch (e) {
     results.push({ n, name, ok: false, error: e.message.split("\n")[0] });
+    // evidência da falha: captura de todas as páginas abertas
+    for (const [i, pg] of (globalThis.__browser?.contexts() ?? []).flatMap((c) => c.pages()).entries()) await pg.screenshot({ path: path.join(OUT, `falha-${n}-${i}.png`) }).catch(() => {});
     console.log(`✘ ${n}. ${name}\n   ${e.message.split("\n").slice(0, 3).join("\n   ")}`);
   }
 }
@@ -82,6 +84,7 @@ app.stdout.on("data", (d) => (appLog += d));
 app.stderr.on("data", (d) => (appLog += d));
 
 const browser = await chromium.launch();
+  globalThis.__browser = browser;
 let exitCode = 0;
 try {
   await waitReady();
@@ -327,7 +330,7 @@ try {
     await act(admin, () => admin.click('button:has-text("Salvar configuração")'));
     await shop.goto(`${BASE}/provador?produto=${productSlug}`);
     await shop.setInputFiles('input[type="file"]', photoFile);
-    await shop.locator('input[type="checkbox"]').last().check();
+    await shop.locator('label:has-text("Autorizo o uso da minha foto") input[type="checkbox"]').check();
     await shop.click('button:has-text("Experimentar")');
     await shop.locator('img[alt="Simulação da joia em você"]').waitFor({ timeout: 90000 });
     const r = await db.tryOnRequest.findFirst({ where: { productId }, orderBy: { createdAt: "desc" } });
@@ -462,6 +465,6 @@ try {
   await db.$disconnect();
   const failed = results.filter((r) => !r.ok);
   console.log(`\n${results.length - failed.length}/${results.length} cenários aprovados.`);
-  if (failed.length) { exitCode = 1; console.log("Log do servidor (fim):\n" + appLog.slice(-3000)); }
+  if (failed.length) { exitCode = 1; writeFileSync(path.join(OUT, "servidor.log"), appLog); console.log(`Log completo do servidor: ${path.join(OUT, "servidor.log")}`); }
   process.exit(exitCode);
 }

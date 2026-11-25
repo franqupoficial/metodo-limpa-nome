@@ -15,8 +15,8 @@ export default async function Unsubscribe({ searchParams }: { searchParams: Prom
     await prisma.customer.updateMany({ where: { email }, data: { marketingOptIn: false } });
   }
   return (
-    <Container className="max-w-xl py-24 text-center">
-      <h1 className="display text-4xl">{valid ? "Descadastro concluído" : "Link inválido"}</h1>
+    <Container className="max-w-xl py-28 text-center">
+      <h1 className="display text-[2.6rem]">{valid ? "Descadastro concluído" : "Link inválido"}</h1>
       <p className="mt-4 text-stone">{valid ? "Você não receberá mais e-mails de marketing da Luxer. E-mails sobre seus pedidos continuam sendo enviados." : "Use o link mais recente recebido por e-mail ou altere suas preferências em Minha conta."}</p>
     </Container>
   );

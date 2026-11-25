@@ -5,7 +5,7 @@ import { submitReview, reportReview } from "@/app/(loja)/_actions/reviews";
 export function ReviewForm({ productId }: { productId: string }) {
   const [state, action, pending] = useActionState(submitReview, null);
   const [rating, setRating] = useState(5);
-  if (state?.ok) return <p className="text-sm text-emerald-700">{state.message}</p>;
+  if (state?.ok) return <p className="text-sm text-ink">{state.message}</p>;
   return (
     <form action={action} className="space-y-3">
       <input type="hidden" name="productId" value={productId} />

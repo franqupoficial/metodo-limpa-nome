@@ -6,8 +6,8 @@ export const metadata = { title: "Nova senha", robots: { index: false } };
 export default async function Reset({ searchParams }: { searchParams: Promise<{ t?: string }> }) {
   const { t } = await searchParams;
   return (
-    <Container className="max-w-md py-16">
-      <h1 className="display text-4xl">Nova senha</h1>
+    <Container className="max-w-md pb-24 pt-14 sm:pt-20">
+      <h1 className="display text-[2.6rem]">Nova senha</h1>
       <SiteForm action={resetCustomer} className="mt-8 space-y-4"><input type="hidden" name="t" value={t ?? ""} /><Lbl label="Nova senha (8+ caracteres, letras e números)"><input name="password" type="password" required autoComplete="new-password" className="field" /></Lbl><SiteSubmit>Salvar</SiteSubmit></SiteForm>
     </Container>
   );

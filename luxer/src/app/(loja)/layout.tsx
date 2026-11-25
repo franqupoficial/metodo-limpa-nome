@@ -4,7 +4,6 @@ import { getCartView } from "@/lib/cart";
 import { getCustomer } from "@/lib/customer-auth";
 import { prisma } from "@/lib/db";
 import { mediaUrl } from "@/lib/media-url";
-import { formatMoney } from "@/lib/format";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { Consent } from "@/components/site/Consent";
@@ -25,12 +24,10 @@ export default async function StoreLayout({ children }: { children: React.ReactN
   ]);
   const now = new Date();
   const popup = await prisma.popup.findFirst({ where: { active: true, AND: [{ OR: [{ startsAt: null }, { startsAt: { lte: now } }] }, { OR: [{ endsAt: null }, { endsAt: { gt: now } }] }] }, orderBy: { updatedAt: "desc" } });
-  const free = s.shipping.freeShippingFromCents;
-  const announcement = [`${(s.payment.pixDiscountBps / 100).toLocaleString("pt-BR")}% de desconto no Pix`, `Até ${s.payment.maxInstallments}x no cartão`, free ? `Frete grátis acima de ${formatMoney(free)}` : "Ouro 18k com certificado de garantia"].join("  ·  ");
   return (
     <div className="flex min-h-dvh flex-col">
-      <a href="#conteudo" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-ink focus:p-3 focus:text-gold">Pular para o conteúdo</a>
-      <Header cats={cats} cartCount={cart.count} logo={mediaUrl(s.store.logoKey)} storeName={s.store.name} announcement={announcement} logged={Boolean(customer)} />
+      <a href="#conteudo" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-ink focus:p-3 focus:text-ivory">Pular para o conteúdo</a>
+      <Header cats={cats} cartCount={cart.count} logo={mediaUrl(s.store.logoKey)} storeName={s.store.name} logged={Boolean(customer)} />
       <main id="conteudo" className="flex-1">{children}</main>
       <Footer s={s} pages={pages} cats={cats.filter((c) => !c.faith).map((c) => ({ slug: c.slug, name: c.name }))} />
       {s.concierge.enabled ? (
