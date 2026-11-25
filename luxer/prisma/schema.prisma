@@ -250,6 +250,9 @@ model Product {
   reviews           Review[]
   favorites         Favorite[]
   orderItems        OrderItem[]
+  /// perfil técnico da joia extraído da fotografia (cache para o provador) e a imagem de origem
+  tryOnSpec         Json?
+  tryOnSpecImage    String?
   tryOns            TryOnRequest[]
 
   @@index([status, publishAt])
@@ -867,6 +870,7 @@ model Media {
 // ───────────────────────── Luxer AI ─────────────────────────
 
 enum TryOnStatus {
+  QUEUED
   PROCESSING
   SUCCEEDED
   FAILED
@@ -874,29 +878,61 @@ enum TryOnStatus {
 }
 
 model TryOnRequest {
-  id              String      @id @default(cuid())
-  productId       String?
-  product         Product?    @relation(fields: [productId], references: [id], onDelete: SetNull)
-  category        String
-  provider        String
-  model           String
-  status          TryOnStatus @default(PROCESSING)
-  /// custo estimado configurado pelo administrador (centavos)
-  costCents       Int         @default(0)
-  durationMs      Int?
-  errorCode       String?
-  errorMessage    String?
+  id            String       @id @default(cuid())
+  productId     String?
+  product       Product?     @relation(fields: [productId], references: [id], onDelete: SetNull)
+  category      String
+  provider      String
+  /// modelo de edição generativa
+  model         String
+  /// modelo de visão (detecção da região e verificação de fidelidade)
+  analysisModel String?
+  status        TryOnStatus  @default(QUEUED)
+  /// etapa atual do pipeline: queued, detect, profile, generate, composite, verify, done
+  stage         String       @default("queued")
+  /// custo estimado acumulado das chamadas feitas (centavos)
+  costCents     Int          @default(0)
+  durationMs    Int?
+  errorCode     String?
+  errorMessage  String?
+  /// hash do token de acesso entregue somente ao navegador que enviou a foto
+  tokenHash     String?
   /// hash do IP com sal diário — não identifica a pessoa
-  clientHash      String?
-  customerId      String?
-  consentAt       DateTime
-  /// chave do resultado (somente se a retenção estiver habilitada)
-  resultKey       String?
-  resultExpiresAt DateTime?
-  createdAt       DateTime    @default(now())
+  clientHash    String?
+  customerId    String?
+  consentAt     DateTime
+  /// região detectada (caixas normalizadas 0–1000) e diagnóstico da foto
+  region        Json?
+  /// nota de fidelidade (0–100) dada pela verificação automática
+  fidelityScore Int?
+  generations   Int          @default(0)
+  /// tempos e métricas técnicas por etapa
+  metrics       Json?
+  assets        TryOnAsset[]
+  createdAt     DateTime     @default(now())
+  finishedAt    DateTime?
 
   @@index([createdAt])
   @@index([status])
+  @@index([clientHash, createdAt])
+}
+
+/// Imagens temporárias do provador (foto enviada e resultado), criptografadas (AES-256-GCM) e com expiração.
+model TryOnAsset {
+  id        String       @id @default(cuid())
+  requestId String
+  request   TryOnRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  /// INPUT (foto do cliente) ou RESULT (simulação)
+  kind      String
+  mime      String
+  width     Int
+  height    Int
+  data      Bytes
+  expiresAt DateTime
+  createdAt DateTime     @default(now())
+
+  @@unique([requestId, kind])
+  @@index([expiresAt])
 }
 
 // ───────────────────────── Operação ─────────────────────────

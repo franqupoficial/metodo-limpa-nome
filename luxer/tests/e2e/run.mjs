@@ -68,7 +68,7 @@ const someOriginal = (() => {
   return path.join(dir, d, "1.jpg");
 })();
 
-const [pg, gm, an] = await Promise.all([startPagarme(4010), startGemini(4011, png), startAnthropic(4012)]);
+const [pg, gm, an] = await Promise.all([startPagarme(4010), startGemini(4011), startAnthropic(4012)]);
 const app = spawn(process.execPath, [path.join(ROOT, "node_modules/next/dist/bin/next"), "start", "-p", String(PORT)], {
   detached: true,
   cwd: ROOT,
@@ -323,25 +323,104 @@ try {
     await op.context().close();
   });
 
-  await step(14, "Provador virtual (LUXER AI TRY-ON)", async () => {
+  await step(14, "Provador virtual LUXER AI: detecção → geração → composição → verificação", async () => {
     await admin.goto(BASE + "/admin/luxer-ai");
     await admin.check('input[name="tryOnEnabled"]');
     await admin.fill('input[name="dailyLimitPerClient"]', "3");
     await act(admin, () => admin.click('button:has-text("Salvar configuração")'));
-    await shop.goto(`${BASE}/provador?produto=${productSlug}`);
-    await shop.setInputFiles('input[type="file"]', photoFile);
-    await shop.locator('label:has-text("Autorizo o uso da minha foto") input[type="checkbox"]').check();
-    await shop.click('button:has-text("Experimentar")');
-    await shop.locator('img[alt="Simulação da joia em você"]').waitFor({ timeout: 90000 });
-    const r = await db.tryOnRequest.findFirst({ where: { productId }, orderBy: { createdAt: "desc" } });
-    assert(r.status === "SUCCEEDED" && !r.resultKey, "solicitação não registrada como sucesso ou resultado retido indevidamente");
-    assert(gemini.calls.at(-1).images === 2 && gemini.calls.at(-1).prompt.includes("faithfully"), "provedor não recebeu foto + joia + instruções");
-    assert(!existsSync(path.join(ROOT, "storage/media/tryon")), "foto/resultado não deveria ser armazenado");
+    await act(admin, () => admin.click('button:has-text("Testar integração")'));
+    const diag = (await admin.locator('form:has(button:has-text("Testar integração")) [role="status"]').innerText()).trim();
+    assert(diag.includes("Integração OK"), "diagnóstico da integração falhou: " + diag);
+
+    // botão PROVAR COM IA na página do produto → modal com a peça carregada
+    await shop.goto(`${BASE}/produto/${productSlug}`);
+    await shop.click('button:has-text("Provar com IA")');
+    const dlg = shop.locator('[role="dialog"][aria-label="Provador Luxer AI"]');
+    await dlg.waitFor();
+    assert(await dlg.locator(`text=Anel Teste ${REF}`).first().isVisible(), "a peça não foi carregada no provador");
+    assert(await dlg.locator("text=Fotografe sua mão").isVisible(), "orientação específica da categoria ausente");
+    await dlg.locator('input[type="checkbox"]').first().check();
+    await dlg.locator('input[type="file"]').setInputFiles(photoFile);
+    await dlg.locator("text=Confira sua foto").waitFor();
+    const calls0 = gemini.calls.length;
+    await dlg.locator('button:has-text("Provar com IA")').click();
+    await dlg.locator('img[alt="Simulação da joia em você"]').waitFor({ timeout: 90000 });
+
+    const r = await db.tryOnRequest.findFirst({ where: { productId }, orderBy: { createdAt: "desc" }, include: { assets: true } });
+    assert(r.status === "SUCCEEDED" && r.stage === "done" && r.fidelityScore === 88 && r.generations === 1, `estado inesperado: ${r.status}/${r.stage}/${r.fidelityScore}/${r.generations}`);
+    assert(r.costCents > 0 && r.region?.target?.length === 4, "custo ou região detectada não registrados");
+    assert(!r.assets.some((x) => x.kind === "INPUT"), "a foto enviada deveria ser apagada ao fim do processamento");
+    const res = r.assets.find((x) => x.kind === "RESULT");
+    assert(res && Buffer.from(res.data).subarray(0, 3).toString("hex") !== "ffd8ff", "resultado deveria estar criptografado no banco");
+    const tasks = gemini.calls.slice(calls0).map((c) => c.task);
+    assert(["DETECT_REGION", "TRY_ON_EDIT", "VERIFY_FIDELITY"].every((t) => tasks.includes(t)), "pipeline incompleto: " + tasks.join(","));
+    const edit = gemini.calls.slice(calls0).find((c) => c.task === "TRY_ON_EDIT");
+    assert(edit.images >= 2 && edit.prompt.includes("mandatory reference") && edit.prompt.includes("finger"), "geração sem a foto da peça como referência ou sem instrução da categoria");
+
+    // composição: mesma dimensão da foto original, fora da região idêntica, na região alterada
+    const src = await dlg.locator('img[alt="Simulação da joia em você"]').getAttribute("src");
+    const img = await shop.request.get(BASE + src);
+    assert(img.status() === 200 && img.headers()["cache-control"].includes("no-store"), "resultado não servido com segurança");
+    const buf = await img.body();
+    writeFileSync(path.join(OUT, "provador-resultado.jpg"), buf);
+    const meta = await sharp(buf).metadata();
+    assert(meta.width === 900 && meta.height === 1200, `dimensões alteradas: ${meta.width}x${meta.height}`);
+    const px = async (left, top) => { const { data } = await sharp(buf).extract({ left, top, width: 8, height: 8 }).raw().toBuffer({ resolveWithObject: true }); return [data[0], data[1], data[2]]; };
+    const corner = await px(20, 20);
+    assert(Math.abs(corner[0] - 0xd8) < 8 && Math.abs(corner[1] - 0xb9) < 8 && Math.abs(corner[2] - 0xa0) < 8, "fora da região a foto foi alterada: " + corner);
+    // região detectada pelo simulador: caixa [460,460,540,540] → centro em (450, 600) px; o fundo tem azul 0xa0, o dourado aplicado ~0x37
+    // stats() do sharp mede a imagem de entrada; por isso o recorte é materializado antes
+    const statsOf = async (r) => sharp(await sharp(buf).extract(r).png().toBuffer()).stats();
+    const zone = await statsOf({ left: 350, top: 530, width: 200, height: 140 });
+    assert(zone.channels[2].min < 0x78, "a joia não foi aplicada na região detectada");
+    const far = await statsOf({ left: 0, top: 0, width: 900, height: 300 });
+    assert(far.channels[2].min > 0x90, "pixels alterados longe da região de aplicação");
+    const other = await (await browser.newContext()).request.get(BASE + src.replace(/t=[^&]+/, "t=" + "x".repeat(32)));
+    assert(other.status() === 404, "resultado acessível sem o token correto");
+
+    // reprovação na fidelidade → nova geração orientada → entrega
+    gemini.scores = [40, 85];
+    await dlg.locator('button:has-text("Gerar novamente")').click();
+    await dlg.locator("text=Criando sua prova").waitFor({ timeout: 30000 });
+    await dlg.locator('img[alt="Simulação da joia em você"]').waitFor({ timeout: 90000 });
+    await shop.waitForTimeout(500);
+    const r2 = await db.tryOnRequest.findFirst({ where: { productId }, orderBy: { createdAt: "desc" } });
+    assert(r2.id !== r.id && r2.generations === 2 && r2.fidelityScore === 85 && r2.status === "SUCCEEDED", `nova tentativa não ocorreu: ${r2.generations}/${r2.fidelityScore}`);
+    assert(gemini.calls.filter((c) => c.task === "TRY_ON_EDIT").at(-1).prompt.includes("band shape differs"), "nova geração não recebeu as divergências apontadas");
+
+    // tamanho + sacola direto do provador
+    const opt = dlg.locator("fieldset button:not([disabled])").first();
+    if (await opt.count()) await opt.click();
+    await dlg.locator('button:has-text("Adicionar à sacola")').click();
+    await dlg.locator("text=Adicionado à sacola").waitFor({ timeout: 30000 });
+    const inCart = await db.cartItem.count({ where: { variant: { productId } } });
+    assert(inCart >= 1, "peça não entrou na sacola pelo provador");
+
+    // exclusão imediata a pedido do cliente
+    await dlg.locator('button:has-text("Excluir minhas imagens agora")').click();
+    await dlg.locator("text=Imagens excluídas").first().waitFor();
+    assert((await db.tryOnAsset.count({ where: { requestId: r2.id } })) === 0, "imagens não excluídas");
+
+    // foto sem a região do corpo: recusada antes da geração (sem custo de imagem), com orientação
+    gemini.detect = "none";
+    await dlg.locator('button:has-text("Nova foto")').click();
+    await dlg.locator('input[type="file"]').setInputFiles(photoFile);
+    await dlg.locator('button:has-text("Provar com IA")').click();
+    await dlg.locator("text=Não encontramos a mão").waitFor({ timeout: 60000 });
+    gemini.detect = "ok";
+    const r3 = await db.tryOnRequest.findFirst({ where: { productId }, orderBy: { createdAt: "desc" } });
+    assert(r3.status === "FAILED" && r3.errorCode === "region_not_found" && r3.generations === 0, "foto inadequada deveria ser recusada antes da geração");
+    await shop.keyboard.press("Escape");
+    // devolve a sacola ao estado anterior para os cenários seguintes
+    await shop.goto(BASE + "/carrinho");
+    await shop.click('button:has-text("Remover")');
+    await shop.locator("text=Sua sacola está vazia").waitFor({ timeout: 30000 });
+
     // sem consentimento a API recusa
-    const fd = new FormData(); fd.set("photo", new Blob([readFileSync(photoFile)], { type: "image/jpeg" }), "p.jpg"); fd.set("product", productSlug);
     const nc = await shop.request.post(BASE + "/api/tryon", { multipart: { photo: { name: "p.jpg", mimeType: "image/jpeg", buffer: readFileSync(photoFile) }, product: productSlug }, headers: { origin: BASE } });
     assert(nc.status() === 400, "sem consentimento deveria ser recusado");
   });
+
 
   await step(16, "Cancelamento de pedido não pago libera a reserva", async () => {
     await shop.goto(`${BASE}/produto/${productSlug}`);

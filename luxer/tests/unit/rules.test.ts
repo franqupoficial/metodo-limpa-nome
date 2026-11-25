@@ -90,6 +90,6 @@ test("provador: categoria da peça", () => {
   assert.equal(tryOnCategoryFor("Pingente Nossa Senhora"), "pingentes");
   assert.equal(tryOnCategoryFor("Corrente Malha Cartier"), "correntes");
   assert.equal(tryOnCategoryFor("Brinco de Pérola"), "brincos");
-  assert.equal(tryOnCategoryFor("Tornozeleira de Ouro"), "pulseiras");
+  assert.equal(tryOnCategoryFor("Tornozeleira de Ouro"), null); // tornozelo não é região do provador
   assert.equal(tryOnCategoryFor("Conjunto"), null);
 });

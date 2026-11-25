@@ -1,109 +1,86 @@
 import "server-only";
 
 /**
- * LUXER AI TRY-ON — provedores de geração/edição de imagem.
- * Credenciais por variáveis de ambiente (nunca no banco nem no painel):
- *   GEMINI_API_KEY  → Google Gemini (modelo padrão: gemini-2.5-flash-image)
- *   OPENAI_API_KEY  → OpenAI Images (modelo padrão: gpt-image-1)
- * A foto do cliente é enviada ao provedor apenas para gerar a simulação e não é gravada pela Luxer.
+ * LUXER AI TRY-ON — cliente do provedor (Google Gemini API).
+ * Credencial somente no servidor, por variável de ambiente: GEMINI_API_KEY.
+ * Dois usos: visão estruturada (JSON com caixas e pareceres) e edição generativa de imagem.
+ * GEMINI_API_URL só é usada pela bateria de testes para apontar a um servidor simulado.
  */
-export type TryOnProvider = "gemini" | "openai";
-export type TryOnInput = {
-  provider: TryOnProvider;
-  model: string;
-  person: { data: Buffer; mime: string };
-  jewel: { data: Buffer; mime: string };
-  category: string;
-  productName: string;
-  productDetails: string;
-};
-export type TryOnOutput = { image: Buffer; mime: string };
-
 export class TryOnError extends Error {
-  constructor(public code: string, message: string) {
+  constructor(public code: string, message: string, public userMessage?: string) {
     super(message);
   }
 }
 
-export const providerConfigured = (p: TryOnProvider) => Boolean(p === "gemini" ? process.env.GEMINI_API_KEY : process.env.OPENAI_API_KEY);
+export const geminiConfigured = () => Boolean(process.env.GEMINI_API_KEY);
+/** Compatibilidade com as telas que perguntam pelo provedor configurado. */
+export const providerConfigured = (_p?: string) => geminiConfigured();
 
-const PLACEMENT: Record<string, string> = {
-  colares: "around the neck, resting naturally on the collarbone/chest",
-  correntes: "around the neck, following the neckline naturally",
-  pingentes: "hanging from a chain around the neck, centered on the chest",
-  brincos: "on the visible earlobe(s); if both ears are visible, place a matching pair",
-  pulseiras: "around the visible wrist",
-  aneis: "on a visible finger (ring finger preferred)",
+export type ImagePart = { data: Buffer; mime: string };
+type Part = { text: string } | { inline_data: { mime_type: string; data: string } };
+type GeminiResponse = {
+  candidates?: { content?: { parts?: { inlineData?: { mimeType: string; data: string }; inline_data?: { mime_type: string; data: string }; text?: string }[] }; finishReason?: string }[];
+  promptFeedback?: { blockReason?: string };
+  usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number; totalTokenCount?: number };
+  error?: { message?: string; status?: string };
 };
 
-export function buildPrompt(i: Pick<TryOnInput, "category" | "productName" | "productDetails">) {
-  return [
-    "Virtual jewelry try-on. Image 1 is a photo of a real person. Image 2 is the product photo of a real piece of fine jewelry.",
-    `Place exactly the jewelry from image 2 ${PLACEMENT[i.category] ?? "where it is naturally worn"} on the person in image 1.`,
-    "Hard requirements: reproduce the jewelry faithfully — same design, shape, metal color, stones, number of stones, links, texture and finish. Do not redesign, simplify, embellish or add elements.",
-    "Keep realistic physical scale relative to the person's body (fine jewelry is delicate and small). Match the lighting, perspective, shadows and reflections of image 1.",
-    "Do not change the person's face, identity, skin tone, body, hair, expression, clothing or the background. Output a single photorealistic image.",
-    `Product: ${i.productName}. ${i.productDetails}`.slice(0, 900),
-  ].join("\n");
-}
+const BASE = () => (process.env.GEMINI_API_URL || "https://generativelanguage.googleapis.com").replace(/\/$/, "");
 
-async function gemini(i: TryOnInput): Promise<TryOnOutput> {
+async function call(model: string, parts: Part[], generationConfig: Record<string, unknown>, timeoutMs: number): Promise<GeminiResponse> {
   const key = process.env.GEMINI_API_KEY;
   if (!key) throw new TryOnError("not_configured", "GEMINI_API_KEY não configurada.");
-  const res = await fetch(`${process.env.GEMINI_API_URL || "https://generativelanguage.googleapis.com"}/v1beta/models/${encodeURIComponent(i.model)}:generateContent`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "x-goog-api-key": key },
-    body: JSON.stringify({
-      contents: [{
-        role: "user",
-        parts: [
-          { text: buildPrompt(i) },
-          { inline_data: { mime_type: i.person.mime, data: i.person.data.toString("base64") } },
-          { inline_data: { mime_type: i.jewel.mime, data: i.jewel.data.toString("base64") } },
-        ],
-      }],
-      generationConfig: { responseModalities: ["IMAGE"] },
-    }),
-    signal: AbortSignal.timeout(120_000),
-  });
-  const data = (await res.json().catch(() => null)) as {
-    candidates?: { content?: { parts?: { inlineData?: { mimeType: string; data: string }; inline_data?: { mime_type: string; data: string }; text?: string }[] }; finishReason?: string }[];
-    promptFeedback?: { blockReason?: string };
-    error?: { message?: string; status?: string };
-  } | null;
-  if (!res.ok) throw new TryOnError(`provider_${res.status}`, data?.error?.message || `Gemini respondeu ${res.status}`);
-  if (data?.promptFeedback?.blockReason) throw new TryOnError("blocked", `Imagem recusada pelo provedor (${data.promptFeedback.blockReason}).`);
-  for (const part of data?.candidates?.[0]?.content?.parts ?? []) {
-    const inl = part.inlineData ?? (part.inline_data ? { mimeType: part.inline_data.mime_type, data: part.inline_data.data } : null);
-    if (inl?.data) return { image: Buffer.from(inl.data, "base64"), mime: inl.mimeType || "image/png" };
+  let res: Response;
+  try {
+    res = await fetch(`${BASE()}/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-goog-api-key": key },
+      body: JSON.stringify({ contents: [{ role: "user", parts }], generationConfig }),
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+  } catch (e) {
+    throw new TryOnError((e as Error).name === "TimeoutError" ? "provider_timeout" : "provider_network", `Falha de comunicação com o Gemini: ${(e as Error).message}`);
   }
-  throw new TryOnError("no_image", `O provedor não retornou imagem (${data?.candidates?.[0]?.finishReason ?? "sem motivo"}).`);
+  const data = (await res.json().catch(() => null)) as GeminiResponse | null;
+  if (!res.ok) throw new TryOnError(res.status === 429 ? "provider_rate_limit" : `provider_${res.status}`, data?.error?.message || `Gemini respondeu ${res.status}`);
+  if (data?.promptFeedback?.blockReason) throw new TryOnError("blocked", `Conteúdo recusado pelo provedor (${data.promptFeedback.blockReason}).`);
+  return data ?? {};
 }
 
-async function openai(i: TryOnInput): Promise<TryOnOutput> {
-  const key = process.env.OPENAI_API_KEY;
-  if (!key) throw new TryOnError("not_configured", "OPENAI_API_KEY não configurada.");
-  const form = new FormData();
-  form.append("model", i.model);
-  form.append("prompt", buildPrompt(i));
-  form.append("image[]", new Blob([new Uint8Array(i.person.data)], { type: i.person.mime }), "person.jpg");
-  form.append("image[]", new Blob([new Uint8Array(i.jewel.data)], { type: i.jewel.mime }), "jewel.jpg");
-  form.append("input_fidelity", "high");
-  form.append("quality", "high");
-  form.append("size", "auto");
-  const res = await fetch("https://api.openai.com/v1/images/edits", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${key}` },
-    body: form,
-    signal: AbortSignal.timeout(180_000),
-  });
-  const data = (await res.json().catch(() => null)) as { data?: { b64_json?: string }[]; error?: { message?: string; code?: string } } | null;
-  if (!res.ok) throw new TryOnError(data?.error?.code === "moderation_blocked" ? "blocked" : `provider_${res.status}`, data?.error?.message || `OpenAI respondeu ${res.status}`);
-  const b64 = data?.data?.[0]?.b64_json;
-  if (!b64) throw new TryOnError("no_image", "O provedor não retornou imagem.");
-  return { image: Buffer.from(b64, "base64"), mime: "image/png" };
+const img = (i: ImagePart): Part => ({ inline_data: { mime_type: i.mime, data: i.data.toString("base64") } });
+
+/** Visão estruturada: devolve o JSON validado pelo schema informado ao modelo. */
+export async function analyze<T>(model: string, prompt: string, images: ImagePart[], schema: Record<string, unknown>): Promise<T> {
+  const data = await call(model, [{ text: prompt }, ...images.map(img)], { responseMimeType: "application/json", responseSchema: schema, temperature: 0 }, 60_000);
+  const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("") ?? "";
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new TryOnError("analysis_invalid", `Resposta de análise inválida (${data.candidates?.[0]?.finishReason ?? "sem motivo"}): ${text.slice(0, 160)}`);
+  }
 }
 
-export function generateTryOn(i: TryOnInput): Promise<TryOnOutput> {
-  return i.provider === "openai" ? openai(i) : gemini(i);
+/** Edição generativa: a primeira imagem é a foto a editar; as demais, referências obrigatórias da joia. */
+export async function generateImage(model: string, prompt: string, images: ImagePart[]): Promise<ImagePart> {
+  const data = await call(model, [{ text: prompt }, ...images.map(img)], { responseModalities: ["IMAGE"], temperature: 0.2 }, 120_000);
+  for (const part of data.candidates?.[0]?.content?.parts ?? []) {
+    const inl = part.inlineData ?? (part.inline_data ? { mimeType: part.inline_data.mime_type, data: part.inline_data.data } : null);
+    if (inl?.data) return { data: Buffer.from(inl.data, "base64"), mime: inl.mimeType || "image/png" };
+  }
+  throw new TryOnError("no_image", `O provedor não retornou imagem (${data.candidates?.[0]?.finishReason ?? "sem motivo"}).`);
+}
+
+/** Diagnóstico da integração para o painel: confere chave e modelos sem gerar custo de imagem. */
+export async function checkModels(models: string[]): Promise<{ model: string; ok: boolean; detail: string }[]> {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) return models.map((model) => ({ model, ok: false, detail: "GEMINI_API_KEY ausente no ambiente do servidor" }));
+  return Promise.all(models.map(async (model) => {
+    try {
+      const r = await fetch(`${BASE()}/v1beta/models/${encodeURIComponent(model)}`, { headers: { "x-goog-api-key": key }, signal: AbortSignal.timeout(15_000) });
+      const d = (await r.json().catch(() => null)) as { displayName?: string; error?: { message?: string } } | null;
+      return { model, ok: r.ok, detail: r.ok ? d?.displayName ?? "disponível" : d?.error?.message ?? `HTTP ${r.status}` };
+    } catch (e) {
+      return { model, ok: false, detail: (e as Error).message };
+    }
+  }));
 }

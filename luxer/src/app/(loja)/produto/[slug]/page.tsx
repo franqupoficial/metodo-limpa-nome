@@ -19,7 +19,8 @@ import { CompareButton } from "@/components/site/Compare";
 import { ProductGrid } from "@/components/site/ProductCard";
 import { Container, SectionHead } from "@/components/site/Section";
 import { ReviewForm, ReportForm } from "@/components/site/ReviewForms";
-import { tryOnCategoryFor } from "@/lib/ai/categories";
+import { tryOnCategoryFor, REGION_OF } from "@/lib/ai/categories";
+import { TryOnButton } from "@/components/site/TryOnStudio";
 
 type P = { params: Promise<{ slug: string }> };
 
@@ -66,7 +67,7 @@ export default async function ProductPage({ params }: P) {
   const shownLabels = new Set(specs.map((x) => x.label.toLowerCase()));
   const crumbs = p.primaryCategory ? [...(p.primaryCategory.parent ? [p.primaryCategory.parent] : []), p.primaryCategory] : [];
   const tryCat = tryOnCategoryFor(p.categories.map((c) => c.category.name).join(" ") + " " + (p.jewelryType ?? "") + " " + p.name);
-  const canTry = s.ai.tryOnEnabled && providerConfigured(s.ai.provider) && p.tryOnEnabled && tryCat && s.ai.categories.includes(tryCat);
+  const canTry = s.ai.tryOnEnabled && providerConfigured() && p.tryOnEnabled && tryCat && REGION_OF[tryCat] && s.ai.categories.includes(tryCat);
   const youtube = p.videos.map((v) => v.url.match(/[?&]v=([\w-]+)/)?.[1]).filter(Boolean) as string[];
   const files = p.videos.filter((v) => /\.(mp4|webm)/i.test(v.url));
   const rating = p.ratingCount ? Number(p.ratingAvg) : null;
@@ -108,9 +109,9 @@ export default async function ProductPage({ params }: P) {
               <div className="flex gap-2"><FavoriteButton productId={p.id} large /><CompareButton productId={p.id} /></div>
             </div>
             <div className="my-7 h-px bg-line" />
+            {canTry && <TryOnButton className="mb-8" consentText={s.ai.consentText} product={{ slug: p.slug, name: p.name, image: mediaUrl(p.images[0]?.thumbKey ?? p.images[0]?.key ?? null), category: tryCat!, optionName: p.optionName, variants: variants.map((v) => ({ id: v.id, option: v.option, available: v.available })) }} />}
             <BuyBox product={{ id: p.id, name: p.name, ref: p.ref, slug: p.slug }} variants={variants} optionName={p.optionName} whatsapp={s.contact.whatsapp} sizeGuide={sizeGuide > 0}
               price={{ price: price.price, compareAt: price.compareAt, pix: price.pix, installments: price.installments, installmentValue: price.installmentValue, pixPct: s.payment.pixDiscountBps / 100 }} />
-            {canTry && <Link href={`/provador?produto=${p.slug}`} className="link-line mt-6 text-ink">Experimentar no provador virtual</Link>}
             <div className="mt-9 border-t border-line pt-7"><div className="eyebrow mb-4 text-stone">Frete e prazo</div><ShippingCalc productId={p.id} /></div>
             <ul className="mt-9 space-y-2.5 border-t border-line pt-7 text-[13px] text-ink/70">
               <li className="flex gap-3"><span aria-hidden className="mt-2 h-px w-3 shrink-0 bg-gold" />Ouro 18k com certificado de garantia</li>

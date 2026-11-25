@@ -94,17 +94,27 @@ export const DEFAULT_SETTINGS = {
   },
   ai: {
     tryOnEnabled: false,
-    provider: "gemini" as "gemini" | "openai",
+    provider: "gemini" as const,
+    /** modelo de edição generativa (recebe a foto do cliente + fotografias da joia) */
     model: "gemini-2.5-flash-image",
+    /** modelo de visão: detecção da região do corpo, perfil técnico da joia e verificação de fidelidade */
+    analysisModel: "gemini-2.5-flash",
     categories: ["colares", "correntes", "pingentes", "brincos", "pulseiras", "aneis"] as string[],
     dailyLimitPerClient: 5,
     dailyGlobalLimit: 300,
     monthlyBudgetCents: 50000,
+    /** custo estimado por geração de imagem e por análise (centavos) — para controle de orçamento */
     costPerRequestCents: 25,
-    retainResultsHours: 0,
-    disclaimer: "Simulação gerada por inteligência artificial. Cores, proporções e caimento podem variar em relação à peça real.",
+    analysisCostCents: 1,
+    /** nota mínima (0–100) da verificação automática para entregar o resultado */
+    fidelityThreshold: 70,
+    /** tentativas de geração por simulação quando a verificação reprova */
+    maxGenerations: 2,
+    /** minutos que a foto e o resultado ficam guardados (criptografados) antes da exclusão automática */
+    retentionMinutes: 60,
+    disclaimer: "Simulação gerada pela LUXER AI. Proporções, brilho e caimento podem variar em relação à peça real.",
     unavailableMessage: "O provador virtual está temporariamente indisponível. Fale conosco pelo WhatsApp para ver a peça em detalhes.",
-    consentText: "Autorizo o uso da minha foto exclusivamente para gerar esta simulação. A foto não é armazenada após o processamento.",
+    consentText: "Autorizo o uso desta foto exclusivamente para gerar a simulação. Ela é processada pela LUXER AI com o Google Gemini e excluída automaticamente em até 60 minutos — ou antes, quando eu solicitar.",
   },
 };
 
@@ -128,6 +138,10 @@ export const getSettings = cache(async (): Promise<Settings> => {
   for (const r of rows) {
     if (r.key in s) (s as Record<string, unknown>)[r.key] = merge((s as Record<string, unknown>)[r.key], r.value);
   }
+  // textos padrão antigos do provador descreviam um tratamento que mudou (a foto agora fica criptografada durante
+  // o processamento): nunca exibir ao cliente uma promessa de privacidade que não corresponde ao sistema
+  if (/não é armazenada após o processamento/i.test(s.ai.consentText)) s.ai.consentText = DEFAULT_SETTINGS.ai.consentText;
+  if (s.ai.disclaimer === "Simulação gerada por inteligência artificial. Cores, proporções e caimento podem variar em relação à peça real.") s.ai.disclaimer = DEFAULT_SETTINGS.ai.disclaimer;
   return s;
 });
 

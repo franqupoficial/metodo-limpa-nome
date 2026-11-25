@@ -2,6 +2,7 @@
 // Reproduzem o formato das APIs reais (Pagar.me Core v5 e Gemini generateContent) para exercitar
 // o código de integração da loja de ponta a ponta sem credenciais. NÃO substituem o teste em sandbox real.
 import http from "node:http";
+import sharp from "sharp";
 
 export const pagarme = { orders: new Map(), requests: [] };
 const json = (res, code, body) => { res.writeHead(code, { "Content-Type": "application/json" }); res.end(JSON.stringify(body)); };
@@ -56,16 +57,38 @@ export function startPagarme(port = 4010) {
   });
 }
 
-export const gemini = { calls: [] };
-export function startGemini(port = 4011, pngBase64) {
+// Gemini: responde por tarefa, no formato real do generateContent (JSON estruturado ou imagem inline).
+// "detect" controla a detecção ("ok" | "none"); "scores" é a fila de notas de fidelidade da verificação.
+export const gemini = { calls: [], detect: "ok", scores: [] };
+export function startGemini(port = 4011) {
   return new Promise((resolve) => {
     const srv = http.createServer(async (req, res) => {
-      const body = await read(req);
-      const j = JSON.parse(body || "{}");
-      const parts = j.contents?.[0]?.parts ?? [];
-      gemini.calls.push({ path: req.url, key: req.headers["x-goog-api-key"], images: parts.filter((p) => p.inline_data).length, prompt: parts.find((p) => p.text)?.text });
       if (!req.headers["x-goog-api-key"]) return json(res, 403, { error: { message: "API key missing" } });
-      json(res, 200, { candidates: [{ content: { parts: [{ inlineData: { mimeType: "image/png", data: pngBase64 } }] }, finishReason: "STOP" }] });
+      if (req.method === "GET") return json(res, 200, { name: req.url, displayName: "Modelo simulado" });
+      const j = JSON.parse((await read(req)) || "{}");
+      const parts = j.contents?.[0]?.parts ?? [];
+      const prompt = parts.find((p) => p.text)?.text ?? "";
+      const images = parts.filter((p) => p.inline_data).map((p) => Buffer.from(p.inline_data.data, "base64"));
+      const task = prompt.match(/^TASK: (\w+)/)?.[1] ?? "UNKNOWN";
+      gemini.calls.push({ path: req.url, key: req.headers["x-goog-api-key"], task, images: images.length, prompt, schema: Boolean(j.generationConfig?.responseSchema) });
+      const text = (obj) => json(res, 200, { candidates: [{ content: { parts: [{ text: JSON.stringify(obj) }] }, finishReason: "STOP" }] });
+      if (task === "DETECT_REGION") {
+        if (gemini.detect === "none") return text({ found: false, region_box: [0, 0, 1, 1], target_box: [0, 0, 1, 1], people_count: 1, target_visibility: "hidden", lighting: "good", sharp: true, wearing_jewelry_on_target: false, guidance_pt: "Não encontramos a mão. Fotografe a mão aberta, com boa luz." });
+        return text({ found: true, region_box: [300, 300, 700, 700], target_box: [460, 460, 540, 540], people_count: 1, target_visibility: "clear", lighting: "good", sharp: true, wearing_jewelry_on_target: false, guidance_pt: "" });
+      }
+      if (task === "JEWEL_PROFILE") return text({ type: "ring", metal_colors: ["yellow gold"], stones: [], key_features: ["polished band"], proportions: "slim band" });
+      if (task === "VERIFY_FIDELITY") {
+        const score = gemini.scores.length ? gemini.scores.shift() : 88;
+        return text({ jewelry_present: true, placed_on_target: true, same_design_score: score, metal_color_match: true, stones_match: true, scale_plausible: true, person_unchanged: true, issues_pt: score < 70 ? "desenho diferente" : "", issues_en: score < 70 ? "band shape differs" : "" });
+      }
+      if (task === "TRY_ON_EDIT") {
+        // edita de verdade a imagem recebida: desenha um aro dourado no centro do recorte
+        const m = await sharp(images[0]).metadata();
+        const ring = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${m.width}" height="${m.height}"><ellipse cx="${m.width / 2}" cy="${m.height / 2}" rx="${m.width * 0.08}" ry="${m.height * 0.05}" fill="none" stroke="#d4af37" stroke-width="${Math.max(4, m.width * 0.02)}"/></svg>`);
+        const out = await sharp(images[0]).composite([{ input: ring }]).png().toBuffer();
+        return json(res, 200, { candidates: [{ content: { parts: [{ inlineData: { mimeType: "image/png", data: out.toString("base64") } }] }, finishReason: "STOP" }] });
+      }
+      json(res, 400, { error: { message: "tarefa desconhecida no simulador" } });
     });
     srv.listen(port, "127.0.0.1", () => resolve(srv));
   });

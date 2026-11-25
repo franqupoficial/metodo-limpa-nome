@@ -21,7 +21,7 @@ export default async function Privacy() {
 - **Entrega**: nome, telefone e endereço são compartilhados com a transportadora escolhida.
 - **Comunicação de marketing**: somente com o seu consentimento, que pode ser revogado a qualquer momento pelo link de descadastro ou na sua conta.
 - **Carrinho**: se você informar o e-mail no checkout e não concluir a compra, podemos enviar um lembrete do carrinho.
-- **Provador virtual (Luxer AI)**: a foto enviada é processada apenas para gerar a simulação, transmitida ao provedor de IA e não é armazenada pela ${s.store.name}.
+- **Provador virtual (LUXER AI)**: somente com a sua autorização. A foto é enviada com os metadados (inclusive localização) removidos, guardada criptografada apenas enquanto a simulação é processada e apagada ao final. Para gerar a simulação, a foto é transmitida ao Google (Gemini API), que atua como operador. O resultado fica guardado criptografado por até ${s.ai.retentionMinutes} minutos para você visualizar e baixar, e pode ser excluído na hora pelo botão “Excluir minhas imagens agora”. A equipe da ${s.store.name} não tem acesso às fotos; registramos apenas dados técnicos (peça, etapa, tempo, custo e um identificador anônimo diário) para controle de uso.
 
 ## Cookies
 - **Essenciais**: sessão, sacola e preferências (sempre ativos).

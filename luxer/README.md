@@ -40,7 +40,7 @@ Os arquivos contêm dados pessoais: **nunca** os coloque no repositório. Relat�
 | `MELHORENVIO_TOKEN`, `MELHORENVIO_ENV`, `MELHORENVIO_CONTACT_EMAIL` | Frete, etiquetas e rastreio (Correios e transportadoras) |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` | E-mails transacionais e de marketing |
 | `ANTHROPIC_API_KEY` | Concierge Luxer (atendimento com IA). Sem ela o chat funciona só com a equipe |
-| `GEMINI_API_KEY` ou `OPENAI_API_KEY` | Provador virtual |
+| `GEMINI_API_KEY` | LUXER AI TRY-ON (provador virtual). Sem ela o provador não aparece na loja |
 
 O painel mostra o estado de cada integração em **Configurações → Integrações** (nunca exibe os valores).
 
@@ -60,6 +60,20 @@ Backups: o PostgreSQL gerenciado faz backup automático (habilite PITR); para c�
 **Concierge Luxer** (botão flutuante): curadoria guiada, respostas rápidas (aro, certificado, prazos, pagamento — editáveis), chat com IA (Claude) que consulta o catálogo e o status de pedidos, e transferência para a equipe, que continua a conversa em **/admin/atendimento**.
 
 **Painel /admin**: visão geral com comparação de períodos; produtos (ficha de joalheria, galeria, vídeos, variações, SEO, agendamento, lote); categorias e coleções; estoque (reservas, movimentações, inventário, CSV); pedidos (status, rastreio, etiqueta Melhor Envio, cancelamento com reembolso, impressão); clientes (CRM, segmentos, LGPD); atendimento; financeiro (faturamento ≠ recebimento ≠ lucro, conciliação Pagar.me); **remarketing automático** (reativação, reconexão da base, aniversário, pós-compra, boas-vindas, VIP, campanha de recuperação, cupons únicos, fila de WhatsApp, atribuição de receita/ROI); banners, pop-ups, cupons, campanhas, leads, carrinhos abandonados; CMS; avaliações; Luxer AI; relatórios; usuários com permissões granulares e auditoria; configurações.
+
+## LUXER AI TRY-ON (provador virtual)
+Botão **Provar com IA** em cada peça compatível (anéis, brincos, colares/correntes/pingentes e pulseiras) e vitrine em `/provador`. O cliente fotografa pela câmera (com contorno de enquadramento por categoria) ou envia da galeria; o navegador confere resolução, luz e nitidez antes do envio.
+
+Pipeline no servidor (`src/lib/ai/tryon-pipeline.ts`), assíncrono (a requisição responde na hora e o processamento continua com `after()`; o navegador acompanha as etapas):
+1. **Detecção** — modelo de visão (Gemini, saída JSON com caixas) localiza a região do corpo e o ponto de aplicação (base do dedo, lóbulo, base do pescoço/colo, pulso) e avalia a foto. Foto inadequada é recusada aqui, com orientação, sem custo de geração.
+2. **Perfil da joia** — extraído das fotografias cadastradas (metal, pedras, desenho), em cache no produto.
+3. **Geração** — edição generativa (Gemini Image) **apenas do recorte** da região, com as fotos originais da peça como referência obrigatória e instruções físicas por categoria (escala, gravidade, perspectiva).
+4. **Composição** — o recorte volta à foto original por máscara elíptica suavizada; fora da região a foto do cliente fica idêntica, o que também permite a comparação antes/depois alinhada.
+5. **Verificação de fidelidade** — inspeção independente compara a peça aplicada com as fotos da peça (nota 0–100). Abaixo do mínimo (padrão 70), gera de novo informando as divergências; se persistir, **não entrega** o resultado.
+
+Segurança e custos: chave só no servidor; upload com verificação de tipo e remoção de EXIF/GPS; token de acesso por simulação; foto e resultado criptografados (AES-256-GCM) no banco, foto apagada ao fim do processamento, resultado apagado no prazo de retenção (padrão 60 min) ou na hora pelo cliente; limites por minuto, por dia, um processamento por vez, limite diário da loja e orçamento mensal; custo estimado por chamada registrado; alertas de falhas recorrentes. Painel: **Luxer AI** (configuração, diagnóstico da integração, fidelidade média, custo, motivos de não entrega, erros).
+
+**Para ativar:** crie a chave em Google AI Studio num projeto com faturamento (no plano pago o Google não usa os dados para treinar modelos), cadastre `GEMINI_API_KEY` na Vercel (Settings → Environment Variables), faça um novo deploy, clique em **Testar integração** em /admin/luxer-ai e ligue “Provador ativo na loja”. Ajuste no painel os custos por geração/análise conforme a tabela vigente do Google. Antes de abrir ao público, faça provas com fotos reais de cada categoria e calibre a fidelidade mínima.
 
 ## Testes
 ```bash

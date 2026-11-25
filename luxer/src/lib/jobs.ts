@@ -27,9 +27,10 @@ export async function runJobs() {
     return low.length;
   });
   await step("provadorRetencao", async () => {
-    const old = await prisma.tryOnRequest.findMany({ where: { resultKey: { not: null }, resultExpiresAt: { lt: new Date() } }, take: 200 });
-    for (const r of old) { await deleteObject(r.resultKey!).catch(() => {}); await prisma.tryOnRequest.update({ where: { id: r.id }, data: { resultKey: null } }); }
-    return old.length;
+    // fotos e resultados do provador: exclusão automática ao fim da retenção; trabalhos travados encerrados
+    const { count } = await prisma.tryOnAsset.deleteMany({ where: { expiresAt: { lt: new Date() } } });
+    await prisma.tryOnRequest.updateMany({ where: { status: { in: ["QUEUED", "PROCESSING"] }, createdAt: { lt: new Date(Date.now() - 10 * 60_000) } }, data: { status: "FAILED", stage: "done", errorCode: "timeout", errorMessage: "Encerrado pela rotina (sem conclusão)" } });
+    return count;
   });
   await step("limpeza", async () => {
     const d = (n: number) => new Date(Date.now() - n * 86_400_000);

@@ -115,9 +115,12 @@ export async function saveSettings(_: ActionState, fd: FormData): Promise<Action
       }
       case "ai": {
         const cats = fd.getAll("categories").map(String);
-        next = { tryOnEnabled: bool(fd, "tryOnEnabled"), provider: str(fd, "provider") === "openai" ? "openai" : "gemini", model: str(fd, "model").replace(/[^A-Za-z0-9._-]/g, "") || s.ai.model,
-          categories: cats, dailyLimitPerClient: Math.max(1, int(fd, "dailyLimitPerClient") ?? 5), dailyGlobalLimit: Math.max(1, int(fd, "dailyGlobalLimit") ?? 300),
-          monthlyBudgetCents: money(fd, "monthlyBudget") ?? 0, costPerRequestCents: money(fd, "costPerRequest") ?? 0, retainResultsHours: Math.max(0, Math.min(72, int(fd, "retainResultsHours") ?? 0)),
+        const clamp = (v: number | null | undefined, lo: number, hi: number, d: number) => Math.max(lo, Math.min(hi, v ?? d));
+        const model = (k: string, d: string) => str(fd, k).replace(/[^A-Za-z0-9._-]/g, "") || d;
+        next = { tryOnEnabled: bool(fd, "tryOnEnabled"), provider: "gemini", model: model("model", s.ai.model), analysisModel: model("analysisModel", s.ai.analysisModel),
+          categories: cats, dailyLimitPerClient: clamp(int(fd, "dailyLimitPerClient"), 1, 50, 5), dailyGlobalLimit: clamp(int(fd, "dailyGlobalLimit"), 1, 100000, 300),
+          monthlyBudgetCents: money(fd, "monthlyBudget") ?? 0, costPerRequestCents: money(fd, "costPerRequest") ?? 0, analysisCostCents: money(fd, "analysisCost") ?? 0,
+          fidelityThreshold: clamp(int(fd, "fidelityThreshold"), 0, 100, 70), maxGenerations: clamp(int(fd, "maxGenerations"), 1, 3, 2), retentionMinutes: clamp(int(fd, "retentionMinutes"), 5, 1440, 60),
           disclaimer: str(fd, "disclaimer"), unavailableMessage: str(fd, "unavailableMessage"), consentText: str(fd, "consentText") || s.ai.consentText };
         break;
       }

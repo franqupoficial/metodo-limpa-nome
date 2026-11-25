@@ -281,6 +281,7 @@ export async function duplicateProduct(_: ActionState, fd: FormData): Promise<Ac
         ...rest,
         specs: rest.specs ?? undefined,
         customFields: rest.customFields ?? undefined,
+        tryOnSpec: undefined, tryOnSpecImage: null,
         name: `${src.name} (cópia)`,
         slug: await uniqueSlug(`${src.name}-copia`),
         status: "DRAFT",
