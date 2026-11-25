@@ -2,7 +2,7 @@ import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
-import { geminiConfigured } from "@/lib/ai/tryon";
+import { providerConfigured, providerFor, DEFAULT_MODELS } from "@/lib/ai/tryon";
 import { testTryOnIntegration } from "../../_actions/ai";
 import { formatDate, formatMoney } from "@/lib/format";
 import { centsToInput } from "@/lib/action";
@@ -40,7 +40,8 @@ export default async function LuxerAI() {
   const codes = Object.fromEntries(byCode.map((b) => [b.errorCode!, b._count])) as Record<string, number>;
   const photoRejects = (codes.region_not_found ?? 0) + (codes.multiple_people ?? 0) + (codes.photo_quality ?? 0);
   const topNames = Object.fromEntries((await prisma.product.findMany({ where: { id: { in: top.map((t) => t.productId!) } }, select: { id: true, name: true } })).map((p) => [p.id, p.name]));
-  const configured = geminiConfigured();
+  const configured = providerConfigured(s.provider);
+  const prov = providerFor(s.provider);
   const STAGE: Record<string, string> = { queued: "na fila", detect: "detecção", profile: "perfil da peça", generate: "geração", composite: "composição", verify: "verificação", done: "concluída" };
   const CODE: Record<string, string> = { region_not_found: "região não encontrada na foto", multiple_people: "mais de uma pessoa", photo_quality: "foto escura/tremida", fidelity_low: "reprovada na fidelidade", blocked: "recusada pelo provedor", timeout: "tempo esgotado", not_configured: "sem credencial", provider_rate_limit: "limite do provedor", no_image: "provedor sem imagem", analysis_invalid: "análise inválida", internal: "erro interno" };
   return (
@@ -71,7 +72,7 @@ export default async function LuxerAI() {
         )}
       </Card>
       <h2 className="mb-3 mt-8 text-lg font-semibold">LUXER AI TRY-ON — provador virtual</h2>
-      {!configured && <div className="mb-4"><Alert><b>Dependência pendente:</b> a variável <code>GEMINI_API_KEY</code> não está configurada no servidor. Sem ela o provador não aparece na loja (nenhum botão fica sem ação). Crie a chave em Google AI Studio (projeto com faturamento ativo — no plano pago o Google não usa os dados para treinar modelos) e cadastre-a em Vercel → Settings → Environment Variables; depois use “Testar integração”.</Alert></div>}
+      {!configured && <div className="mb-4"><Alert><b>Dependência pendente:</b> o provedor <b>{prov.label}</b> está selecionado, mas a variável <code>{prov.envKey}</code> não está configurada no servidor. Sem ela o provador com IA não aparece na loja (nenhum botão fica sem ação; o provador AR continua disponível). Crie a chave ({s.provider === "gemini" ? "Google AI Studio, projeto com faturamento ativo — no plano pago o Google não usa os dados para treinar modelos" : "plataforma da OpenAI, organização verificada para modelos de imagem"}) e cadastre-a em Vercel → Settings → Environment Variables; depois use “Testar integração”.</Alert></div>}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-6">
         <Stat label="Status" value={s.tryOnEnabled && configured ? "Ativo" : "Inativo"} hint={s.tryOnEnabled ? (configured ? "Gemini configurado" : "sem credencial") : "desligado no painel"} />
         <Stat label="Simulações no mês" value={month._count} hint={`${day} nas últimas 24h`} />
@@ -98,8 +99,11 @@ export default async function LuxerAI() {
           {!admin.can("ai.manage") ? <p className="text-sm text-zinc-500">Somente leitura para o seu perfil.</p> : (
             <ActionForm action={saveSettings} className="space-y-3"><input type="hidden" name="group" value="ai" />
               <label className="flex items-center gap-2 text-sm font-semibold"><input type="checkbox" name="tryOnEnabled" defaultChecked={s.tryOnEnabled} /> Provador ativo na loja</label>
+              <Field label="Provedor de IA" hint={`Gemini: ${DEFAULT_MODELS.gemini.edit} + ${DEFAULT_MODELS.gemini.analysis}. OpenAI: ${DEFAULT_MODELS.openai.edit} (edição com máscara) + ${DEFAULT_MODELS.openai.analysis}. Ao trocar, ajuste os modelos e os custos.`}>
+                <select name="provider" defaultValue={s.provider} className="input"><option value="gemini">Google Gemini{providerConfigured("gemini") ? " — chave configurada" : " — sem chave"}</option><option value="openai">OpenAI{providerConfigured("openai") ? " — chave configurada" : " — sem chave"}</option></select>
+              </Field>
               <div className="grid grid-cols-2 gap-3">
-                <Field label="Modelo de edição de imagem" hint="Gemini com saída de imagem."><input name="model" defaultValue={s.model} className="input font-mono text-xs" /></Field>
+                <Field label="Modelo de edição de imagem"><input name="model" defaultValue={s.model} className="input font-mono text-xs" /></Field>
                 <Field label="Modelo de visão" hint="Detecção e verificação."><input name="analysisModel" defaultValue={s.analysisModel} className="input font-mono text-xs" /></Field>
               </div>
               <Field label="Categorias disponíveis"><div className="grid grid-cols-3 gap-1 text-sm">{CATS.map(([k, l]) => <label key={k} className="flex items-center gap-2"><input type="checkbox" name="categories" value={k} defaultChecked={s.categories.includes(k)} /> {l}</label>)}</div></Field>

@@ -8,7 +8,7 @@ import { createRequire } from "node:module";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import sharp from "sharp";
-import { startPagarme, startGemini, startAnthropic, pagarme, gemini, anthropic } from "./mocks.mjs";
+import { startPagarme, startGemini, startAnthropic, startOpenAI, pagarme, gemini, anthropic, openai } from "./mocks.mjs";
 
 const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
@@ -35,6 +35,12 @@ async function step(n, name, fn) {
   }
 }
 const assert = (c, m) => { if (!c) throw new Error(m); };
+/** Revisão da foto: espera a análise anatômica (MediaPipe) e envia; sem mão identificada, usa "Tentar assim mesmo". */
+async function reviewSubmit(dlg) {
+  await dlg.locator('button:has-text("Experimentar com IA"), button:has-text("Tentar assim mesmo")').first().waitFor({ timeout: 60000 });
+  const retry = dlg.locator('button:has-text("Tentar assim mesmo")');
+  if (await retry.count()) await retry.click(); else await dlg.locator('button:has-text("Experimentar com IA")').click();
+}
 
 async function waitReady() {
   for (let i = 0; i < 120; i++) {
@@ -68,14 +74,14 @@ const someOriginal = (() => {
   return path.join(dir, d, "1.jpg");
 })();
 
-const [pg, gm, an] = await Promise.all([startPagarme(4010), startGemini(4011), startAnthropic(4012)]);
+const [pg, gm, an, oa] = await Promise.all([startPagarme(4010), startGemini(4011), startAnthropic(4012), startOpenAI(4013)]);
 const app = spawn(process.execPath, [path.join(ROOT, "node_modules/next/dist/bin/next"), "start", "-p", String(PORT)], {
   detached: true,
   cwd: ROOT,
   env: {
     ...process.env, NODE_ENV: "production", APP_URL: BASE,
     PAGARME_SECRET_KEY: "sk_test_mock", PAGARME_API_URL: "http://127.0.0.1:4010/core/v5", PAGARME_WEBHOOK_USER: WH.user, PAGARME_WEBHOOK_PASSWORD: WH.pass,
-    GEMINI_API_KEY: "mock-key", GEMINI_API_URL: "http://127.0.0.1:4011", ANTHROPIC_API_KEY: "mock-anthropic", ANTHROPIC_BASE_URL: "http://127.0.0.1:4012", CRON_SECRET: "cron-e2e", SMTP_HOST: "",
+    GEMINI_API_KEY: "mock-key", GEMINI_API_URL: "http://127.0.0.1:4011", OPENAI_API_KEY: "mock-openai", OPENAI_API_URL: "http://127.0.0.1:4013/v1", TRYON_EDIT_TIMEOUT_MS: "4000", ANTHROPIC_API_KEY: "mock-anthropic", ANTHROPIC_BASE_URL: "http://127.0.0.1:4012", CRON_SECRET: "cron-e2e", SMTP_HOST: "",
   },
   stdio: ["ignore", "pipe", "pipe"],
 });
@@ -88,6 +94,8 @@ const browser = await chromium.launch();
 let exitCode = 0;
 try {
   await waitReady();
+  // estado limpo: configuração padrão do provador (execuções anteriores podem ter trocado provedor/limites)
+  await db.setting.deleteMany({ where: { key: "ai" } });
   const admin = await (await browser.newContext({ viewport: { width: 1400, height: 900 } })).newPage();
   const ctxCustomer = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const shop = await ctxCustomer.newPage();
@@ -334,7 +342,7 @@ try {
 
     // botão PROVAR COM IA na página do produto → modal com a peça carregada
     await shop.goto(`${BASE}/produto/${productSlug}`);
-    await shop.click('button:has-text("Provar com IA")');
+    await shop.click('button:has-text("Experimentar com IA")');
     const dlg = shop.locator('[role="dialog"][aria-label="Provador Luxer AI"]');
     await dlg.waitFor();
     assert(await dlg.locator(`text=Anel Teste ${REF}`).first().isVisible(), "a peça não foi carregada no provador");
@@ -343,7 +351,7 @@ try {
     await dlg.locator('input[type="file"]').setInputFiles(photoFile);
     await dlg.locator("text=Confira sua foto").waitFor();
     const calls0 = gemini.calls.length;
-    await dlg.locator('button:has-text("Provar com IA")').click();
+    await reviewSubmit(dlg);
     await dlg.locator('img[alt="Simulação da joia em você"]').waitFor({ timeout: 90000 });
 
     const r = await db.tryOnRequest.findFirst({ where: { productId }, orderBy: { createdAt: "desc" }, include: { assets: true } });
@@ -405,7 +413,7 @@ try {
     gemini.detect = "none";
     await dlg.locator('button:has-text("Nova foto")').click();
     await dlg.locator('input[type="file"]').setInputFiles(photoFile);
-    await dlg.locator('button:has-text("Provar com IA")').click();
+    await reviewSubmit(dlg);
     await dlg.locator("text=Não encontramos a mão").waitFor({ timeout: 60000 });
     gemini.detect = "ok";
     const r3 = await db.tryOnRequest.findFirst({ where: { productId }, orderBy: { createdAt: "desc" } });
@@ -580,6 +588,79 @@ try {
     assert(await m.locator(`text=Anel Teste ${REF}`).first().isVisible(), "peça provada não entrou na sacola");
     await ctx.close();
   });
+  await step(22, "Provador com IA: articulações (híbrido), falha da API, timeout, imagem grande e troca para OpenAI", async () => {
+    await admin.goto(BASE + "/admin/luxer-ai");
+    await admin.fill('input[name="dailyLimitPerClient"]', "50");
+    await act(admin, () => admin.click('button:has-text("Salvar configuração")'));
+    let ip = 10;
+    const post = (extra = {}, buffer = readFileSync(photoFile)) => shop.request.post(BASE + "/api/tryon", { headers: { origin: BASE, "x-forwarded-for": `10.9.0.${ip++}` }, multipart: { photo: { name: "p.jpg", mimeType: "image/jpeg", buffer }, product: productSlug, consent: "true", ...extra } });
+    const settle = async (id) => { for (let i = 0; i < 120; i++) { const r = await db.tryOnRequest.findUnique({ where: { id } }); if (!["QUEUED", "PROCESSING"].includes(r.status)) return r; await new Promise((x) => setTimeout(x, 500)); } throw new Error("simulação não terminou"); };
+    // mão com articulações medidas no aparelho (pontos normalizados como os do MediaPipe)
+    const hand = Array.from({ length: 21 }, () => ({ x: 0.5, y: 0.5 }));
+    Object.assign(hand, { 0: { x: 0.5, y: 0.85 }, 5: { x: 0.4, y: 0.55 }, 9: { x: 0.47, y: 0.53 }, 13: { x: 0.54, y: 0.54 }, 14: { x: 0.55, y: 0.44 }, 17: { x: 0.6, y: 0.57 } });
+
+    // 1) híbrido: sem chamada de detecção paga; escala real no prompt; máscara anatômica
+    let n0 = gemini.calls.length;
+    let r = await (await post({ hand: JSON.stringify(hand) })).json();
+    let row = await settle(r.id);
+    const tasks = gemini.calls.slice(n0).map((c) => c.task);
+    assert(row.status === "SUCCEEDED" && row.region?.detector === "mediapipe", `híbrido falhou: ${row.status}/${row.errorCode}/${JSON.stringify(row.region)}`);
+    assert(!tasks.includes("DETECT_REGION"), "não deveria pagar detecção com articulações medidas no aparelho");
+    assert(gemini.calls.slice(n0).find((c) => c.task === "TRY_ON_EDIT").prompt.includes("px wide"), "prompt sem a escala medida");
+    // pontos forjados são ignorados (cai na detecção por visão)
+    n0 = gemini.calls.length;
+    r = await (await post({ hand: JSON.stringify([{ x: 9, y: 9 }]) })).json();
+    row = await settle(r.id);
+    assert(gemini.calls.slice(n0).some((c) => c.task === "DETECT_REGION"), "dados de articulação inválidos deveriam ser descartados");
+
+    // 2) falha da API do provedor: registrada, mensagem elegante, nada técnico para o cliente
+    gemini.fail = "500";
+    r = await (await post()).json();
+    row = await settle(r.id);
+    const st = await (await shop.request.get(`${BASE}/api/tryon/${r.id}?t=${r.token}`)).json();
+    assert(row.status === "FAILED" && row.errorCode === "provider_500", `esperado provider_500, obtido ${row.errorCode}`);
+    assert(st.error && !/500|internal|gemini/i.test(st.error), "mensagem ao cliente expõe detalhes técnicos: " + st.error);
+    assert((await db.tryOnAsset.count({ where: { requestId: r.id } })) === 0, "foto deveria ser apagada também na falha");
+
+    // 3) timeout do provedor (limite de 4 s no ambiente de teste; simulador responde em 8 s)
+    gemini.fail = "slow";
+    r = await (await post()).json();
+    row = await settle(r.id);
+    gemini.fail = null;
+    assert(row.status === "FAILED" && row.errorCode === "provider_timeout", `esperado provider_timeout, obtido ${row.errorCode}`);
+
+    // 4) imagem excessivamente grande: recusada antes de qualquer processamento
+    const big = await post({}, Buffer.alloc(13 * 1024 * 1024, 1));
+    assert(big.status() === 413, `imagem grande deveria ser recusada (413), obtido ${big.status()}`);
+    // imagem enorme em pixels, porém leve: reduzida para no máximo 1600 px antes de ir ao provedor
+    const huge = await sharp({ create: { width: 6000, height: 8000, channels: 3, background: "#d8b9a0" } }).jpeg({ quality: 40 }).toBuffer();
+    r = await (await post({}, huge)).json();
+    assert(r.ok && Math.max(r.width, r.height) <= 1600, "imagem não foi reduzida");
+    await settle(r.id);
+
+    // 5) troca de provedor pelo painel: OpenAI com edição por máscara (inpainting) e alta fidelidade
+    await admin.goto(BASE + "/admin/luxer-ai");
+    await admin.selectOption('select[name="provider"]', "openai");
+    await admin.fill('form:has(input[name="tryOnEnabled"]) input[name="model"]', "gpt-image-1");
+    await admin.fill('input[name="analysisModel"]', "gpt-4.1-mini");
+    await act(admin, () => admin.click('button:has-text("Salvar configuração")'));
+    await act(admin, () => admin.click('button:has-text("Testar integração")'));
+    const diag = (await admin.locator('form:has(button:has-text("Testar integração")) [role="status"]').innerText()).trim();
+    assert(diag.includes("Integração OK") && diag.includes("gpt-image-1"), "diagnóstico OpenAI: " + diag);
+    const o0 = openai.calls.length;
+    r = await (await post({ hand: JSON.stringify(hand) })).json();
+    row = await settle(r.id);
+    const edit = openai.calls.slice(o0).find((c) => c.kind === "edit");
+    assert(row.status === "SUCCEEDED" && row.provider === "openai", `OpenAI falhou: ${row.status}/${row.errorCode}/${row.errorMessage}`);
+    assert(edit?.mask && edit.images >= 2 && edit.fidelity === "high", "edição OpenAI sem máscara, sem referência da peça ou sem alta fidelidade");
+    assert(openai.calls.slice(o0).some((c) => c.kind === "chat" && c.task === "VERIFY_FIDELITY" && c.schema), "verificação de fidelidade não usou saída estruturada");
+    // volta ao provedor padrão
+    await admin.selectOption('select[name="provider"]', "gemini");
+    await admin.fill('form:has(input[name="tryOnEnabled"]) input[name="model"]', "gemini-2.5-flash-image");
+    await admin.fill('input[name="analysisModel"]', "gemini-2.5-flash");
+    await act(admin, () => admin.click('button:has-text("Salvar configuração")'));
+  });
+
 
 
   if (errors.length) console.log("Erros de JavaScript no navegador:\n  " + [...new Set(errors)].join("\n  "));

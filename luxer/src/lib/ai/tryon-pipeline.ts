@@ -7,8 +7,8 @@ import { getObject } from "../storage";
 import { encryptBuffer, decryptBuffer } from "../crypto";
 import { notify } from "../notifications";
 import { REGION_OF, type BodyRegion } from "./categories";
-import { analyze, generateImage, TryOnError, type ImagePart } from "./tryon";
-import { cleanBox, cropRect, blendEllipse, centerAspect, fidelityScore, toRect, type Box, type Rect } from "./tryon-geometry";
+import { providerFor, TryOnError, type ImagePart } from "./tryon";
+import { cleanBox, cropRect, blendEllipse, centerAspect, fidelityScore, toRect, validHandLandmarks, anchorFromHand, type Anchor, type Box, type Rect } from "./tryon-geometry";
 
 /**
  * LUXER AI TRY-ON — pipeline de processamento.
@@ -117,10 +117,10 @@ function placement(category: string, d: Detection, dims: string) {
   }
 }
 
-const generatePrompt = (category: string, d: Detection, profile: Profile, dims: string, feedback?: string) => `TASK: TRY_ON_EDIT
+const generatePrompt = (category: string, d: Detection, profile: Profile, dims: string, feedback?: string, scale?: string) => `TASK: TRY_ON_EDIT
 Image 1 is a close-up crop of a customer's real photo. The remaining images are the store's photos of ONE real piece of fine jewelry — they are the mandatory reference.
 Edit image 1 so the customer is wearing EXACTLY that piece.
-${placement(category, d, dims)}
+${placement(category, d, dims)}${scale ? `\nMeasured scale (from hand landmarks): ${scale}` : ""}
 Reference profile (must match): ${profileText(profile)}
 Strict rules:
 - Reproduce the very same piece: same design, shape, metal color, number/color/cut of stones, links, texture and finish. Do not redesign, simplify, embellish, or substitute a similar piece.
@@ -162,6 +162,17 @@ async function ellipseMask(w: number, h: number, e: { cx: number; cy: number; rx
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><defs><filter id="f" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="${e.feather}"/></filter></defs><rect width="100%" height="100%" fill="black"/><ellipse cx="${e.cx}" cy="${e.cy}" rx="${Math.max(4, e.rx - e.feather)}" ry="${Math.max(4, e.ry - e.feather)}" fill="white" filter="url(#f)"/></svg>`;
   return sharp(Buffer.from(svg)).extractChannel(0).raw().toBuffer();
 }
+/** Máscara anatômica: cápsula ao longo do dedo (ou atravessando o pulso), com borda suavizada. */
+async function capsuleMask(w: number, h: number, c: { x1: number; y1: number; x2: number; y2: number; r: number }, feather: number) {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><defs><filter id="f" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="${feather}"/></filter></defs><rect width="100%" height="100%" fill="black"/><line x1="${c.x1}" y1="${c.y1}" x2="${c.x2}" y2="${c.y2}" stroke="white" stroke-width="${Math.max(6, 2 * c.r - feather)}" stroke-linecap="round" filter="url(#f)"/></svg>`;
+  return sharp(Buffer.from(svg)).extractChannel(0).raw().toBuffer();
+}
+/** Máscara de inpainting no formato da OpenAI: PNG do tamanho da imagem enviada, transparente onde a IA pode editar. */
+async function inpaintMask(alpha: Buffer, w: number, h: number, outW: number, outH: number) {
+  const rgba = Buffer.alloc(w * h * 4, 255);
+  for (let i = 0; i < w * h; i++) rgba[i * 4 + 3] = alpha[i] > 24 ? 0 : 255;
+  return sharp(rgba, { raw: { width: w, height: h, channels: 4 } }).resize(outW, outH, { fit: "fill", kernel: "nearest" }).png().toBuffer();
+}
 async function borderMask(w: number, h: number, feather: number) {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><defs><filter id="f"><feGaussianBlur stdDeviation="${feather / 2}"/></filter></defs><rect width="100%" height="100%" fill="black"/><rect x="${feather}" y="${feather}" width="${w - 2 * feather}" height="${h - 2 * feather}" fill="white" filter="url(#f)"/></svg>`;
   return sharp(Buffer.from(svg)).extractChannel(0).raw().toBuffer();
@@ -198,16 +209,35 @@ export async function runTryOn(id: string) {
     const W = meta.width!, H = meta.height!;
     const person: ImagePart = { data: photo, mime: "image/jpeg" };
 
-    // 1. detecção da região do corpo
+    const ai = providerFor(s.provider);
+    metrics.provider = ai.id;
+    // 1. detecção da região do corpo — híbrida:
+    //    anéis e pulseiras com articulações medidas no aparelho (MediaPipe) dispensam a chamada de visão;
+    //    sem elas (ou para orelha/pescoço), o modelo de visão localiza a região.
     let t = Date.now();
-    const det = await analyze<Detection>(s.analysisModel, detectPrompt(region), [person], DETECT_SCHEMA);
-    cost += s.analysisCostCents; lap("detectMs", t);
-    const target = cleanBox(det.target_box);
-    const regionBox = cleanBox(det.region_box);
-    await setStage(id, "profile", { region: { region, target, regionBox, people: det.people_count, visibility: det.target_visibility, lighting: det.lighting, sharp: det.sharp } as Prisma.InputJsonValue, costCents: cost });
-    if (!det.found || !target || det.target_visibility === "hidden") throw new TryOnError("region_not_found", `Região não encontrada (${region}).`, det.guidance_pt || TARGET[region].reject);
-    if (det.people_count > 1) throw new TryOnError("multiple_people", "Mais de uma pessoa na foto.", "Use uma foto com apenas uma pessoa.");
-    if (det.lighting !== "good" && !det.sharp) throw new TryOnError("photo_quality", "Foto escura/estourada e sem nitidez.", det.guidance_pt || "A foto está sem nitidez e com pouca luz. Tente perto de uma janela, com a câmera firme.");
+    const hint = req.region as { hand?: unknown } | null;
+    const lm = (region === "hand" || region === "wrist") ? validHandLandmarks(hint?.hand) : null;
+    let anchor: Anchor | null = null;
+    let det: Detection;
+    let target: Box | null;
+    if (lm) {
+      anchor = anchorFromHand(lm, region as "hand" | "wrist", W, H);
+      target = anchor.target;
+      det = { found: true, region_box: target, target_box: target, people_count: 1, target_visibility: "clear", lighting: "good", sharp: true, wearing_jewelry_on_target: false, guidance_pt: "" };
+      metrics.detector = "mediapipe";
+      await setStage(id, "profile", { region: { region, target, detector: "mediapipe", widthPx: Math.round(anchor.widthPx), pxPerMm: Math.round(anchor.pxPerMm * 100) / 100 } as Prisma.InputJsonValue });
+    } else {
+      det = await ai.analyze<Detection>(s.analysisModel, detectPrompt(region), [person], DETECT_SCHEMA);
+      cost += s.analysisCostCents; lap("detectMs", t);
+      target = cleanBox(det.target_box);
+      const regionBox = cleanBox(det.region_box);
+      metrics.detector = "vision-model";
+      await setStage(id, "profile", { region: { region, target, regionBox, detector: "vision-model", people: det.people_count, visibility: det.target_visibility, lighting: det.lighting, sharp: det.sharp } as Prisma.InputJsonValue, costCents: cost });
+      if (!det.found || !target || det.target_visibility === "hidden") throw new TryOnError("region_not_found", `Região não encontrada (${region}).`, det.guidance_pt || TARGET[region].reject);
+      if (det.people_count > 1) throw new TryOnError("multiple_people", "Mais de uma pessoa na foto.", "Use uma foto com apenas uma pessoa.");
+      if (det.lighting !== "good" && !det.sharp) throw new TryOnError("photo_quality", "Foto escura/estourada e sem nitidez.", det.guidance_pt || "A foto está sem nitidez e com pouca luz. Tente perto de uma janela, com a câmera firme.");
+    }
+    if (!target) throw new TryOnError("region_not_found", "Região não encontrada.", TARGET[region].reject);
 
     // 2. perfil técnico da joia (cache por produto e por imagem de origem)
     t = Date.now();
@@ -216,7 +246,7 @@ export async function runTryOn(id: string) {
     if (!profile || req.product.tryOnSpecImage !== refs.firstKey) {
       const p = req.product;
       const catalog = [p.name, p.material, p.color && `metal color: ${p.color}`, p.goldType, p.stoneType && `stones: ${p.stoneType}`, p.finish && `finish: ${p.finish}`, p.widthMm && `width ${p.widthMm} mm`, p.heightMm && `height ${p.heightMm} mm`, p.lengthMm && `length ${p.lengthMm} mm`].filter(Boolean).join("; ");
-      profile = await analyze<Profile>(s.analysisModel, profilePrompt(catalog), refs.images, PROFILE_SCHEMA);
+      profile = await ai.analyze<Profile>(s.analysisModel, profilePrompt(catalog), refs.images, PROFILE_SCHEMA);
       cost += s.analysisCostCents;
       await prisma.product.update({ where: { id: p.id }, data: { tryOnSpec: profile as unknown as Prisma.InputJsonValue, tryOnSpecImage: refs.firstKey } });
     }
@@ -226,18 +256,29 @@ export async function runTryOn(id: string) {
     const dimsText = dims ? ` (${dims})` : "";
 
     // 3–5. recorte → geração → composição → verificação (com nova tentativa orientada)
+    const spec: Profile = profile;
     const crop: Rect = cropRect(target, region, W, H);
     const ellipse = blendEllipse(target, crop, region, W, H);
     const origCrop = await sharp(photo).extract(crop).toBuffer();
     const genSide = Math.min(1024, Math.max(768, crop.width));
-    const cropForModel = await sharp(origCrop).resize(genSide, Math.round((genSide * crop.height) / crop.width), { fit: "fill" }).jpeg({ quality: 93 }).toBuffer();
+    const genH = Math.round((genSide * crop.height) / crop.width);
+    const cropForModel = await sharp(origCrop).resize(genSide, genH, { fit: "fill" }).jpeg({ quality: 93 }).toBuffer();
+    // máscara da região editável: cápsula anatômica (com articulações) ou elipse (detecção por visão)
+    const k = genSide / crop.width;
+    const capsule = anchor ? { x1: anchor.capsule.x1 - crop.left, y1: anchor.capsule.y1 - crop.top, x2: anchor.capsule.x2 - crop.left, y2: anchor.capsule.y2 - crop.top, r: anchor.capsule.r } : null;
+    const regionAlpha = capsule ? await capsuleMask(crop.width, crop.height, capsule, ellipse.feather) : await ellipseMask(crop.width, crop.height, ellipse);
+    const editMask = await inpaintMask(regionAlpha, crop.width, crop.height, genSide, genH);
+    const driftZone = capsule ? { cx: (capsule.x1 + capsule.x2) / 2, cy: (capsule.y1 + capsule.y2) / 2, rx: Math.hypot(capsule.x2 - capsule.x1, capsule.y2 - capsule.y1) / 2 + capsule.r, ry: Math.hypot(capsule.x2 - capsule.x1, capsule.y2 - capsule.y1) / 2 + capsule.r } : ellipse;
+    // escala real medida: largura do dedo/pulso em px → largura esperada da peça em px (na imagem enviada ao modelo)
+    const pieceMm = Number(req.product.widthMm ?? 0) || null;
+    const scale = anchor ? `${region === "hand" ? "the ring finger" : "the wrist"} is about ${Math.round(anchor.widthPx * k)} px wide in image 1 (≈ ${region === "hand" ? 18 : 55} mm)${pieceMm ? `, so this ${pieceMm} mm wide piece must measure about ${Math.round(pieceMm * anchor.pxPerMm * k)} px across its width` : ""}. Keep that exact scale.` : undefined;
     const beforeForVerify: ImagePart = { data: await sharp(origCrop).resize({ width: 768, height: 768, fit: "inside" }).jpeg({ quality: 90 }).toBuffer(), mime: "image/jpeg" };
     let feedback: string | undefined;
     let best: { score: number; result: Buffer; verdict: Verdict; drift: number } | null = null;
     for (let attempt = 1; attempt <= s.maxGenerations; attempt++) {
       await setStage(id, "generate", { generations: attempt, costCents: cost });
       t = Date.now();
-      const gen = await generateImage(s.model, generatePrompt(req.category, det, profile, dimsText, feedback), [{ data: cropForModel, mime: "image/jpeg" }, ...refs.images]);
+      const gen = await ai.edit(s.model, generatePrompt(req.category, det, spec, dimsText, feedback, scale), { data: cropForModel, mime: "image/jpeg" }, refs.images, editMask);
       cost += s.costPerRequestCents; lap(`generate${attempt}Ms`, t);
 
       await setStage(id, "composite", { costCents: cost });
@@ -245,9 +286,9 @@ export async function runTryOn(id: string) {
       const gm = await sharp(gen.data).metadata();
       const fit = centerAspect(gm.width!, gm.height!, crop.width / crop.height);
       const genCrop = await sharp(gen.data).extract(fit).resize(crop.width, crop.height, { fit: "fill" }).removeAlpha().toBuffer();
-      const drift = await driftOutside(origCrop, genCrop, crop.width, crop.height, ellipse);
+      const drift = await driftOutside(origCrop, genCrop, crop.width, crop.height, driftZone);
       // o modelo mexeu no enquadramento: mescla o recorte inteiro com borda suave (fora do recorte segue original)
-      const mask = drift > 24 ? await borderMask(crop.width, crop.height, ellipse.feather) : await ellipseMask(crop.width, crop.height, ellipse);
+      const mask = drift > 24 ? await borderMask(crop.width, crop.height, ellipse.feather) : regionAlpha;
       const { data: genRgb, info } = await sharp(genCrop).removeAlpha().toColourspace("srgb").raw().toBuffer({ resolveWithObject: true });
       const ch = info.channels;
       const rgba = Buffer.alloc(crop.width * crop.height * 4);
@@ -262,7 +303,7 @@ export async function runTryOn(id: string) {
       await setStage(id, "verify", { costCents: cost });
       t = Date.now();
       const after = await sharp(result).extract(crop).resize({ width: 768, height: 768, fit: "inside" }).jpeg({ quality: 90 }).toBuffer();
-      const verdict = await analyze<Verdict>(s.analysisModel, verifyPrompt(req.category, profile), [beforeForVerify, { data: after, mime: "image/jpeg" }, ...refs.images], VERIFY_SCHEMA);
+      const verdict = await ai.analyze<Verdict>(s.analysisModel, verifyPrompt(req.category, spec), [beforeForVerify, { data: after, mime: "image/jpeg" }, ...refs.images], VERIFY_SCHEMA);
       cost += s.analysisCostCents; lap(`verify${attempt}Ms`, t);
       const score = fidelityScore(verdict);
       metrics[`score${attempt}`] = score;

@@ -6,7 +6,8 @@ import { sameOrigin, clientIp } from "@/lib/request-meta";
 import { keyedHash, encryptBuffer, randomToken } from "@/lib/crypto";
 import { sniffImage } from "@/lib/images";
 import { rateLimit } from "@/lib/rate-limit";
-import { geminiConfigured } from "@/lib/ai/tryon";
+import { providerConfigured } from "@/lib/ai/tryon";
+import { validHandLandmarks } from "@/lib/ai/tryon-geometry";
 import { runTryOn } from "@/lib/ai/tryon-pipeline";
 import { tokenHashOf } from "@/lib/ai/tryon-access";
 import { tryOnCategoryFor, REGION_OF } from "@/lib/ai/categories";
@@ -26,7 +27,7 @@ const err = (status: number, error: string) => Response.json({ ok: false, error 
 export async function POST(req: Request) {
   if (!sameOrigin(req)) return err(403, "Origem inválida.");
   const s = (await getSettings()).ai;
-  if (!s.tryOnEnabled || !geminiConfigured()) return err(503, s.unavailableMessage);
+  if (!s.tryOnEnabled || !providerConfigured(s.provider)) return err(503, s.unavailableMessage);
 
   const ip = await clientIp();
   const day = new Date().toISOString().slice(0, 10);
@@ -72,11 +73,15 @@ export async function POST(req: Request) {
   }
   if (Math.min(width, height) < 480) return err(422, "A foto tem resolução muito baixa. Use uma foto com pelo menos 480 px no menor lado.");
 
+  let hand = null;
+  try { hand = validHandLandmarks(JSON.parse(String(fd.get("hand") ?? "null"))); } catch { hand = null; }
   const token = randomToken(24);
   const customer = await getCustomer();
   const row = await prisma.tryOnRequest.create({
     data: {
-      productId: product.id, category, provider: "gemini", model: s.model, analysisModel: s.analysisModel, clientHash, customerId: customer?.id, consentAt: new Date(), tokenHash: tokenHashOf(token),
+      productId: product.id, category, provider: s.provider, model: s.model, analysisModel: s.analysisModel, clientHash, customerId: customer?.id, consentAt: new Date(), tokenHash: tokenHashOf(token),
+      // articulações da mão medidas no aparelho (MediaPipe), se houver — validadas antes de uso
+      region: hand ? { hand } : undefined,
       assets: { create: { kind: "INPUT", mime: "image/jpeg", width, height, data: new Uint8Array(encryptBuffer(person)), expiresAt: new Date(Date.now() + 15 * 60_000) } },
     },
   });

@@ -59,7 +59,7 @@ export function startPagarme(port = 4010) {
 
 // Gemini: responde por tarefa, no formato real do generateContent (JSON estruturado ou imagem inline).
 // "detect" controla a detecção ("ok" | "none"); "scores" é a fila de notas de fidelidade da verificação.
-export const gemini = { calls: [], detect: "ok", scores: [] };
+export const gemini = { calls: [], detect: "ok", scores: [], fail: null };
 export function startGemini(port = 4011) {
   return new Promise((resolve) => {
     const srv = http.createServer(async (req, res) => {
@@ -70,6 +70,9 @@ export function startGemini(port = 4011) {
       const prompt = parts.find((p) => p.text)?.text ?? "";
       const images = parts.filter((p) => p.inline_data).map((p) => Buffer.from(p.inline_data.data, "base64"));
       const task = prompt.match(/^TASK: (\w+)/)?.[1] ?? "UNKNOWN";
+      // falhas simuladas: erro do provedor ou lentidão além do tempo-limite configurado
+      if (gemini.fail === "500" && task === "TRY_ON_EDIT") return json(res, 500, { error: { message: "Internal error (simulado)" } });
+      if (gemini.fail === "slow" && task === "TRY_ON_EDIT") await new Promise((r) => setTimeout(r, 8000));
       gemini.calls.push({ path: req.url, key: req.headers["x-goog-api-key"], task, images: images.length, prompt, schema: Boolean(j.generationConfig?.responseSchema) });
       const text = (obj) => json(res, 200, { candidates: [{ content: { parts: [{ text: JSON.stringify(obj) }] }, finishReason: "STOP" }] });
       if (task === "DETECT_REGION") {
@@ -112,6 +115,59 @@ export function startAnthropic(port = 4012) {
       const text = typeof last?.content === "string" ? last.content : "";
       if (/atendente|humano|troca/i.test(text)) return msg([{ type: "tool_use", id: "tu_h", name: "request_human", input: { reason: "Cliente pediu troca" } }], "tool_use");
       return msg([{ type: "tool_use", id: "tu_s", name: "search_products", input: { query: text.slice(0, 60) } }], "tool_use");
+    });
+    srv.listen(port, "127.0.0.1", () => resolve(srv));
+  });
+}
+
+// OpenAI: chat completions (visão com json_schema) e images/edits (multipart, com máscara)
+export const openai = { calls: [] };
+const answerFor = (task) => ({
+  DETECT_REGION: { found: true, region_box: [300, 300, 700, 700], target_box: [460, 460, 540, 540], people_count: 1, target_visibility: "clear", lighting: "good", sharp: true, wearing_jewelry_on_target: false, guidance_pt: "" },
+  JEWEL_PROFILE: { type: "ring", metal_colors: ["yellow gold"], stones: [], key_features: ["polished band"], proportions: "slim band" },
+  VERIFY_FIDELITY: { jewelry_present: true, placed_on_target: true, same_design_score: 86, metal_color_match: true, stones_match: true, scale_plausible: true, person_unchanged: true, issues_pt: "", issues_en: "" },
+}[task]);
+function multipartFiles(body, contentType) {
+  const boundary = Buffer.from("--" + contentType.split("boundary=")[1]);
+  const out = [];
+  let i = body.indexOf(boundary);
+  while (i !== -1) {
+    const next = body.indexOf(boundary, i + boundary.length);
+    if (next === -1) break;
+    const part = body.subarray(i + boundary.length + 2, next - 2);
+    const sep = part.indexOf("\r\n\r\n");
+    const head = part.subarray(0, sep).toString();
+    out.push({ name: head.match(/name="([^"]+)"/)?.[1], file: /filename=/.test(head), data: part.subarray(sep + 4) });
+    i = next;
+  }
+  return out;
+}
+export function startOpenAI(port = 4013) {
+  return new Promise((resolve) => {
+    const srv = http.createServer(async (req, res) => {
+      if (!req.headers.authorization?.startsWith("Bearer ")) return json(res, 401, { error: { message: "missing key" } });
+      if (req.method === "GET") return json(res, 200, { id: req.url.split("/").pop(), object: "model" });
+      const chunks = []; for await (const c of req) chunks.push(c);
+      const body = Buffer.concat(chunks);
+      if (req.url.endsWith("/chat/completions")) {
+        const j = JSON.parse(body.toString());
+        const text = j.messages[0].content.find((c) => c.type === "text").text;
+        const task = text.match(/^TASK: (\w+)/)?.[1];
+        openai.calls.push({ kind: "chat", task, images: j.messages[0].content.filter((c) => c.type === "image_url").length, schema: Boolean(j.response_format?.json_schema) });
+        return json(res, 200, { choices: [{ message: { role: "assistant", content: JSON.stringify(answerFor(task)) } }] });
+      }
+      if (req.url.endsWith("/images/edits")) {
+        const parts = multipartFiles(body, req.headers["content-type"]);
+        const imgs = parts.filter((p) => p.name === "image[]"), mask = parts.find((p) => p.name === "mask");
+        const prompt = parts.find((p) => p.name === "prompt")?.data.toString() ?? "";
+        const fidelity = parts.find((p) => p.name === "input_fidelity")?.data.toString();
+        openai.calls.push({ kind: "edit", images: imgs.length, mask: Boolean(mask), fidelity, prompt });
+        const m = await sharp(imgs[0].data).metadata();
+        const ring = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${m.width}" height="${m.height}"><ellipse cx="${m.width / 2}" cy="${m.height / 2}" rx="${m.width * 0.08}" ry="${m.height * 0.05}" fill="none" stroke="#d4af37" stroke-width="${Math.max(4, m.width * 0.02)}"/></svg>`);
+        const out = await sharp(imgs[0].data).composite([{ input: ring }]).png().toBuffer();
+        return json(res, 200, { data: [{ b64_json: out.toString("base64") }] });
+      }
+      json(res, 404, { error: { message: "rota desconhecida no simulador" } });
     });
     srv.listen(port, "127.0.0.1", () => resolve(srv));
   });

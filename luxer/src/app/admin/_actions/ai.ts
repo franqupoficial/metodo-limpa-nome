@@ -10,7 +10,7 @@ export async function testTryOnIntegration(_: ActionState, _fd: FormData): Promi
   try {
     const admin = await assertAdmin("ai.manage");
     const s = (await getSettings()).ai;
-    const r = await checkModels([s.analysisModel, s.model]);
+    const r = await checkModels([s.analysisModel, s.model], s.provider);
     await audit(admin.id, "ai.tryon.diagnostic", "Setting", "ai", { meta: { ok: r.every((x) => x.ok) } });
     const text = r.map((x) => `${x.ok ? "✓" : "✗"} ${x.model}: ${x.detail}`).join(" · ");
     return r.every((x) => x.ok) ? ok(`Integração OK — ${text}`) : fail(`Integração com problema — ${text}`);

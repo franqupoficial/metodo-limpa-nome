@@ -56,3 +56,37 @@ test("categorias do provador e regiões do corpo", () => {
   assert.equal(REGION_OF[tryOnCategoryFor("Pulseira Elos")!], "wrist");
   assert.equal(tryOnCategoryFor("Tornozeleira Coração"), null);
 });
+
+import { validHandLandmarks, anchorFromHand } from "../../src/lib/ai/tryon-geometry";
+import { toJsonSchema } from "../../src/lib/ai/providers/types";
+
+const handLm = () => {
+  const lm = Array.from({ length: 21 }, () => ({ x: 0.5, y: 0.5 }));
+  lm[0] = { x: 0.5, y: 0.85 }; lm[5] = { x: 0.4, y: 0.55 }; lm[9] = { x: 0.47, y: 0.53 }; lm[13] = { x: 0.54, y: 0.54 }; lm[17] = { x: 0.6, y: 0.57 }; lm[14] = { x: 0.55, y: 0.44 };
+  return lm;
+};
+
+test("landmarks: só aceita 21 pontos normalizados", () => {
+  assert.equal(validHandLandmarks([{ x: 0.5, y: 0.5 }]), null);
+  assert.equal(validHandLandmarks(Array.from({ length: 21 }, () => ({ x: 3, y: 0.5 }))), null);
+  assert.equal(validHandLandmarks(handLm())?.length, 21);
+});
+
+test("âncora do anel: falange do anelar, escala pela largura do dedo, cápsula ao longo do dedo", () => {
+  const a = anchorFromHand(handLm(), "hand", 1000, 1000);
+  assert.ok(a.center.y < 540 && a.center.y > 470, "entre as articulações 13 e 14");
+  assert.ok(Math.abs(a.pxPerMm - a.widthPx / 18) < 1e-9);
+  assert.ok(a.capsule.y2 < a.capsule.y1, "cápsula segue o dedo em direção à ponta");
+  const [y0, x0, y1, x1] = a.target;
+  assert.ok(y0 < a.center.y / 1 && y1 > a.center.y && x0 < a.center.x && x1 > a.center.x);
+});
+
+test("âncora da pulseira: além do ponto do pulso, régua de 55 mm", () => {
+  const a = anchorFromHand(handLm(), "wrist", 1000, 1000);
+  assert.ok(a.center.y > 850);
+  assert.ok(Math.abs(a.pxPerMm - a.widthPx / 55) < 1e-9);
+});
+
+test("schema do Gemini convertido para JSON Schema (OpenAI)", () => {
+  assert.deepEqual(toJsonSchema({ type: "OBJECT", properties: { a: { type: "ARRAY", items: { type: "INTEGER" } } } }), { type: "object", properties: { a: { type: "array", items: { type: "integer" } } } });
+});

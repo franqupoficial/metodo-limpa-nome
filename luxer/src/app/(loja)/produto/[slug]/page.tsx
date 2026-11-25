@@ -70,7 +70,7 @@ export default async function ProductPage({ params }: P) {
   const tryCat = tryOnCategoryFor(p.categories.map((c) => c.category.name).join(" ") + " " + (p.jewelryType ?? "") + " " + p.name);
   // provador AR em tempo real roda no aparelho (sem credencial); o de IA generativa depende do Gemini
   const canAR = p.tryOnEnabled && Boolean(tryCat && REGION_OF[tryCat]);
-  const canTry = s.ai.tryOnEnabled && providerConfigured() && p.tryOnEnabled && tryCat && REGION_OF[tryCat] && s.ai.categories.includes(tryCat);
+  const canTry = s.ai.tryOnEnabled && providerConfigured(s.ai.provider) && p.tryOnEnabled && tryCat && REGION_OF[tryCat] && s.ai.categories.includes(tryCat);
   const youtube = p.videos.map((v) => v.url.match(/[?&]v=([\w-]+)/)?.[1]).filter(Boolean) as string[];
   const files = p.videos.filter((v) => /\.(mp4|webm)/i.test(v.url));
   const rating = p.ratingCount ? Number(p.ratingAvg) : null;

@@ -61,19 +61,33 @@ Backups: o PostgreSQL gerenciado faz backup automático (habilite PITR); para c�
 
 **Painel /admin**: visão geral com comparação de períodos; produtos (ficha de joalheria, galeria, vídeos, variações, SEO, agendamento, lote); categorias e coleções; estoque (reservas, movimentações, inventário, CSV); pedidos (status, rastreio, etiqueta Melhor Envio, cancelamento com reembolso, impressão); clientes (CRM, segmentos, LGPD); atendimento; financeiro (faturamento ≠ recebimento ≠ lucro, conciliação Pagar.me); **remarketing automático** (reativação, reconexão da base, aniversário, pós-compra, boas-vindas, VIP, campanha de recuperação, cupons únicos, fila de WhatsApp, atribuição de receita/ROI); banners, pop-ups, cupons, campanhas, leads, carrinhos abandonados; CMS; avaliações; Luxer AI; relatórios; usuários com permissões granulares e auditoria; configurações.
 
-## LUXER AI TRY-ON (provador virtual)
-Botão **Provar com IA** em cada peça compatível (anéis, brincos, colares/correntes/pingentes e pulseiras) e vitrine em `/provador`. O cliente fotografa pela câmera (com contorno de enquadramento por categoria) ou envia da galeria; o navegador confere resolução, luz e nitidez antes do envio.
+## LUXER AI TRY-ON — provador com IA realista
+Botão **Experimentar com IA** na página de cada peça compatível (aparece quando há credencial do provedor). O cliente fotografa pela câmera (com contorno de enquadramento) ou envia da galeria, sem precisar de conta. Existe também o **provador AR ao vivo** (`/provador`, botões "Provar … (AR)"), que roda inteiramente no aparelho e não depende de credencial.
 
-Pipeline no servidor (`src/lib/ai/tryon-pipeline.ts`), assíncrono (a requisição responde na hora e o processamento continua com `after()`; o navegador acompanha as etapas):
-1. **Detecção** — modelo de visão (Gemini, saída JSON com caixas) localiza a região do corpo e o ponto de aplicação (base do dedo, lóbulo, base do pescoço/colo, pulso) e avalia a foto. Foto inadequada é recusada aqui, com orientação, sem custo de geração.
-2. **Perfil da joia** — extraído das fotografias cadastradas (metal, pedras, desenho), em cache no produto.
-3. **Geração** — edição generativa (Gemini Image) **apenas do recorte** da região, com as fotos originais da peça como referência obrigatória e instruções físicas por categoria (escala, gravidade, perspectiva).
-4. **Composição** — o recorte volta à foto original por máscara elíptica suavizada; fora da região a foto do cliente fica idêntica, o que também permite a comparação antes/depois alinhada.
-5. **Verificação de fidelidade** — inspeção independente compara a peça aplicada com as fotos da peça (nota 0–100). Abaixo do mínimo (padrão 70), gera de novo informando as divergências; se persistir, **não entrega** o resultado.
+### Arquitetura (híbrida: visão computacional no aparelho + IA generativa no servidor)
+1. **No navegador** — verificação de resolução, exposição e nitidez; para anéis e pulseiras, o **MediaPipe HandLandmarker** mede as 21 articulações da mão na foto: alerta se a mão não aparece, está pequena, cortada ou com o anelar dobrado, e envia os pontos ao servidor.
+2. **Detecção** (`src/lib/ai/tryon-pipeline.ts`) — com articulações: âncora anatômica na falange proximal do anelar (ou no pulso), largura do dedo/pulso em px e escala (px/mm, régua anatômica de 18 mm/55 mm) — sem chamada paga. Sem articulações (ou orelha/pescoço): modelo de visão devolve caixas e diagnóstico; foto inadequada é recusada sem custo de geração.
+3. **Perfil da peça** — extraído das fotografias cadastradas do SKU (metal, pedras, desenho), em cache no produto.
+4. **Edição generativa** — só no recorte da região, com as fotos originais da peça como referência obrigatória, instruções físicas da categoria e a **escala medida** ("o dedo tem N px; esta peça de X mm deve ter M px"). Máscara anatômica em cápsula ao longo do dedo (inpainting no provedor que suporta).
+5. **Composição** — o recorte volta à foto original pela mesma máscara suavizada: fora dela a foto fica idêntica pixel a pixel (pele, unhas, fundo).
+6. **Verificação de fidelidade** — inspeção independente (nota 0–100: mesma peça, metal, pedras, escala, pessoa inalterada). Abaixo do mínimo, nova geração com as divergências; persistindo, **não entrega** e orienta o cliente.
 
-Segurança e custos: chave só no servidor; upload com verificação de tipo e remoção de EXIF/GPS; token de acesso por simulação; foto e resultado criptografados (AES-256-GCM) no banco, foto apagada ao fim do processamento, resultado apagado no prazo de retenção (padrão 60 min) ou na hora pelo cliente; limites por minuto, por dia, um processamento por vez, limite diário da loja e orçamento mensal; custo estimado por chamada registrado; alertas de falhas recorrentes. Painel: **Luxer AI** (configuração, diagnóstico da integração, fidelidade média, custo, motivos de não entrega, erros).
+### Provedores (troca no painel, sem alterar o pipeline — `src/lib/ai/providers/`)
+| Provedor | Edição | Visão | Credencial |
+|---|---|---|---|
+| Google Gemini (padrão) | `gemini-2.5-flash-image` (várias referências) | `gemini-2.5-flash` | `GEMINI_API_KEY` |
+| OpenAI | `gpt-image-1` em `/images/edits` com **máscara** e `input_fidelity=high` | `gpt-4.1-mini` (json_schema) | `OPENAI_API_KEY` |
 
-**Para ativar:** crie a chave em Google AI Studio num projeto com faturamento (no plano pago o Google não usa os dados para treinar modelos), cadastre `GEMINI_API_KEY` na Vercel (Settings → Environment Variables), faça um novo deploy, clique em **Testar integração** em /admin/luxer-ai e ligue “Provador ativo na loja”. Ajuste no painel os custos por geração/análise conforme a tabela vigente do Google. Antes de abrir ao público, faça provas com fotos reais de cada categoria e calibre a fidelidade mínima.
+**Custo estimado por simulação** (referência; confira a tabela vigente de cada provedor e ajuste no painel): Gemini ≈ US$ 0,04–0,05 (1 geração + 1 verificação; a detecção é gratuita com articulações; +1 geração quando a verificação reprova); OpenAI ≈ US$ 0,20–0,30 (edição em alta qualidade). O perfil da peça é cobrado uma vez por produto.
+
+### Segurança, privacidade e custos
+Chaves só no servidor; upload com verificação de tipo, limite de 12 MB e redução para no máximo 1600 px (sem metadados EXIF/GPS); token de acesso por simulação; foto e resultado criptografados (AES-256-GCM) no banco — foto apagada ao fim do processamento (inclusive em falha), resultado apagado no prazo de retenção (padrão 60 min) ou na hora pelo cliente; limites por minuto, por dia, um processamento por vez, limite diário da loja e orçamento mensal; tempo-limite por chamada (`TRYON_EDIT_TIMEOUT_MS`, `TRYON_ANALYZE_TIMEOUT_MS`); custo de cada chamada registrado; alerta de falhas recorrentes. Painel **Luxer AI**: liga/desliga, provedor e modelos, diagnóstico da integração, simulações por período, taxa de sucesso, fidelidade média, custo, peças mais experimentadas, motivos de não entrega e erros.
+
+### Para ativar
+1. Crie a chave do provedor escolhido (Gemini: Google AI Studio com faturamento ativo; OpenAI: organização verificada para modelos de imagem).
+2. Cadastre `GEMINI_API_KEY` (ou `OPENAI_API_KEY`) na Vercel → Settings → Environment Variables e faça um novo deploy.
+3. Em `/admin/luxer-ai`: selecione o provedor, **Testar integração**, ajuste custos e ligue "Provador ativo na loja".
+4. Antes de abrir ao público, faça provas com fotos reais (tons de pele, iluminação, anéis finos/largos/com pedra) e calibre a fidelidade mínima.
 
 ## Testes
 ```bash

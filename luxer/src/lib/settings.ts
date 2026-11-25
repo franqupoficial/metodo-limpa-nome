@@ -94,7 +94,8 @@ export const DEFAULT_SETTINGS = {
   },
   ai: {
     tryOnEnabled: false,
-    provider: "gemini" as const,
+    /** provedor de IA (troca sem alterar o pipeline): "gemini" ou "openai" */
+    provider: "gemini" as "gemini" | "openai",
     /** modelo de edição generativa (recebe a foto do cliente + fotografias da joia) */
     model: "gemini-2.5-flash-image",
     /** modelo de visão: detecção da região do corpo, perfil técnico da joia e verificação de fidelidade */

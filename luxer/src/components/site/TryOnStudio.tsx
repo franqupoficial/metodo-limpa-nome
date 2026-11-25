@@ -79,6 +79,7 @@ export function TryOnStudio({ product, consentText, onClose }: { product: Studio
   const [step, setStep] = useState<"intro" | "camera" | "review" | "processing" | "result" | "error">("intro");
   const [consent, setConsent] = useState(false);
   const [photo, setPhoto] = useState<{ blob: Blob; url: string; checks: Checks } | null>(null);
+  const [hand, setHand] = useState<{ status: "pending" | "found" | "none" | "unavailable"; warnings: string[]; landmarks?: { x: number; y: number }[] } | null>(null);
   const [job, setJob] = useState<Job | null>(null);
   const [st, setSt] = useState<Status | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -116,11 +117,42 @@ export function TryOnStudio({ product, consentText, onClose }: { product: Studio
   async function usePhoto(blob: Blob) {
     try {
       const checks = await inspect(blob);
-      setPhoto({ blob, url: URL.createObjectURL(blob), checks });
+      const url = URL.createObjectURL(blob);
+      setPhoto({ blob, url, checks });
       setError(null);
+      setHand(region === "hand" || region === "wrist" ? { status: "pending", warnings: [] } : null);
       setStep("review");
+      if (region === "hand" || region === "wrist") analyzeHand(url);
     } catch {
       setError("Não foi possível ler esta imagem. Use JPG, PNG ou WebP.");
+    }
+  }
+
+  /**
+   * Visão computacional no aparelho (MediaPipe HandLandmarker): mede as 21 articulações da mão.
+   * Valida o enquadramento antes de qualquer custo de IA e envia os pontos ao servidor, que os usa
+   * para posicionar, dimensionar e mascarar a joia com precisão anatômica.
+   */
+  async function analyzeHand(url: string) {
+    try {
+      const { createTracker } = await import("@/components/luxe/ar/tracker");
+      const img = new Image();
+      img.src = url;
+      await img.decode();
+      const tr = await createTracker("hand");
+      const lm = tr.detect(img, performance.now());
+      tr.close();
+      if (!lm) { setHand({ status: "none", warnings: [] }); return; }
+      const xs = lm.map((p) => p.x), ys = lm.map((p) => p.y);
+      const span = Math.max(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys));
+      const warnings: string[] = [];
+      if (span < 0.3) warnings.push("A mão ocupa pouco da foto: aproxime a câmera.");
+      const ids = region === "hand" ? [13, 14, 15] : [0, 1, 17];
+      if (ids.some((i) => lm[i].x < 0.02 || lm[i].x > 0.98 || lm[i].y < 0.02 || lm[i].y > 0.98)) warnings.push(region === "hand" ? "O dedo anelar está cortado na borda da foto." : "O pulso está cortado na borda da foto.");
+      if (region === "hand" && Math.hypot(lm[14].x - lm[13].x, lm[14].y - lm[13].y) < 0.025) warnings.push("O dedo anelar está dobrado ou escondido: abra a mão.");
+      setHand({ status: "found", warnings, landmarks: lm.map((p) => ({ x: Math.round(p.x * 1e5) / 1e5, y: Math.round(p.y * 1e5) / 1e5 })) });
+    } catch {
+      setHand({ status: "unavailable", warnings: [] }); // sem rastreamento no aparelho: o servidor faz a detecção
     }
   }
 
@@ -145,6 +177,7 @@ export function TryOnStudio({ product, consentText, onClose }: { product: Studio
     fd.set("photo", await normalizePhoto(photo.blob).catch(() => photo.blob), "foto.jpg");
     fd.set("product", product.slug);
     fd.set("consent", "true");
+    if (hand?.landmarks) fd.set("hand", JSON.stringify(hand.landmarks));
     const r = await fetch("/api/tryon", { method: "POST", body: fd }).then((x) => x.json()).catch(() => ({ ok: false, error: "Falha de conexão. Verifique sua internet." }));
     if (!r.ok) { setError(r.error); setStep("error"); return; }
     setJob({ id: r.id, token: r.token });
@@ -253,11 +286,24 @@ export function TryOnStudio({ product, consentText, onClose }: { product: Studio
                 <li className="flex justify-between py-3"><span>Resolução</span><span className={photo.checks.tooSmall ? "text-red-800" : "text-ink/70"}>{photo.checks.width}×{photo.checks.height}{photo.checks.tooSmall ? " · muito baixa" : " · adequada"}</span></li>
                 <li className="flex justify-between py-3"><span>Iluminação</span><span className={photo.checks.light === "ok" ? "text-ink/70" : "text-gold-2"}>{photo.checks.light === "ok" ? "adequada" : photo.checks.light === "dark" ? "escura — procure mais luz" : "estourada — evite luz direta"}</span></li>
                 <li className="flex justify-between py-3"><span>Nitidez</span><span className={photo.checks.sharp ? "text-ink/70" : "text-gold-2"}>{photo.checks.sharp ? "adequada" : "pode estar tremida"}</span></li>
+                {hand && <li className="flex justify-between gap-4 py-3"><span>Mão e articulações</span><span className={hand.status === "found" && !hand.warnings.length ? "text-ink/70" : hand.status === "pending" ? "text-stone" : "text-gold-2"}>
+                  {hand.status === "pending" ? "analisando…" : hand.status === "found" ? (hand.warnings.length ? "identificadas, com ressalvas" : "identificadas (21 pontos)") : hand.status === "none" ? "não identificadas" : "verificação no servidor"}</span></li>}
               </ul>
-              <p className="mt-4 text-[12px] text-stone">A LUXER AI ainda confirma se {guide.where} está visível antes de aplicar a joia.</p>
+              {hand?.warnings.map((w) => <p key={w} className="mt-3 text-[12px] text-gold-2">{w}</p>)}
+              {hand?.status === "none" && <p className="mt-3 text-[12px] leading-relaxed text-gold-2">Não identificamos {guide.where} nesta foto. Para um resultado realista, fotografe {region === "hand" ? "o dorso da mão aberta, com os dedos visíveis" : "a mão e o pulso livres"}.</p>}
+              {hand?.status !== "none" && !hand?.warnings.length && <p className="mt-4 text-[12px] text-stone">{hand?.status === "found" ? "A posição, a escala e a área da joia serão calculadas a partir das articulações da sua mão." : `A LUXER AI ainda confirma se ${guide.where} está visível antes de aplicar a joia.`}</p>}
               <div className="sticky bottom-0 -mx-5 mt-8 flex flex-col gap-3 border-t border-line bg-ivory px-5 py-4 sm:static sm:mx-0 sm:flex-row sm:border-0 sm:p-0">
-                <button type="button" disabled={photo.checks.tooSmall} onClick={submit} className="btn-gold flex-1">Provar com IA</button>
-                <button type="button" onClick={() => setStep("intro")} className="btn-line flex-1">Trocar foto</button>
+                {hand?.status === "none" ? (
+                  <>
+                    <button type="button" onClick={() => setStep("intro")} className="btn-gold flex-1">Trocar foto</button>
+                    <button type="button" onClick={submit} className="btn-line flex-1">Tentar assim mesmo</button>
+                  </>
+                ) : (
+                  <>
+                    <button type="button" disabled={photo.checks.tooSmall || hand?.status === "pending"} onClick={submit} className="btn-gold flex-1">{hand?.status === "pending" ? "Analisando a foto…" : "Experimentar com IA"}</button>
+                    <button type="button" onClick={() => setStep("intro")} className="btn-line flex-1">Trocar foto</button>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -362,7 +408,7 @@ export function TryOnStudio({ product, consentText, onClose }: { product: Studio
   );
 }
 
-/** Botão "Provar com IA" + modal (tela cheia no celular). Abre sozinho com ?provar=1 na URL. */
+/** Botão "Experimentar com IA" + modal (tela cheia no celular). Abre sozinho com ?provar=1 na URL. */
 export function TryOnButton({ product, consentText, className = "" }: { product: StudioProduct; consentText: string; className?: string }) {
   const [open, setOpen] = useState(false);
   useEffect(() => { if (new URLSearchParams(window.location.search).get("provar") === "1") setOpen(true); }, []);
@@ -375,15 +421,15 @@ export function TryOnButton({ product, consentText, className = "" }: { product:
   }, [open]);
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className={`group flex w-full items-center justify-between border border-ink/80 px-5 py-4 text-left transition-colors hover:bg-ink hover:text-ivory ${className}`}>
+      <button type="button" onClick={() => setOpen(true)} className={`group relative flex w-full items-center justify-between overflow-hidden rounded-2xl border border-[#d4af37]/50 bg-[linear-gradient(120deg,rgba(212,175,55,0.14),rgba(212,175,55,0.02)_60%)] px-5 py-5 text-left transition-colors hover:border-[#d4af37] ${className}`}>
         <span>
-          <span className="block text-[10.5px] uppercase tracking-[0.26em]">Provar com IA</span>
-          <span className="mt-1 block text-[12px] text-stone transition-colors group-hover:text-ivory/70">Veja esta peça em você, com a sua foto</span>
+          <span className="block text-[11px] font-medium uppercase tracking-[0.3em] text-ink">Experimentar com IA</span>
+          <span className="mt-1.5 block text-[12px] tracking-tight text-stone">Uma fotografia sua usando esta joia, gerada a partir da peça real</span>
         </span>
-        <span aria-hidden className="text-[9px] uppercase tracking-[0.3em] text-gold-2 transition-colors group-hover:text-gold-soft">Luxer AI</span>
+        <span aria-hidden className="text-[9px] uppercase tracking-[0.3em] text-gold">Luxer AI</span>
       </button>
       {open && createPortal(
-        <div className="fixed inset-0 z-[80] flex animate-[fade-in_.3s_ease] items-stretch justify-center bg-ink/45 sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-label="Provador Luxer AI" onClick={() => setOpen(false)}>
+        <div className="theme-obsidian fixed inset-0 z-[80] flex animate-[fade-in_.3s_ease] items-stretch justify-center !bg-black/60 sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-label="Provador Luxer AI" onClick={() => setOpen(false)}>
           <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-ivory sm:h-[min(90vh,860px)] sm:max-w-5xl" onClick={(e) => e.stopPropagation()}>
             <TryOnStudio product={product} consentText={consentText} onClose={() => setOpen(false)} />
           </div>

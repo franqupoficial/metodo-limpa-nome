@@ -73,3 +73,53 @@ export function fidelityScore(v: { jewelry_present?: boolean; placed_on_target?:
   if (v.person_unchanged === false) s -= 20;
   return Math.max(0, s);
 }
+
+// ─────────── Arquitetura híbrida: articulações da mão medidas no aparelho (MediaPipe) ───────────
+
+export type LM = { x: number; y: number };
+/** Aceita somente os 21 pontos normalizados do HandLandmarker (proteção contra dados forjados). */
+export function validHandLandmarks(v: unknown): LM[] | null {
+  if (!Array.isArray(v) || v.length !== 21) return null;
+  const ok = v.every((p) => p && typeof p.x === "number" && typeof p.y === "number" && p.x > -0.05 && p.x < 1.05 && p.y > -0.05 && p.y < 1.05);
+  return ok ? v.map((p) => ({ x: Math.min(1, Math.max(0, p.x)), y: Math.min(1, Math.max(0, p.y)) })) : null;
+}
+
+/** Larguras anatômicas médias usadas como régua: dedo anelar (base) ≈ 18 mm; pulso ≈ 55 mm. */
+export const ANATOMY_MM = { finger: 18, wrist: 55 };
+
+export type Anchor = {
+  target: Box;                       // caixa do ponto de aplicação (0–1000)
+  center: { x: number; y: number };  // px
+  widthPx: number;                   // largura do dedo/pulso no ponto de aplicação
+  pxPerMm: number;                   // escala estimada da foto
+  capsule: { x1: number; y1: number; x2: number; y2: number; r: number }; // px — região anatômica da joia
+};
+
+/**
+ * Ancoragem anatômica: anel na falange proximal do anelar (entre 13 e 14, a ~38% da base);
+ * pulseira logo acima do ponto do pulso (0), na direção do antebraço.
+ */
+export function anchorFromHand(lm: LM[], region: "hand" | "wrist", W: number, H: number): Anchor {
+  const P = (i: number) => ({ x: lm[i].x * W, y: lm[i].y * H });
+  const d = (a: { x: number; y: number }, b: { x: number; y: number }) => Math.hypot(a.x - b.x, a.y - b.y);
+  const lerp = (a: { x: number; y: number }, b: { x: number; y: number }, t: number) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
+  let center, widthPx, capsule, mm;
+  if (region === "hand") {
+    const m13 = P(13), p14 = P(14);
+    widthPx = ((d(m13, P(9)) + d(m13, P(17))) / 2) * 0.92;
+    center = lerp(m13, p14, 0.38);
+    const a = lerp(m13, p14, 0.05), b = lerp(m13, p14, 0.72);
+    capsule = { x1: a.x, y1: a.y, x2: b.x, y2: b.y, r: widthPx * 0.78 };
+    mm = ANATOMY_MM.finger;
+  } else {
+    const w0 = P(0), m9 = P(9);
+    widthPx = d(P(5), P(17)) * 0.82;
+    center = { x: w0.x + (w0.x - m9.x) * 0.16, y: w0.y + (w0.y - m9.y) * 0.16 };
+    const len = d(w0, m9) || 1, ux = (w0.x - m9.x) / len, uy = (w0.y - m9.y) / len, half = widthPx * 0.28;
+    capsule = { x1: center.x - ux * half, y1: center.y - uy * half, x2: center.x + ux * half, y2: center.y + uy * half, r: widthPx * 0.72 };
+    mm = ANATOMY_MM.wrist;
+  }
+  const half = widthPx * 0.75;
+  const target = cleanBox([((center.y - half) / H) * 1000, ((center.x - half) / W) * 1000, ((center.y + half) / H) * 1000, ((center.x + half) / W) * 1000]) ?? [0, 0, 1000, 1000];
+  return { target, center, widthPx, pxPerMm: widthPx / mm, capsule };
+}
