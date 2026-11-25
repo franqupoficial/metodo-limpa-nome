@@ -30,7 +30,7 @@ export function stoneFor(text: string): Stone {
 
 export function drawBand(ctx: CanvasRenderingContext2D, pose: Pose, metal: Metal, a: Adjust, kind: "ring" | "bracelet", stone: Stone) {
   const s = pose.size * a.scale;
-  const bw = s * (kind === "ring" ? 0.3 : 0.17), L = s * (kind === "ring" ? 0.56 : 0.58), c = bw * 0.95;
+  const bw = s * (kind === "ring" ? 0.27 : 0.11), L = s * (kind === "ring" ? 0.5 : 0.56), c = bw * 0.95;
   const [d, m, h, w] = SHADES[metal];
   ctx.save();
   ctx.translate(pose.x + a.dx, pose.y + a.dy);
