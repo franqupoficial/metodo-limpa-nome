@@ -102,11 +102,13 @@ async function homeV2() {
 
 /**
  * Conta master provisória, pedida pelo proprietário (admin@luxer.com, senha provisória combinada fora do código —
- * aqui só o hash bcrypt). Criada UMA vez e só se o banco não tiver nenhum usuário administrativo: nunca sobrescreve,
- * nunca recria. Troque a senha em "Minha conta" no primeiro acesso.
+ * aqui só o hash bcrypt). Criada UMA única vez (registrada na auditoria) e só se o e-mail não existir: nunca
+ * sobrescreve nem recria, e não mexe em outros usuários. Troque a senha em "Minha conta" no primeiro acesso.
  */
 async function bootstrapMaster() {
-  if (await prisma.adminUser.count()) return;
+  // uma única vez na vida do banco: se já foi criada (mesmo que depois excluída) ou o e-mail já existe, não faz nada
+  if (await prisma.auditLog.findFirst({ where: { action: "auth.bootstrap_master" } })) return;
+  if (await prisma.adminUser.findUnique({ where: { email: "admin@luxer.com" } })) return;
   const u = await prisma.adminUser.create({ data: { email: "admin@luxer.com", name: "Master", role: "OWNER", passwordHash: "$2b$12$R/94EeeQ0OCnIuuXF.o6k.64hcZ/vMqDDCXlBdJP9HNbHwRF4Eu4y" } });
   await prisma.auditLog.create({ data: { adminId: u.id, action: "auth.bootstrap_master" } });
   console.log("Conta master provisória criada: admin@luxer.com");
