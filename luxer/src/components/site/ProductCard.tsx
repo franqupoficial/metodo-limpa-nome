@@ -28,7 +28,7 @@ export function ProductCard({ p, priority = false }: { p: Card; priority?: boole
         </Link>
         {p.ar && p.available && (
           <Link href={`/produto/${p.slug}?ar=1`} aria-label={`Provar ${p.name} ao vivo (AR)`}
-            className="absolute bottom-3 left-3 flex items-center gap-1.5 rounded-full bg-[#050505]/80 px-3 py-1.5 text-[11px] tracking-tight text-[#f5f5f7] backdrop-blur-md transition-opacity duration-300 lg:opacity-0 lg:group-hover:opacity-100 lg:focus-visible:opacity-100">
+            className="absolute bottom-3 left-3 flex items-center gap-1.5 border border-[#141414]/10 bg-white px-2.5 py-1.5 text-[10px] uppercase tracking-[0.16em] text-[#141414] transition-opacity duration-300 lg:opacity-0 lg:group-hover:opacity-100 lg:focus-visible:opacity-100">
             <Camera className="h-3.5 w-3.5" strokeWidth={1.25} />Provar (AR)
           </Link>
         )}

@@ -13,6 +13,7 @@ import { Hero3D } from "@/components/luxe/Hero3D";
 import { MetalConfigurator, type FinishPiece } from "@/components/luxe/MetalConfigurator";
 import { GuidedGiftFlow } from "@/components/luxe/GuidedGiftFlow";
 import { formatMoney } from "@/lib/format";
+import { faithDevotions, faithTotal, FAITH_WHERE } from "@/lib/faith";
 
 export const dynamic = "force-dynamic";
 
@@ -135,18 +136,70 @@ export default async function Home() {
         break;
       }
       case "FAITH": {
-        const items = await products({ categories: { some: { category: { faith: true } } } }, [{ featured: "desc" }, { salesCount: "desc" }, { priceCents: "desc" }], 3);
-        if (!items.length) break;
+        // Especialização Luxer Fé: devoções e números do catálogo real (nada além do que está à venda)
+        const [total, devotions, items] = await Promise.all([
+          faithTotal(),
+          faithDevotions({ images: true }),
+          products(FAITH_WHERE, [{ featured: "desc" }, { salesCount: "desc" }, { priceCents: "desc" }], 32),
+        ]);
+        // variedade: uma peça por desenho (variações de cor do mesmo modelo não se repetem na vitrine)
+        const stem = (n: string) => n.toLowerCase().split(/\s+/).slice(0, 3).join(" ");
+        const pick: ProductCard[] = [];
+        for (const it of items) if (pick.length < Math.min(limit, 4) && !pick.some((x) => stem(x.name) === stem(it.name))) pick.push(it);
+        if (!total) break;
+        const lead = devotions.filter((d) => d.image).slice(0, 6), more = devotions.filter((d) => !lead.includes(d));
+        const names = devotions.slice(0, 4).map((d) => d.label.replace(/^Nossa Senhora .*/, "Nossa Senhora"));
+        out.push(
+          <section key={sec.id} className="bg-sand py-24 sm:py-32" aria-labelledby={`fe-${sec.id}`}><Container>
+            <div className="grid gap-10 lg:grid-cols-[1fr_1.15fr] lg:items-end lg:gap-24">
+              <div>
+                <div className="flex items-center gap-4"><span aria-hidden className="h-px w-8 bg-gold" /><span className="eyebrow text-stone">{sec.subtitle ?? "Especialidade da casa · Luxer Fé"}</span></div>
+                <h2 id={`fe-${sec.id}`} className="display mt-6 text-[2.6rem] sm:text-[4rem]">{sec.title && sec.title !== "Luxer Fé" ? sec.title : <>Joias de <span className="italic">devoção</span></>}</h2>
+              </div>
+              <div>
+                <p className="max-w-lg text-[15px] leading-relaxed text-ink/65">{cfg.text ?? `Uma curadoria dedicada à fé, em ouro 18 quilates: ${total} peças entre ${[...new Set(names)].join(", ")} e outras devoções — para usar todos os dias ou presentear em um momento especial.`}</p>
+                <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
+                  <Link href={cfg.ctaUrl ?? "/luxer-fe"} className="btn-gold">{cfg.ctaLabel ?? "Explorar a Luxer Fé"}</Link>
+                  <span className="text-[11px] uppercase tracking-[0.22em] text-stone">{total} peças · {devotions.length} devoções</span>
+                </div>
+              </div>
+            </div>
+            {/* índice de devoções: fotografia real da peça mais representativa de cada uma */}
+            <ul className="mt-16 grid grid-cols-2 gap-x-3 gap-y-10 sm:mt-20 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-6">
+              {lead.map((d) => (
+                <li key={d.href}><Link href={d.href} className="group block">
+                  <div className="aspect-square overflow-hidden bg-plate"><img src={d.image!} alt="" loading="lazy" className="h-full w-full object-contain p-[12%] transition duration-[1200ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.05]" /></div>
+                  <div className="mt-4 font-serif text-[1.2rem] leading-tight">{d.label}</div>
+                  <div className="mt-1 text-[10px] uppercase tracking-[0.2em] text-stone">{d.count} {d.count === 1 ? "peça" : "peças"}</div>
+                </Link></li>
+              ))}
+            </ul>
+            {more.length > 0 && (
+              <div className="mt-12 flex flex-wrap gap-x-7 gap-y-3 border-t border-line pt-8 text-[11px] uppercase tracking-[0.2em]">
+                {more.map((d) => <Link key={d.href} href={d.href} className="text-ink/60 transition-colors hover:text-ink">{d.label}</Link>)}
+              </div>
+            )}
+            {pick.length > 0 && <div className="mt-20 sm:mt-24"><ProductGrid items={pick} /></div>}
+          </Container></section>,
+        );
+        break;
+      }
+      case "GUIDES": {
+        // guias editoriais (significado das devoções, presentes, cuidados…) escritos no painel: Conteúdo → Páginas, tipo "Guia"
+        const guides = await prisma.page.findMany({ where: { type: "GUIDE", published: true }, orderBy: [{ position: "asc" }, { publishedAt: "desc" }], take: 3, select: { slug: true, title: true, content: true, heroImageKey: true, seoDescription: true } });
+        if (!guides.length) break;
         out.push(
           <section key={sec.id} className="border-t border-line py-24 sm:py-32"><Container>
-            <div className="grid gap-14 lg:grid-cols-[1fr_2.4fr] lg:gap-20">
-              <div className="lg:pt-6">
-                <div className="flex items-center gap-4"><span aria-hidden className="h-px w-8 bg-gold" /><span className="eyebrow text-stone">Luxer Fé</span></div>
-                <h2 className="display mt-6 text-[2.35rem] sm:text-[3.2rem]">{sec.title ?? "Luxer Fé"}</h2>
-                <p className="mt-6 max-w-sm text-[14px] leading-relaxed text-ink/60">{cfg.text ?? sec.subtitle ?? "Nossa Senhora, Divino Espírito Santo, crucifixos, medalhas e escapulários em ouro 18k — joias que acompanham a sua fé."}</p>
-                <Link href={cfg.ctaUrl ?? "/luxer-fe"} className="link-line mt-10 text-ink">{cfg.ctaLabel ?? "Conhecer a coleção"}</Link>
-              </div>
-              <ProductGrid items={items} cols={3} />
+            <SectionHead eyebrow={sec.subtitle ?? "Guias Luxer"} title={sec.title ?? "Para escolher com significado"} href="/guias" linkLabel="Todos os guias" center={false} />
+            <div className="grid gap-x-8 gap-y-14 md:grid-cols-3">
+              {guides.map((g) => (
+                <Link key={g.slug} href={`/p/${g.slug}`} className="group block">
+                  {g.heroImageKey && <div className="mb-6 aspect-[4/3] overflow-hidden bg-plate"><img src={mediaUrl(g.heroImageKey)!} alt="" loading="lazy" className="h-full w-full object-cover transition duration-[1200ms] group-hover:scale-[1.03]" /></div>}
+                  <div className="font-serif text-[1.6rem] leading-tight">{g.title}</div>
+                  <p className="mt-3 text-[13.5px] leading-relaxed text-ink/60">{g.seoDescription ?? plainExcerpt(g.content, 150)}</p>
+                  <span className="link-line mt-5 text-ink">Ler o guia</span>
+                </Link>
+              ))}
             </div>
           </Container></section>,
         );

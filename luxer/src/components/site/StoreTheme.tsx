@@ -4,7 +4,7 @@ import { Moon, Sun } from "lucide-react";
 
 import { THEME_COOKIE, themeClass, type StoreThemeName } from "@/lib/store-theme";
 
-const Ctx = createContext<{ theme: StoreThemeName; setTheme: (t: StoreThemeName) => void }>({ theme: "dark", setTheme: () => {} });
+const Ctx = createContext<{ theme: StoreThemeName; setTheme: (t: StoreThemeName) => void }>({ theme: "light", setTheme: () => {} });
 export const useStoreTheme = () => useContext(Ctx);
 
 export function StoreThemeProvider({ initial, children, className = "" }: { initial: StoreThemeName; children: React.ReactNode; className?: string }) {
@@ -17,7 +17,7 @@ export function StoreThemeProvider({ initial, children, className = "" }: { init
   useEffect(() => {
     let m = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
     if (!m) { m = document.createElement("meta"); m.name = "theme-color"; document.head.appendChild(m); }
-    m.content = theme === "light" ? "#f6f3ee" : "#050505";
+    m.content = theme === "light" ? "#faf9f6" : "#0a0a0b";
   }, [theme]);
   return (
     <Ctx.Provider value={{ theme, setTheme }}>

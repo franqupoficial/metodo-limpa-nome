@@ -81,6 +81,25 @@ async function atelier() {
   await prisma.homeSection.create({ data: { type: "ATELIER", title: "Encontre a joia ideal em três escolhas", subtitle: "Atelier Concierge", position: pos } });
 }
 
+/**
+ * Home editorial v2 (uma única vez): abertura cinematográfica → categorias → especialização Luxer Fé →
+ * mais desejadas → presentes (Atelier) → novidades → coleções → provador → guias → história → avaliações.
+ * Roda só se ainda não existe a seção GUIDES; depois disso, a ordem definida no painel é respeitada.
+ */
+async function homeV2() {
+  if (await prisma.homeSection.findFirst({ where: { type: "GUIDES" } })) return;
+  if (!(await prisma.homeSection.count())) return;
+  await prisma.homeSection.create({ data: { type: "GUIDES", title: "Para escolher com significado", subtitle: "Guias Luxer", position: 999 } });
+  const order = ["HERO", "CATEGORIES", "FAITH", "BESTSELLERS", "ATELIER", "NEW", "COLLECTIONS", "TRYON", "GUIDES", "STORY", "REVIEWS", "INSTAGRAM", "NEWSLETTER"];
+  const all = await prisma.homeSection.findMany({ orderBy: { position: "asc" } });
+  const rank = (t: string) => { const i = order.indexOf(t); return i < 0 ? order.length : i; };
+  const sorted = [...all].sort((a, b) => rank(a.type) - rank(b.type) || a.position - b.position);
+  for (const [i, sec] of sorted.entries()) await prisma.homeSection.update({ where: { id: sec.id }, data: { position: i } });
+  // título padrão antigo "Luxer Fé" vira o título editorial da seção (o texto do painel, se houver, é mantido)
+  await prisma.homeSection.updateMany({ where: { type: "FAITH", title: "Luxer Fé" }, data: { title: null } });
+  await prisma.homeSection.updateMany({ where: { type: "FAITH", subtitle: "Joias que carregam devoção" }, data: { subtitle: null } });
+}
+
 async function faq() {
   if (await prisma.faqItem.count()) return;
   // Respostas extraídas das políticas publicadas pela própria Luxer no site atual.
@@ -100,6 +119,7 @@ async function main() {
   await home();
   await faq();
   await atelier();
+  await homeV2();
   await ensureDefaultFlows(); // fluxos de remarketing criados DESATIVADOS
 }
 

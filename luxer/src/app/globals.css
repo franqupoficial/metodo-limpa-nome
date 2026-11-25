@@ -143,54 +143,56 @@ body {
  * (fundo branco original) continuam sobre placas claras — sem recortes artificiais.
  */
 .theme-obsidian {
-  --color-ivory: #050505;
-  --color-ink: #f5f5f7;
-  --color-ink-2: #e8e8ed;
-  --color-ink-3: #d2d2d7;
-  --color-stone: #86868b;
-  --color-line: rgba(255, 255, 255, 0.08);
-  --color-sand: #0e0e10;
-  --color-surface: #0e0e10;
+  /* Dark Luxury: preto profundo, grafite e carvão; branco suave no texto; o metal aparece só em detalhes */
+  --color-ivory: #0a0a0b;
+  --color-ink: #efeee9;
+  --color-ink-2: #e2e0da;
+  --color-ink-3: #c9c7c0;
+  --color-stone: #8e8c86;
+  --color-line: rgba(239, 238, 233, 0.09);
+  --color-sand: #131315;
+  --color-surface: #18181a;
   --color-plate: #ffffff;
-  --color-gold: #d4af37;
-  --color-gold-2: #d4af37;
-  --color-gold-soft: #e9d79c;
+  --color-gold: #b9a782;
+  --color-gold-2: #a8966f;
+  --color-gold-soft: #d9ccb0;
   color-scheme: dark;
   background: var(--color-ivory);
   color: var(--color-ink);
 }
-html:has(.theme-obsidian), body:has(.theme-obsidian) { background: #050505; }
-.theme-obsidian ::selection { background: rgba(212, 175, 55, 0.35); color: #fff; }
-.theme-obsidian .prose-luxer { color: #c7c7cc; }
+html:has(.theme-obsidian), body:has(.theme-obsidian) { background: #0a0a0b; }
+.theme-obsidian ::selection { background: rgba(185, 167, 130, 0.35); color: #fff; }
+.theme-obsidian .prose-luxer { color: #c9c7c0; }
 
 /*
  * Light Luxury (porcelana): marfim quente, tinta quase preta, ouro envelhecido legível em texto pequeno.
  * Mesmos componentes e a mesma experiência 3D — só a luz e a paleta mudam.
  */
 .theme-ivory {
-  --color-ivory: #f6f3ee;
-  --color-ink: #141312;
-  --color-ink-2: #2a2824;
-  --color-ink-3: #3d3a34;
-  --color-stone: #6e675d;
-  --color-line: rgba(20, 19, 18, 0.1);
-  --color-sand: #eee9e1;
-  --color-surface: #fbf9f6;
+  /* Light Luxury: branco sofisticado e marfim, areia muito sutil, cinzas delicados, tinta quase preta */
+  --color-ivory: #faf9f6;
+  --color-ink: #141414;
+  --color-ink-2: #2a2a29;
+  --color-ink-3: #3e3d3a;
+  --color-stone: #75726c;
+  --color-line: rgba(20, 20, 20, 0.09);
+  --color-sand: #f3f0ea;
+  --color-surface: #ffffff;
   --color-plate: #ffffff;
-  --color-gold: #8a6a32;
-  --color-gold-2: #6f5426;
-  --color-gold-soft: #e3d3ae;
+  --color-gold: #8f7647;
+  --color-gold-2: #75603a;
+  --color-gold-soft: #e6dcc6;
   color-scheme: light;
   background: var(--color-ivory);
   color: var(--color-ink);
 }
-html:has(.theme-ivory), body:has(.theme-ivory) { background: #f6f3ee; }
+html:has(.theme-ivory), body:has(.theme-ivory) { background: #faf9f6; }
 .theme-ivory ::selection { background: #e3d3ae; color: #141312; }
 
 /* Palco do Hero 3D: luz de estúdio por tema (a coreografia do anel é a mesma nos dois) */
 .lx-hero-bg {
   background:
-    radial-gradient(60% 50% at 50% 45%, color-mix(in srgb, var(--color-gold) 11%, transparent), transparent 70%),
+    radial-gradient(60% 50% at 50% 45%, rgba(239, 230, 210, 0.07), transparent 70%),
     radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
 }
 .theme-ivory .lx-hero-bg {
@@ -198,7 +200,7 @@ html:has(.theme-ivory), body:has(.theme-ivory) { background: #f6f3ee; }
     radial-gradient(42% 10% at 50% 80%, rgba(110, 82, 40, 0.10), transparent 72%),
     radial-gradient(55% 48% at 50% 42%, #fffdf9 0%, rgba(255, 253, 249, 0) 70%),
     radial-gradient(120% 95% at 50% 45%, transparent 60%, rgba(120, 96, 60, 0.12) 100%),
-    linear-gradient(180deg, #f3efe8 0%, #f6f3ee 45%, #efe9e0 100%);
+    linear-gradient(180deg, #f6f4ef 0%, #faf9f6 45%, #f2efe9 100%);
 }
 
 ::selection { background: var(--color-gold-soft); color: var(--color-ink); }

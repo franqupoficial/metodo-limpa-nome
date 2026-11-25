@@ -9,9 +9,9 @@ type Item = { id: string; name: string; slug: string; ref: string | null; image:
 const brl = (c: number) => (c / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 const STEPS = [
-  { key: "ocasiao", q: "Para qual história estamos escolhendo?", opts: [["presente", "Presente inesquecível", "Para alguém que merece o extraordinário"], ["uso", "Uso pessoal & sofisticação", "Uma joia para acompanhar o seu dia"], ["noivado", "Noivado & celebração", "Solitários, alianças e meias-alianças"], ["fe", "Fé & proteção", "Nossa Senhora, crucifixos, medalhas"]] },
+  { key: "ocasiao", q: "Para qual história estamos escolhendo?", opts: [["presente", "Presente inesquecível", "Para alguém que merece o extraordinário"], ["uso", "Uso pessoal & sofisticação", "Uma joia para acompanhar o seu dia"], ["noivado", "Noivado & celebração", "Solitários, alianças e meias-alianças"], ["fe", "Fé & proteção", "Nossa Senhora, crucifixos, escapulários"]] },
   { key: "metal", q: "Qual acabamento traduz esse estilo?", opts: [["amarelo", "Ouro Amarelo 18k", "Clássico, luminoso, atemporal"], ["branco", "Ouro Branco 18k", "Contemporâneo e discreto"], ["rose", "Ouro Rosé", "Delicado e romântico"], ["todos", "Quero ver todos", "Sem preferência de acabamento"]] },
-  { key: "peca", q: "Qual peça você procura?", opts: [["aneis", "Anéis", "Solitários, alianças, anéis com pedra"], ["brincos", "Brincos", "Argolas, pontos de luz, pérolas"], ["colares", "Colares & pingentes", "Correntes, colares e medalhas"], ["pulseiras", "Pulseiras", "Pulseiras, braceletes e tornozeleiras"], ["todas", "Ver curadoria completa", "Uma seleção entre todas as categorias"]] },
+  { key: "peca", q: "Qual peça você procura?", opts: [["aneis", "Anéis", "Solitários, alianças, anéis com pedra"], ["brincos", "Brincos", "Argolas, pontos de luz, pérolas"], ["colares", "Colares & pingentes", "Correntes, colares e pingentes"], ["pulseiras", "Pulseiras", "Pulseiras, braceletes e tornozeleiras"], ["todas", "Ver curadoria completa", "Uma seleção entre todas as categorias"]] },
 ] as const;
 const LABEL: Record<string, string> = Object.fromEntries(STEPS.flatMap((s) => s.opts.map(([k, l]) => [k, l])));
 

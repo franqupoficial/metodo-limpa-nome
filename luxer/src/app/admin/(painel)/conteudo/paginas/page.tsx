@@ -7,7 +7,7 @@ import { ActionForm, ActionButton, Submit } from "@/components/admin/forms";
 import { savePage, unpublishPage } from "../../../_actions/content";
 
 export const metadata = { title: "Páginas" };
-const TYPES: Record<string, string> = { INSTITUTIONAL: "Institucional", POLICY: "Política", LANDING: "Landing page", STORY: "História da marca" };
+const TYPES: Record<string, string> = { INSTITUTIONAL: "Institucional", POLICY: "Política", LANDING: "Landing page", STORY: "História da marca", GUIDE: "Guia editorial (significados, presentes, cuidados…) — aparece em /guias" };
 
 export default async function Pages({ searchParams }: { searchParams: Promise<{ editar?: string; nova?: string }> }) {
   await requireAdmin("content.manage");

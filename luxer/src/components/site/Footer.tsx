@@ -24,7 +24,7 @@ export function Footer({ s, pages, cats }: { s: Settings; pages: { slug: string;
         <div className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <div className={head}>Joias</div>
-            <ul className="space-y-3">{cats.map((c) => <li key={c.slug}><Link href={`/categoria/${c.slug}`} className={link}>{c.name}</Link></li>)}<li><Link href="/luxer-fe" className={link}>Luxer Fé</Link></li></ul>
+            <ul className="space-y-3"><li><Link href="/luxer-fe" className={link}>Luxer Fé</Link></li>{cats.map((c) => <li key={c.slug}><Link href={`/categoria/${c.slug}`} className={link}>{c.name}</Link></li>)}<li><Link href="/guias" className={link}>Guias Luxer</Link></li></ul>
           </div>
           <div>
             <div className={head}>A Luxer</div>

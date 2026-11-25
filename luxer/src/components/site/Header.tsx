@@ -18,9 +18,11 @@ const ICON = {
   x: "M6 6l12 12M18 6 6 18",
 };
 
-const SUGGESTIONS = ["Alianças", "Solitário", "Corrente", "Nossa Senhora", "Brinco de pérola", "Pulseira infantil"];
+const SUGGESTIONS = ["Alianças", "Solitário", "Nossa Senhora", "Crucifixo", "Escapulário", "São Bento", "Brinco de pérola", "Corrente"];
 
-export function Header({ cats, cartCount, logo, storeName, logged }: { cats: Cat[]; cartCount: number; logo: string | null; storeName: string; logged: boolean }) {
+export type FaithMenu = { total: number; devotions: { label: string; href: string; count: number }[]; types: { label: string; href: string; count: number }[]; guides: boolean };
+
+export function Header({ cats, cartCount, logo, storeName, logged, faith }: { cats: Cat[]; cartCount: number; logo: string | null; storeName: string; logged: boolean; faith?: FaithMenu }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState(false);
   const [mega, setMega] = useState<string | null>(null);
@@ -90,16 +92,42 @@ export function Header({ cats, cartCount, logo, storeName, logged }: { cats: Cat
         </div>
         <nav className="hidden lg:block" aria-label="Categorias">
           <ul className="mx-auto flex max-w-[1440px] items-center justify-center gap-9 px-8">
+            {/* especialização: Luxer Fé abre a navegação, com painel de devoções; as demais categorias seguem */}
+            <li onMouseEnter={() => setMega(faith?.devotions.length ? "faith" : null)}><Link href="/luxer-fe" className={`${navLink} ${path.startsWith("/luxer-fe") ? "!text-ink after:scale-x-100" : ""}`}>Luxer Fé</Link></li>
+            <li aria-hidden className="h-3 w-px bg-line" />
             {nav.map((c) => (
               <li key={c.id} onMouseEnter={() => setMega(c.children.length ? c.id : null)}>
                 <Link href={`/categoria/${c.slug}`} className={`${navLink} ${active(c.slug) ? "!text-ink after:scale-x-100" : ""}`}>{c.name}</Link>
               </li>
             ))}
             <li aria-hidden className="h-3 w-px bg-line" />
-            <li onMouseEnter={() => setMega(null)}><Link href="/luxer-fe" className={`${navLink} ${path === "/luxer-fe" ? "!text-ink after:scale-x-100" : ""}`}>Luxer Fé</Link></li>
             <li onMouseEnter={() => setMega(null)}><Link href="/provador" className={`${navLink} ${path === "/provador" ? "!text-ink after:scale-x-100" : ""}`}>Provador</Link></li>
           </ul>
-          {mega && (() => {
+          {mega === "faith" && faith && (
+            <div className="absolute inset-x-0 top-full animate-[fade-in_.35s_ease] border-y border-line bg-ivory">
+              <div className="mx-auto grid max-w-[1180px] grid-cols-[1.1fr_2fr_1fr] gap-14 px-8 py-12">
+                <div>
+                  <div className="eyebrow text-stone">Luxer Fé</div>
+                  <p className="mt-5 max-w-[15rem] font-serif text-[1.35rem] leading-snug text-ink/85">Joias de devoção em ouro 18k.</p>
+                  <Link href="/luxer-fe" className="link-line mt-7">Ver as {faith.total} peças</Link>
+                  {faith.guides && <Link href="/guias" className="mt-5 block text-[12px] text-ink/60 underline-offset-4 hover:text-ink hover:underline">Guias e significados</Link>}
+                </div>
+                <div>
+                  <div className="text-[10px] uppercase tracking-[0.24em] text-stone">Devoções</div>
+                  <ul className="mt-5 grid grid-cols-2 gap-x-10 gap-y-3.5">
+                    {faith.devotions.map((d) => <li key={d.href}><Link href={d.href} className="group flex items-baseline justify-between gap-3 font-serif text-[1.15rem] text-ink/85 transition-colors hover:text-ink">{d.label}<span className="font-sans text-[10px] tabular-nums text-stone opacity-0 transition-opacity group-hover:opacity-100">{d.count}</span></Link></li>)}
+                  </ul>
+                </div>
+                <div>
+                  <div className="text-[10px] uppercase tracking-[0.24em] text-stone">Por peça</div>
+                  <ul className="mt-5 space-y-3.5">
+                    {faith.types.map((d) => <li key={d.href}><Link href={d.href} className="font-serif text-[1.15rem] text-ink/85 transition-colors hover:text-ink">{d.label}</Link></li>)}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
+          {mega && mega !== "faith" && (() => {
             const c = nav.find((x) => x.id === mega)!;
             return (
               <div className="absolute inset-x-0 top-full animate-[fade-in_.35s_ease] border-y border-line bg-ivory">
@@ -145,6 +173,16 @@ export function Header({ cats, cartCount, logo, storeName, logged }: { cats: Cat
               <button onClick={() => setOpen(false)} className="-mr-2 p-2" aria-label="Fechar menu"><I d={ICON.x} /></button>
             </div>
             <nav className="flex-1 overflow-y-auto px-5 pb-8 pt-2">
+              {faith?.devotions.length ? (
+                <details className="group border-b border-line">
+                  <summary className="flex cursor-pointer list-none items-center justify-between py-4 font-serif text-[1.45rem]">Luxer Fé<span className="text-lg font-light text-stone transition-transform duration-300 group-open:rotate-45">+</span></summary>
+                  <ul className="pb-4 pl-1">
+                    <li><Link href="/luxer-fe" className="block py-2 text-[13px] text-ink">Todas as {faith.total} peças</Link></li>
+                    {faith.devotions.map((d) => <li key={d.href}><Link href={d.href} className="block py-2 text-[13px] text-ink/70">{d.label}</Link></li>)}
+                    {faith.guides && <li><Link href="/guias" className="block py-2 text-[13px] text-ink/70">Guias e significados</Link></li>}
+                  </ul>
+                </details>
+              ) : <Link href="/luxer-fe" className="block border-b border-line py-4 font-serif text-[1.45rem]">Luxer Fé</Link>}
               {nav.map((c) => c.children.length ? (
                 <details key={c.id} className="group border-b border-line">
                   <summary className="flex cursor-pointer list-none items-center justify-between py-4 font-serif text-[1.45rem]">{c.name}<span className="text-lg font-light text-stone transition-transform duration-300 group-open:rotate-45">+</span></summary>
@@ -156,7 +194,6 @@ export function Header({ cats, cartCount, logo, storeName, logged }: { cats: Cat
               ) : (
                 <Link key={c.id} href={`/categoria/${c.slug}`} className="block border-b border-line py-4 font-serif text-[1.45rem]">{c.name}</Link>
               ))}
-              <Link href="/luxer-fe" className="block border-b border-line py-4 font-serif text-[1.45rem]">Luxer Fé</Link>
               <Link href="/provador" className="block border-b border-line py-4 font-serif text-[1.45rem]">Provador virtual</Link>
               <div className="mt-8 space-y-4 text-[11px] uppercase tracking-[0.22em] text-ink/70">
                 <Link href={logged ? "/conta" : "/conta/entrar"} className="block">Minha conta</Link>

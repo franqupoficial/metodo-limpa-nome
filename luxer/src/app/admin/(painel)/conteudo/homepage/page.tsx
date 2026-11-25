@@ -9,7 +9,7 @@ export const metadata = { title: "Homepage" };
 const TYPES: Record<string, string> = {
   HERO: "Abertura (título: “linha 1 | linha 2”; foto lifestyle ou vídeo macro; banners aparecem logo abaixo)", ATELIER: "Atelier Concierge (compra guiada)", CATEGORIES: "Categorias", BESTSELLERS: "Mais vendidos", NEW: "Novidades", COLLECTIONS: "Coleções especiais",
   FAITH: "Luxer Fé", RECOMMENDED: "Produtos recomendados", PRODUCTS: "Vitrine manual (referências)", TRYON: "Provador virtual", STORY: "História da marca",
-  REVIEWS: "Avaliações", INSTAGRAM: "Instagram", NEWSLETTER: "Newsletter (o formulário já aparece no rodapé de todas as páginas; esta seção não é exibida)", EDITORIAL: "Bloco editorial (imagem + texto)",
+  REVIEWS: "Avaliações", INSTAGRAM: "Instagram", NEWSLETTER: "Newsletter (o formulário já aparece no rodapé de todas as páginas; esta seção não é exibida)", EDITORIAL: "Bloco editorial (imagem + texto)", GUIDES: "Guias editoriais (páginas do tipo Guia; some se não houver)",
 };
 
 export default async function HomeEditor() {
