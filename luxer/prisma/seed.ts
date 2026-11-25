@@ -100,6 +100,18 @@ async function homeV2() {
   await prisma.homeSection.updateMany({ where: { type: "FAITH", subtitle: "Joias que carregam devoção" }, data: { subtitle: null } });
 }
 
+/**
+ * Conta master provisória, pedida pelo proprietário (admin@luxer.com, senha provisória combinada fora do código —
+ * aqui só o hash bcrypt). Criada UMA vez e só se o banco não tiver nenhum usuário administrativo: nunca sobrescreve,
+ * nunca recria. Troque a senha em "Minha conta" no primeiro acesso.
+ */
+async function bootstrapMaster() {
+  if (await prisma.adminUser.count()) return;
+  const u = await prisma.adminUser.create({ data: { email: "admin@luxer.com", name: "Master", role: "OWNER", passwordHash: "$2b$12$R/94EeeQ0OCnIuuXF.o6k.64hcZ/vMqDDCXlBdJP9HNbHwRF4Eu4y" } });
+  await prisma.auditLog.create({ data: { adminId: u.id, action: "auth.bootstrap_master" } });
+  console.log("Conta master provisória criada: admin@luxer.com");
+}
+
 async function faq() {
   if (await prisma.faqItem.count()) return;
   // Respostas extraídas das políticas publicadas pela própria Luxer no site atual.
@@ -118,6 +130,7 @@ async function main() {
   await pages();
   await home();
   await faq();
+  await bootstrapMaster();
   await atelier();
   await homeV2();
   await ensureDefaultFlows(); // fluxos de remarketing criados DESATIVADOS
