@@ -1,12 +1,12 @@
 import "server-only";
-import nodemailer from "nodemailer";
+import nodemailer, { type Transporter } from "nodemailer";
 import { prisma } from "./db";
 import { formatMoney } from "./format";
 
 export const appUrl = () => (process.env.APP_URL || "http://localhost:3100").replace(/\/$/, "");
 export const mailConfigured = () => Boolean(process.env.SMTP_HOST);
 
-let transporter: nodemailer.Transporter | null = null;
+let transporter: Transporter | null = null;
 function getTransporter() {
   if (!transporter) {
     transporter = nodemailer.createTransport({

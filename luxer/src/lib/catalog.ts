@@ -1,4 +1,5 @@
 import "server-only";
+import { tryOnCategoryFor, REGION_OF } from "./ai/categories";
 import { Prisma } from "@prisma/client";
 import { prisma } from "./db";
 import { getSettings } from "./settings";
@@ -16,6 +17,9 @@ export const cardSelect = {
   ratingAvg: true, ratingCount: true, material: true,
   images: { orderBy: { position: "asc" }, take: 2, select: { id: true, key: true, thumbKey: true, alt: true } },
   variants: { where: { active: true }, select: { stock: true, reserved: true } },
+  // compatibilidade com o provador AR (categoria da peça → região do corpo)
+  tryOnEnabled: true, jewelryType: true,
+  categories: { select: { category: { select: { name: true } } } },
 } satisfies Prisma.ProductSelect;
 
 type CardRow = Prisma.ProductGetPayload<{ select: typeof cardSelect }>;
@@ -34,6 +38,8 @@ export type ProductCard = {
   bestSeller: boolean;
   rating: number | null;
   ratingCount: number;
+  /** peça compatível com o provador AR (anel, pulseira, brinco, colar/corrente/pingente) */
+  ar: boolean;
 };
 
 export async function toCards(rows: CardRow[]): Promise<ProductCard[]> {
@@ -52,6 +58,7 @@ export async function toCards(rows: CardRow[]): Promise<ProductCard[]> {
     bestSeller: p.bestSeller,
     rating: p.ratingAvg ? Number(p.ratingAvg) : null,
     ratingCount: p.ratingCount,
+    ar: p.tryOnEnabled && Boolean(REGION_OF[tryOnCategoryFor(p.categories.map((c) => c.category.name).join(" ") + " " + (p.jewelryType ?? "") + " " + p.name) ?? ""]),
   }));
 }
 

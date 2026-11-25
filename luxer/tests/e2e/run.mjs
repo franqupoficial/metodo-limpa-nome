@@ -545,7 +545,13 @@ try {
   await step(21, "Provador AR: privacidade → foto da galeria → joia sobreposta → ajuste → captura → compra", async () => {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, acceptDownloads: true });
     const m = await ctx.newPage();
-    await m.goto(`${BASE}/produto/${productSlug}`);
+    // vitrine: atalho "Provar (AR)" nos cards compatíveis abre o provador já carregado
+    await m.goto(`${BASE}/categoria/aneis`);
+    const arLink = m.locator(`a[href="/produto/${productSlug}?ar=1"]`);
+    assert((await arLink.count()) > 0, "card da vitrine sem o atalho Provar (AR)");
+    await m.goto(`${BASE}/produto/${productSlug}?ar=1`);
+    await m.locator('[role="dialog"][aria-label="Provador virtual AR"]').waitFor();
+    await m.keyboard.press("Escape");
     await m.click('button:has-text("Provar na mão (AR)")');
     const dlg = m.locator('[role="dialog"][aria-label="Provador virtual AR"]');
     await dlg.locator("text=processada no seu aparelho").waitFor();

@@ -34,7 +34,7 @@ export const checkoutSchema = z.object({
   createAccount: z.boolean().default(false),
   password: z.string().max(128).optional(),
   marketingOptIn: z.boolean().default(false),
-  acceptTerms: z.literal(true, { errorMap: () => ({ message: "É necessário aceitar os termos e a política de privacidade." }) }),
+  acceptTerms: z.literal(true, { message: "É necessário aceitar os termos e a política de privacidade." }),
   note: z.string().trim().max(500).optional(),
   utmSource: z.string().max(80).optional(),
   utmCampaign: z.string().max(80).optional(),
