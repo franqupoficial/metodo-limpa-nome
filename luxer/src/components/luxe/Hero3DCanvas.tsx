@@ -10,6 +10,8 @@ import { ArrowDown } from "lucide-react";
 import { SolitaireRing } from "./three/SolitaireRing";
 import { Studio } from "./three/Studio";
 import { useWebGL } from "./useWebGL";
+import { useStoreTheme } from "@/components/site/StoreTheme";
+import { studioFor } from "@/lib/store-theme";
 
 type Props = { priceFrom: string | null; models: number; href: string };
 
@@ -57,6 +59,8 @@ export function Hero3DCanvas({ priceFrom, models, href }: Props) {
   const webgl = useWebGL();
   const [dpr, setDpr] = useState<[number, number]>([1, 2]);
   const [active, setActive] = useState(true);
+  const { theme } = useStoreTheme();
+  const [chapter, setChapter] = useState(0);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -74,20 +78,25 @@ export function Hero3DCanvas({ priceFrom, models, href }: Props) {
         .fromTo(".h3-spec", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.14 }, 0.7)
         .to({}, { duration: 0.16 }, 0.84);
     }, el);
+    // camada editorial (aditiva): fio de progresso e capítulo atual — lê o mesmo progresso, não altera a coreografia
+    const rail = ScrollTrigger.create({ trigger: el, start: "top top", end: "bottom bottom", onUpdate: (st) => {
+      el.style.setProperty("--hp", st.progress.toFixed(4));
+      setChapter(st.progress < 0.3 ? 0 : st.progress < 0.65 ? 1 : 2);
+    } });
     const io = new IntersectionObserver(([e]) => setActive(e.isIntersecting), { rootMargin: "100px" });
     io.observe(el);
     const move = (e: PointerEvent) => { pointer.current = { x: e.clientX / window.innerWidth - 0.5, y: e.clientY / window.innerHeight - 0.5 }; };
     if (window.matchMedia("(pointer: fine)").matches) window.addEventListener("pointermove", move, { passive: true });
-    return () => { ctx.revert(); io.disconnect(); window.removeEventListener("pointermove", move); };
+    return () => { ctx.revert(); rail.kill(); io.disconnect(); window.removeEventListener("pointermove", move); };
   }, []);
 
   return (
-    <section ref={root} className="relative h-[400svh] bg-[#050505] text-[#f5f5f7]" aria-label="LUXER — a arte do ouro eterno">
+    <section ref={root} className="relative h-[400svh] bg-ivory text-ink" aria-label="LUXER — a arte do ouro eterno">
       <div className="sticky top-0 h-svh overflow-hidden">
         {/* brilho de estúdio ao fundo */}
-        <div aria-hidden className="absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_45%,rgba(212,175,55,0.10),transparent_70%)]" />
+        <div aria-hidden className="lx-hero-bg absolute inset-0 transition-[background] duration-700" />
         {/* números gigantes translúcidos (fase macro) */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 flex flex-col justify-center gap-[2vh] overflow-hidden font-serif leading-none text-white/[0.06]">
+        <div aria-hidden className="pointer-events-none absolute inset-0 flex flex-col justify-center gap-[2vh] overflow-hidden font-serif leading-none text-ink/[0.06]">
           <span className="h3-num h3-num-a block whitespace-nowrap pl-[8vw] text-[30vw] sm:text-[22vw]">18K</span>
           <span className="h3-num h3-num-b block whitespace-nowrap text-right text-[26vw] sm:text-[18vw]">750</span>
           <span className="h3-num h3-num-c block whitespace-nowrap pl-[30vw] text-[22vw] italic sm:text-[15vw]">Au</span>
@@ -95,42 +104,54 @@ export function Hero3DCanvas({ priceFrom, models, href }: Props) {
 
         <div className="absolute inset-0">
           {webgl === false ? (
-            <div className="flex h-full items-center justify-center"><div aria-hidden className="h-[38vmin] w-[38vmin] rounded-full border border-[#d4af37]/40 shadow-[0_0_120px_rgba(212,175,55,0.15)_inset]" /></div>
+            <div className="flex h-full items-center justify-center"><div aria-hidden className="h-[38vmin] w-[38vmin] rounded-full border border-gold/40 shadow-[0_0_120px_color-mix(in_srgb,var(--color-gold)_15%,transparent)_inset]" /></div>
           ) : webgl && (
             <Canvas dpr={dpr} frameloop={active ? "always" : "never"} camera={{ fov: 30, near: 0.1, far: 50, position: [0, 0.55, 6.2] }} gl={{ antialias: true, alpha: true, powerPreference: "high-performance", toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.05 }} aria-hidden>
               <PerformanceMonitor onDecline={() => setDpr([1, 1.25])} onIncline={() => setDpr([1, 2])} />
               <Suspense fallback={null}>
-                <Studio />
+                <Studio key={theme} {...studioFor(theme)} />
                 <Choreography progress={progress} pointer={pointer} />
               </Suspense>
             </Canvas>
           )}
         </div>
 
+        {/* índice editorial dos capítulos + fio de progresso (acompanham a rolagem) */}
+        <ol aria-hidden className="pointer-events-none absolute left-[3.2vw] top-1/2 hidden -translate-y-1/2 flex-col gap-5 text-[10px] uppercase tracking-[0.38em] lg:flex">
+          {["Forma", "Cravação", "O solitário"].map((c, i) => (
+            <li key={c} className={`flex items-center gap-3 transition-all duration-500 ${chapter === i ? "text-ink" : "text-stone/60"}`}>
+              <span className="font-serif text-[13px] normal-case tracking-normal tabular-nums">{["I", "II", "III"][i]}</span>
+              <span className={`h-px bg-gold transition-all duration-500 ${chapter === i ? "w-8" : "w-3 opacity-40"}`} />
+              <span className={chapter === i ? "opacity-100" : "opacity-0"}>{c}</span>
+            </li>
+          ))}
+        </ol>
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-ink/[0.08]"><div className="h-full origin-left bg-gold/70" style={{ transform: "scaleX(var(--hp, 0))" }} /></div>
+
         {/* fase 1: título */}
         <div className="h3-title pointer-events-none absolute inset-x-0 bottom-[14vh] px-6 text-center">
-          <div className="text-[10px] uppercase tracking-[0.5em] text-[#86868b]">Luxer Joias · Curitiba</div>
+          <div className="flex items-center justify-center gap-4 text-[10px] uppercase tracking-[0.5em] text-stone"><span aria-hidden className="h-px w-8 bg-gold/60 sm:w-14" />Luxer Joias · Curitiba<span aria-hidden className="h-px w-8 bg-gold/60 sm:w-14" /></div>
           <h1 className="mt-5 font-serif text-[2.6rem] font-normal leading-[1.02] tracking-tight sm:text-[4.6rem]">
-            LUXER <span className="text-[#d4af37]">—</span> <span className="italic">A arte do ouro eterno</span>
+            LUXER <span className="text-gold">—</span> <span className="italic">A arte do ouro eterno</span>
           </h1>
         </div>
-        <div className="h3-hint absolute inset-x-0 bottom-6 flex flex-col items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-[#86868b]">
+        <div className="h3-hint absolute inset-x-0 bottom-6 flex flex-col items-center gap-2 text-[10px] uppercase tracking-[0.3em] text-stone">
           Role para descobrir <ArrowDown className="h-4 w-4 animate-bounce" strokeWidth={1.25} />
         </div>
 
         {/* fase 3: especificação + compra */}
         <div className="h3-spec absolute inset-x-0 bottom-0 px-6 pb-[8vh] opacity-0 sm:inset-x-auto sm:bottom-auto sm:right-[7vw] sm:top-1/2 sm:w-[min(440px,40vw)] sm:-translate-y-1/2 sm:px-0 sm:pb-0">
-          <div className="text-[10px] uppercase tracking-[0.4em] text-[#d4af37]">Solitário · Ouro 18k</div>
+          <div className="text-[10px] uppercase tracking-[0.4em] text-gold">Solitário · Ouro 18k</div>
           <h2 className="mt-4 font-serif text-[2.2rem] leading-[1.05] tracking-tight sm:text-[3rem]">O clássico que atravessa gerações.</h2>
-          <dl className="mt-7 divide-y divide-white/[0.08] border-y border-white/[0.08] text-[13px] tracking-tight">
-            <div className="flex justify-between gap-6 py-3"><dt className="text-[#86868b]">Metal</dt><dd>Ouro 18 quilates · 750</dd></div>
-            <div className="flex justify-between gap-6 py-3"><dt className="text-[#86868b]">Garantia</dt><dd>Certificado e nota fiscal</dd></div>
-            {models > 0 && <div className="flex justify-between gap-6 py-3"><dt className="text-[#86868b]">Acervo</dt><dd>{models} modelos de solitário</dd></div>}
-            {priceFrom && <div className="flex justify-between gap-6 py-3"><dt className="text-[#86868b]">Investimento</dt><dd>a partir de {priceFrom}</dd></div>}
+          <dl className="mt-7 divide-y divide-ink/[0.08] border-y border-ink/[0.08] text-[13px] tracking-tight">
+            <div className="flex justify-between gap-6 py-3"><dt className="text-stone">Metal</dt><dd>Ouro 18 quilates · 750</dd></div>
+            <div className="flex justify-between gap-6 py-3"><dt className="text-stone">Garantia</dt><dd>Certificado e nota fiscal</dd></div>
+            {models > 0 && <div className="flex justify-between gap-6 py-3"><dt className="text-stone">Acervo</dt><dd>{models} modelos de solitário</dd></div>}
+            {priceFrom && <div className="flex justify-between gap-6 py-3"><dt className="text-stone">Investimento</dt><dd>a partir de {priceFrom}</dd></div>}
           </dl>
           <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-4">
-            <Link href={href} className="inline-flex items-center justify-center rounded-full bg-[#f5f5f7] px-7 py-3.5 text-[12px] font-medium tracking-tight text-[#050505] transition-colors hover:bg-white">Escolher meu solitário</Link>
-            <button type="button" onClick={() => { document.getElementById("atelier")?.scrollIntoView({ behavior: "smooth", block: "start" }); window.dispatchEvent(new Event("lx:finder-start")); }} className="text-[12px] tracking-tight text-[#f5f5f7]/80 underline-offset-4 hover:text-white hover:underline">Descobrir minha joia ideal</button>
+            <Link href={href} className="inline-flex items-center justify-center rounded-full bg-ink px-7 py-3.5 text-[12px] font-medium tracking-tight text-ivory transition-colors hover:bg-ink-2">Escolher meu solitário</Link>
+            <button type="button" onClick={() => { document.getElementById("atelier")?.scrollIntoView({ behavior: "smooth", block: "start" }); window.dispatchEvent(new Event("lx:finder-start")); }} className="text-[12px] tracking-tight text-ink/80 underline-offset-4 hover:text-ink hover:underline">Descobrir minha joia ideal</button>
           </div>
         </div>
       </div>

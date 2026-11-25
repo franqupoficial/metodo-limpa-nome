@@ -163,4 +163,42 @@ html:has(.theme-obsidian), body:has(.theme-obsidian) { background: #050505; }
 .theme-obsidian ::selection { background: rgba(212, 175, 55, 0.35); color: #fff; }
 .theme-obsidian .prose-luxer { color: #c7c7cc; }
 
+/*
+ * Light Luxury (porcelana): marfim quente, tinta quase preta, ouro envelhecido legível em texto pequeno.
+ * Mesmos componentes e a mesma experiência 3D — só a luz e a paleta mudam.
+ */
+.theme-ivory {
+  --color-ivory: #f6f3ee;
+  --color-ink: #141312;
+  --color-ink-2: #2a2824;
+  --color-ink-3: #3d3a34;
+  --color-stone: #6e675d;
+  --color-line: rgba(20, 19, 18, 0.1);
+  --color-sand: #eee9e1;
+  --color-surface: #fbf9f6;
+  --color-plate: #ffffff;
+  --color-gold: #8a6a32;
+  --color-gold-2: #6f5426;
+  --color-gold-soft: #e3d3ae;
+  color-scheme: light;
+  background: var(--color-ivory);
+  color: var(--color-ink);
+}
+html:has(.theme-ivory), body:has(.theme-ivory) { background: #f6f3ee; }
+.theme-ivory ::selection { background: #e3d3ae; color: #141312; }
+
+/* Palco do Hero 3D: luz de estúdio por tema (a coreografia do anel é a mesma nos dois) */
+.lx-hero-bg {
+  background:
+    radial-gradient(60% 50% at 50% 45%, color-mix(in srgb, var(--color-gold) 11%, transparent), transparent 70%),
+    radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+}
+.theme-ivory .lx-hero-bg {
+  background:
+    radial-gradient(42% 10% at 50% 80%, rgba(110, 82, 40, 0.10), transparent 72%),
+    radial-gradient(55% 48% at 50% 42%, #fffdf9 0%, rgba(255, 253, 249, 0) 70%),
+    radial-gradient(120% 95% at 50% 45%, transparent 60%, rgba(120, 96, 60, 0.12) 100%),
+    linear-gradient(180deg, #f3efe8 0%, #f6f3ee 45%, #efe9e0 100%);
+}
+
 ::selection { background: var(--color-gold-soft); color: var(--color-ink); }

@@ -135,7 +135,7 @@ export function CheckoutForm(p: Props) {
             {ship?.error && <p className="text-sm text-red-700">{ship.error}</p>}
             {ship?.options.map((o) => (
               <label key={o.id} className={`flex cursor-pointer items-center justify-between gap-3 border bg-surface px-4 py-4 text-[13px] transition-colors ${shipId === o.id ? "border-ink" : "border-line hover:border-ink/40"}`}>
-                <span className="flex items-center gap-3"><input type="radio" name="ship" checked={shipId === o.id} onChange={() => setShipId(o.id)} className="accent-[#d4af37]" /> {o.name}{o.carrier && o.carrier !== "Luxer" ? ` · ${o.carrier}` : ""} <span className="text-stone">— até {o.days} dias úteis</span></span>
+                <span className="flex items-center gap-3"><input type="radio" name="ship" checked={shipId === o.id} onChange={() => setShipId(o.id)} className="accent-gold" /> {o.name}{o.carrier && o.carrier !== "Luxer" ? ` · ${o.carrier}` : ""} <span className="text-stone">— até {o.days} dias úteis</span></span>
                 <span>{p.totals.freeShipping || o.priceCents === 0 ? "Grátis" : brl(o.priceCents)}</span>
               </label>
             ))}
@@ -176,12 +176,12 @@ export function CheckoutForm(p: Props) {
         </dl>
         {!p.customer?.logged && (
           <div className="space-y-2 text-sm">
-            <label className="flex items-center gap-2"><input type="checkbox" checked={f.createAccount} onChange={(e) => set("createAccount", e.target.checked)} className="accent-[#d4af37]" /> Criar conta para acompanhar pedidos</label>
+            <label className="flex items-center gap-2"><input type="checkbox" checked={f.createAccount} onChange={(e) => set("createAccount", e.target.checked)} className="accent-gold" /> Criar conta para acompanhar pedidos</label>
             {f.createAccount && <input type="password" autoComplete="new-password" placeholder="Senha (8+ caracteres, letras e números)" value={f.password} onChange={(e) => set("password", e.target.value)} className="field" />}
           </div>
         )}
-        <label className="flex items-start gap-2 text-xs"><input type="checkbox" checked={f.marketingOptIn} onChange={(e) => set("marketingOptIn", e.target.checked)} className="mt-0.5 accent-[#d4af37]" /> Quero receber novidades e ofertas por e-mail (opcional).</label>
-        <label className="flex items-start gap-2 text-xs"><input type="checkbox" required checked={f.acceptTerms} onChange={(e) => set("acceptTerms", e.target.checked)} className="mt-0.5 accent-[#d4af37]" /> <span>Li e aceito os <Link href="/p/termos-e-garantias" target="_blank" className="underline underline-offset-2">termos</Link>, a <Link href="/p/politica-de-troca" target="_blank" className="underline underline-offset-2">política de troca</Link> e a <Link href="/privacidade" target="_blank" className="underline underline-offset-2">política de privacidade</Link>.</span></label>
+        <label className="flex items-start gap-2 text-xs"><input type="checkbox" checked={f.marketingOptIn} onChange={(e) => set("marketingOptIn", e.target.checked)} className="mt-0.5 accent-gold" /> Quero receber novidades e ofertas por e-mail (opcional).</label>
+        <label className="flex items-start gap-2 text-xs"><input type="checkbox" required checked={f.acceptTerms} onChange={(e) => set("acceptTerms", e.target.checked)} className="mt-0.5 accent-gold" /> <span>Li e aceito os <Link href="/p/termos-e-garantias" target="_blank" className="underline underline-offset-2">termos</Link>, a <Link href="/p/politica-de-troca" target="_blank" className="underline underline-offset-2">política de troca</Link> e a <Link href="/privacidade" target="_blank" className="underline underline-offset-2">política de privacidade</Link>.</span></label>
         {error && <p role="alert" className="border-l border-red-700 pl-3 text-[13px] text-red-800">{error}</p>}
         <button disabled={pending || !p.enabled} className="btn-gold w-full">{pending ? "Processando…" : method === "PIX" ? "Gerar Pix" : "Pagar com cartão"}</button>
         {!p.enabled && <p className="text-xs text-red-700">Pagamentos online em configuração. Fale conosco pelo WhatsApp para concluir sua compra.</p>}

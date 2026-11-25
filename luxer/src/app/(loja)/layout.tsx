@@ -1,4 +1,7 @@
+import { cookies } from "next/headers";
 import { getSettings } from "@/lib/settings";
+import { StoreThemeProvider } from "@/components/site/StoreTheme";
+import { THEME_COOKIE } from "@/lib/store-theme";
 import { menuCategories } from "@/lib/catalog";
 import { getCartView } from "@/lib/cart";
 import { getCustomer } from "@/lib/customer-auth";
@@ -24,8 +27,10 @@ export default async function StoreLayout({ children }: { children: React.ReactN
   ]);
   const now = new Date();
   const popup = await prisma.popup.findFirst({ where: { active: true, AND: [{ OR: [{ startsAt: null }, { startsAt: { lte: now } }] }, { OR: [{ endsAt: null }, { endsAt: { gt: now } }] }] }, orderBy: { updatedAt: "desc" } });
+  // Dark Luxury é o padrão; Light Luxury quando o cliente escolhe (cookie) — sem piscar, já no HTML do servidor
+  const theme = (await cookies()).get(THEME_COOKIE)?.value === "light" ? "light" : "dark";
   return (
-    <div className="theme-obsidian flex min-h-dvh flex-col">
+    <StoreThemeProvider initial={theme} className="flex min-h-dvh flex-col">
       <a href="#conteudo" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-ink focus:p-3 focus:text-ivory">Pular para o conteúdo</a>
       <Header cats={cats} cartCount={cart.count} logo={mediaUrl(s.store.logoKey)} storeName={s.store.name} logged={Boolean(customer)} />
       <main id="conteudo" className="flex-1">{children}</main>
@@ -36,6 +41,6 @@ export default async function StoreLayout({ children }: { children: React.ReactN
       <CompareBar />
       <Consent ids={{ ga4Id: s.analytics.ga4Id, gtmId: s.analytics.gtmId, metaPixelId: s.analytics.metaPixelId }} />
       <Popup consentText={s.marketing.newsletterConsentText} popup={popup ? { id: popup.id, title: popup.title, body: popup.body, image: mediaUrl(popup.imageKey), ctaLabel: popup.ctaLabel, ctaUrl: popup.ctaUrl, couponCode: popup.couponCode, collectEmail: popup.collectEmail, delaySeconds: popup.delaySeconds, pages: popup.pages } : null} />
-    </div>
+    </StoreThemeProvider>
   );
 }

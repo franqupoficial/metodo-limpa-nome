@@ -73,8 +73,8 @@ export default async function Home() {
       }
       case "ATELIER":
         out.push(
-          <section key={sec.id} id="atelier" className="scroll-mt-20 border-t border-white/[0.08] bg-[#050505] py-24 sm:py-32"><Container>
-            <div className="mb-14 text-[10px] uppercase tracking-[0.45em] text-[#86868b] sm:mb-20">{sec.subtitle ?? "Guided Luxury Concierge"}</div>
+          <section key={sec.id} id="atelier" className="scroll-mt-20 border-t border-ink/[0.08] bg-ivory py-24 sm:py-32"><Container>
+            <div className="mb-14 text-[10px] uppercase tracking-[0.45em] text-stone sm:mb-20">{sec.subtitle ?? "Guided Luxury Concierge"}</div>
             <GuidedGiftFlow whatsapp={s.contact.whatsapp} />
           </Container></section>,
         );

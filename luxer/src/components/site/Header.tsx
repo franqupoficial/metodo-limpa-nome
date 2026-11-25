@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import { ThemeToggle } from "./StoreTheme";
 
 type Cat = { id: string; name: string; slug: string; faith: boolean; children: { id: string; name: string; slug: string }[] };
 
@@ -78,6 +79,7 @@ export function Header({ cats, cartCount, logo, storeName, logged }: { cats: Cat
             )}
           </Link>
           <div className="flex items-center justify-end text-ink/75">
+            <ThemeToggle className="hover:text-ink" />
             <Link href={logged ? "/conta" : "/conta/entrar"} className="hidden p-2 transition-colors hover:text-ink sm:block" aria-label="Minha conta"><I d={ICON.user} /></Link>
             <Link href="/favoritos" className="hidden p-2 transition-colors hover:text-ink sm:block" aria-label="Favoritos"><I d={ICON.heart} /></Link>
             <Link href="/carrinho" className="-mr-2 flex items-center gap-1 p-2 transition-colors hover:text-ink" aria-label={`Sacola com ${cartCount} item(ns)`}>

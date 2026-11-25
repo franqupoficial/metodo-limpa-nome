@@ -297,7 +297,7 @@ export function VirtualTryOnModal({ product, whatsapp, sizeGuide, onClose }: { p
   const pill = "flex items-center gap-2 rounded-full border border-white/10 bg-black/45 px-3.5 py-2 text-[12px] tracking-tight text-white backdrop-blur-md";
 
   return (
-    <div className="fixed inset-0 z-[90] flex items-stretch justify-center bg-black/70 backdrop-blur-sm sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-label="Provador virtual AR" onClick={() => { stopCamera(); onClose(); }}>
+    <div className="theme-obsidian fixed inset-0 z-[90] flex items-stretch justify-center !bg-black/70 backdrop-blur-sm sm:items-center sm:p-6" role="dialog" aria-modal="true" aria-label="Provador virtual AR" onClick={() => { stopCamera(); onClose(); }}>
       <motion.div initial={{ opacity: 0, y: 24, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }}
         className="relative flex h-[100dvh] w-full flex-col overflow-hidden bg-[#050505] text-[#f5f5f7] sm:h-[min(92vh,900px)] sm:max-w-[520px] sm:rounded-[28px] sm:border sm:border-white/[0.08]" onClick={(e) => e.stopPropagation()}>
         <button type="button" onClick={() => { stopCamera(); onClose(); }} className="absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-md" aria-label="Fechar provador"><X className="h-5 w-5" strokeWidth={1.25} /></button>
