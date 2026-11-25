@@ -1,0 +1,8 @@
+storage
+tests
+.next
+node_modules
+.env
+.env.*
+!.env.example
+scripts/import/__pycache__
