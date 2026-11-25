@@ -53,3 +53,27 @@ export async function markNotificationsRead() {
   if (!a) return;
   await prisma.adminNotification.updateMany({ where: { readAt: null, OR: [{ adminId: a.id }, { adminId: null }] }, data: { readAt: new Date() } });
 }
+
+/** Primeiro acesso: cria a conta master (Proprietário) com o código de instalação. Ver src/lib/admin-setup.ts. */
+export async function setupOwnerAction(_: ActionState, fd: FormData): Promise<ActionState> {
+  const { setupOpen, codeMatches } = await import("@/lib/admin-setup");
+  const { passwordIsStrong, PASSWORD_RULES } = await import("@/lib/password");
+  const bcrypt = (await import("bcryptjs")).default;
+  const ip = await clientIp();
+  if (!(await rateLimit(`admin-setup:${ip}`, 5, 3600))) return fail("Muitas tentativas. Tente mais tarde.");
+  if (!(await setupOpen())) return fail("O primeiro acesso não está disponível (a conta master já existe ou o código não foi configurado).");
+  if (!codeMatches(String(fd.get("code") ?? ""))) return fail("Código de instalação incorreto.");
+  const email = str(fd, "email").toLowerCase(), name = str(fd, "name") || "Master";
+  const pass = String(fd.get("password") ?? "");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail("Informe um e-mail válido.");
+  if (pass !== String(fd.get("confirm") ?? "")) return fail("As senhas não conferem.");
+  if (!passwordIsStrong(pass)) return fail(PASSWORD_RULES);
+  const passwordHash = await bcrypt.hash(pass, 12);
+  const u = await prisma.adminUser.upsert({
+    where: { email },
+    create: { email, name, role: "OWNER", passwordHash },
+    update: { name, role: "OWNER", passwordHash, active: true, failedLogins: 0, lockedUntil: null },
+  });
+  await prisma.auditLog.create({ data: { adminId: u.id, action: "auth.setup_owner", ip } });
+  return ok("Conta master criada. Faça login.", { redirect: "/admin/login" });
+}

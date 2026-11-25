@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_ADMIN = ["/admin/login", "/admin/recuperar-senha", "/admin/redefinir-senha"];
+const PUBLIC_ADMIN = ["/admin/login", "/admin/recuperar-senha", "/admin/redefinir-senha", "/admin/primeiro-acesso"];
 const COOKIE = process.env.NODE_ENV === "production" ? "__Host-lx_admin" : "lx_admin";
 
 /** Barreira inicial: sem cookie de sessão → login. A validação real (sessão + permissão) ocorre no servidor. */
