@@ -134,8 +134,8 @@ export function CheckoutForm(p: Props) {
             {!ship && <p className="text-sm text-stone">Informe o CEP para ver as opções de entrega.</p>}
             {ship?.error && <p className="text-sm text-red-700">{ship.error}</p>}
             {ship?.options.map((o) => (
-              <label key={o.id} className={`flex cursor-pointer items-center justify-between gap-3 border bg-white px-4 py-4 text-[13px] transition-colors ${shipId === o.id ? "border-ink" : "border-line hover:border-ink/40"}`}>
-                <span className="flex items-center gap-3"><input type="radio" name="ship" checked={shipId === o.id} onChange={() => setShipId(o.id)} className="accent-[#0b0b0c]" /> {o.name}{o.carrier && o.carrier !== "Luxer" ? ` · ${o.carrier}` : ""} <span className="text-stone">— até {o.days} dias úteis</span></span>
+              <label key={o.id} className={`flex cursor-pointer items-center justify-between gap-3 border bg-surface px-4 py-4 text-[13px] transition-colors ${shipId === o.id ? "border-ink" : "border-line hover:border-ink/40"}`}>
+                <span className="flex items-center gap-3"><input type="radio" name="ship" checked={shipId === o.id} onChange={() => setShipId(o.id)} className="accent-[#d4af37]" /> {o.name}{o.carrier && o.carrier !== "Luxer" ? ` · ${o.carrier}` : ""} <span className="text-stone">— até {o.days} dias úteis</span></span>
                 <span>{p.totals.freeShipping || o.priceCents === 0 ? "Grátis" : brl(o.priceCents)}</span>
               </label>
             ))}
@@ -146,8 +146,8 @@ export function CheckoutForm(p: Props) {
         <section>
           <h2 className="mb-7 flex items-baseline gap-4 border-b border-line pb-4"><span className="text-[11px] tabular-nums tracking-[0.2em] text-gold">03</span><span className="display text-[1.9rem]">Pagamento</span></h2>
           <div className="grid gap-3 sm:grid-cols-2">
-            {p.payment.pixEnabled && <button type="button" onClick={() => setMethod("PIX")} className={`border bg-white px-5 py-4 text-left transition-colors ${method === "PIX" ? "border-ink" : "border-line hover:border-ink/40"}`}><div className="flex items-center gap-2.5 text-sm"><span className={`h-2.5 w-2.5 rounded-full border ${method === "PIX" ? "border-ink bg-ink" : "border-stone"}`} />Pix</div><div className="mt-1 pl-5 text-xs text-stone">{p.payment.pixPct.toLocaleString("pt-BR")}% de desconto · aprovação imediata</div></button>}
-            {p.payment.cardEnabled && <button type="button" onClick={() => setMethod("CREDIT_CARD")} className={`border bg-white px-5 py-4 text-left transition-colors ${method === "CREDIT_CARD" ? "border-ink" : "border-line hover:border-ink/40"}`}><div className="flex items-center gap-2.5 text-sm"><span className={`h-2.5 w-2.5 rounded-full border ${method === "CREDIT_CARD" ? "border-ink bg-ink" : "border-stone"}`} />Cartão de crédito</div><div className="mt-1 pl-5 text-xs text-stone">até {p.payment.maxInstallments}x</div></button>}
+            {p.payment.pixEnabled && <button type="button" onClick={() => setMethod("PIX")} className={`border bg-surface px-5 py-4 text-left transition-colors ${method === "PIX" ? "border-ink" : "border-line hover:border-ink/40"}`}><div className="flex items-center gap-2.5 text-sm"><span className={`h-2.5 w-2.5 rounded-full border ${method === "PIX" ? "border-ink bg-ink" : "border-stone"}`} />Pix</div><div className="mt-1 pl-5 text-xs text-stone">{p.payment.pixPct.toLocaleString("pt-BR")}% de desconto · aprovação imediata</div></button>}
+            {p.payment.cardEnabled && <button type="button" onClick={() => setMethod("CREDIT_CARD")} className={`border bg-surface px-5 py-4 text-left transition-colors ${method === "CREDIT_CARD" ? "border-ink" : "border-line hover:border-ink/40"}`}><div className="flex items-center gap-2.5 text-sm"><span className={`h-2.5 w-2.5 rounded-full border ${method === "CREDIT_CARD" ? "border-ink bg-ink" : "border-stone"}`} />Cartão de crédito</div><div className="mt-1 pl-5 text-xs text-stone">até {p.payment.maxInstallments}x</div></button>}
           </div>
           {method === "PIX" && <p className="mt-4 text-sm text-stone">O QR Code e o código “copia e cola” aparecem na próxima tela. O pedido é confirmado automaticamente após o pagamento.</p>}
           {method === "CREDIT_CARD" && (
@@ -176,12 +176,12 @@ export function CheckoutForm(p: Props) {
         </dl>
         {!p.customer?.logged && (
           <div className="space-y-2 text-sm">
-            <label className="flex items-center gap-2"><input type="checkbox" checked={f.createAccount} onChange={(e) => set("createAccount", e.target.checked)} className="accent-[#0b0b0c]" /> Criar conta para acompanhar pedidos</label>
+            <label className="flex items-center gap-2"><input type="checkbox" checked={f.createAccount} onChange={(e) => set("createAccount", e.target.checked)} className="accent-[#d4af37]" /> Criar conta para acompanhar pedidos</label>
             {f.createAccount && <input type="password" autoComplete="new-password" placeholder="Senha (8+ caracteres, letras e números)" value={f.password} onChange={(e) => set("password", e.target.value)} className="field" />}
           </div>
         )}
-        <label className="flex items-start gap-2 text-xs"><input type="checkbox" checked={f.marketingOptIn} onChange={(e) => set("marketingOptIn", e.target.checked)} className="mt-0.5 accent-[#0b0b0c]" /> Quero receber novidades e ofertas por e-mail (opcional).</label>
-        <label className="flex items-start gap-2 text-xs"><input type="checkbox" required checked={f.acceptTerms} onChange={(e) => set("acceptTerms", e.target.checked)} className="mt-0.5 accent-[#0b0b0c]" /> <span>Li e aceito os <Link href="/p/termos-e-garantias" target="_blank" className="underline underline-offset-2">termos</Link>, a <Link href="/p/politica-de-troca" target="_blank" className="underline underline-offset-2">política de troca</Link> e a <Link href="/privacidade" target="_blank" className="underline underline-offset-2">política de privacidade</Link>.</span></label>
+        <label className="flex items-start gap-2 text-xs"><input type="checkbox" checked={f.marketingOptIn} onChange={(e) => set("marketingOptIn", e.target.checked)} className="mt-0.5 accent-[#d4af37]" /> Quero receber novidades e ofertas por e-mail (opcional).</label>
+        <label className="flex items-start gap-2 text-xs"><input type="checkbox" required checked={f.acceptTerms} onChange={(e) => set("acceptTerms", e.target.checked)} className="mt-0.5 accent-[#d4af37]" /> <span>Li e aceito os <Link href="/p/termos-e-garantias" target="_blank" className="underline underline-offset-2">termos</Link>, a <Link href="/p/politica-de-troca" target="_blank" className="underline underline-offset-2">política de troca</Link> e a <Link href="/privacidade" target="_blank" className="underline underline-offset-2">política de privacidade</Link>.</span></label>
         {error && <p role="alert" className="border-l border-red-700 pl-3 text-[13px] text-red-800">{error}</p>}
         <button disabled={pending || !p.enabled} className="btn-gold w-full">{pending ? "Processando…" : method === "PIX" ? "Gerar Pix" : "Pagar com cartão"}</button>
         {!p.enabled && <p className="text-xs text-red-700">Pagamentos online em configuração. Fale conosco pelo WhatsApp para concluir sua compra.</p>}

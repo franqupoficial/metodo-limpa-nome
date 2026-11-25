@@ -9,7 +9,9 @@ import { providerConfigured } from "@/lib/ai/tryon";
 import { HeroCarousel } from "@/components/site/HeroCarousel";
 import { ProductGrid } from "@/components/site/ProductCard";
 import { SectionHead, Container } from "@/components/site/Section";
-import { EditorialHero, type HeroPiece } from "@/components/site/EditorialHero";
+import { EditorialHero } from "@/components/site/EditorialHero";
+import { Hero3D } from "@/components/luxe/Hero3D";
+import { formatMoney } from "@/lib/format";
 import { AtelierFinder } from "@/components/site/AtelierFinder";
 
 export const dynamic = "force-dynamic";
@@ -35,32 +37,21 @@ export default async function Home() {
     const limit = cfg.limit ?? 8;
     switch (sec.type) {
       case "HERO": {
-        // Solução principal: fotografia lifestyle ou vídeo macro cadastrados no painel.
-        // Sem essa mídia, usa a fotografia ORIGINAL de peças reais (sem recorte) como solução temporária.
+        // Com fotografia lifestyle ou vídeo macro cadastrados no painel, a abertura usa essa mídia.
+        // Sem mídia, a abertura é a cena 3D (scrollytelling), com especificação e preço dos solitários reais do acervo.
         const media = cfg.imageKey || cfg.videoUrl ? { image: mediaUrl(cfg.imageKey ?? null), mobile: mediaUrl(cfg.mobileKey ?? null), video: cfg.videoUrl ?? null } : null;
-        const pick = async (where: Prisma.ProductWhereInput): Promise<HeroPiece | null> => {
-          const p = await prisma.product.findFirst({ where: { AND: [visibleWhere(), { images: { some: {} } }, cfg.refs?.length ? { ref: { in: cfg.refs } } : {}, where] }, orderBy: [{ featured: "desc" }, { bestSeller: "desc" }, { priceCents: "desc" }], select: { name: true, slug: true, images: { take: 2, orderBy: { position: "asc" }, select: { key: true } } } });
-          if (!p?.images[0]) return null;
-          return { name: p.name, slug: p.slug, image: mediaUrl(p.images[0].key)!, detail: mediaUrl(p.images[1]?.key ?? null) };
-        };
-        const inCat = (slug: string) => ({ categories: { some: { category: { OR: [{ slug }, { parent: { slug } }] } } } });
-        const pieces: Partial<Record<"amarelo" | "branco" | "rose", HeroPiece>> = {};
-        if (!media) {
-          const amarelo = (await pick({ AND: [inCat("aneis"), { color: { equals: "Amarelo", mode: "insensitive" } }, { stoneType: { not: null } }] })) ?? (await pick({}));
-          if (amarelo) pieces.amarelo = amarelo;
-          const branco = await pick({ AND: [inCat("aneis"), { color: { contains: "branco", mode: "insensitive" } }, { NOT: { color: { contains: "amarelo", mode: "insensitive" } } }] });
-          if (branco) pieces.branco = branco;
-          const rose = await pick({ AND: [{ OR: [inCat("aneis"), inCat("pingentes"), inCat("brincos")] }, { OR: [{ color: { contains: "ros", mode: "insensitive" } }, { goldType: { contains: "ros", mode: "insensitive" } }] }] });
-          if (rose) pieces.rose = rose;
-          if (!pieces.amarelo) break;
+        if (media) {
+          out.push(
+            <EditorialHero key={sec.id} media={media} pieces={{}}
+              eyebrow={sec.subtitle ?? "Alta joalheria em ouro 18k · Curitiba"}
+              title={sec.title?.includes("|") ? (sec.title.split("|").map((x) => x.trim()) as [string, string]) : ["A joia certa", "para cada história."]}
+              subtitle={cfg.text ?? "Alianças, anéis, correntes, brincos e pingentes em ouro 18 quilates, com certificado de garantia e atendimento de joalheria."}
+              primary={{ label: cfg.ctaLabel ?? "Explorar a coleção", href: cfg.ctaUrl ?? "/busca" }} secondaryLabel="Descobrir minha joia ideal" />,
+          );
+        } else {
+          const sol = await prisma.product.aggregate({ where: { AND: [visibleWhere(), { categories: { some: { category: { slug: "anel-solitario" } } } }] }, _min: { priceCents: true }, _count: true });
+          out.push(<Hero3D key={sec.id} priceFrom={sol._min.priceCents ? formatMoney(sol._min.priceCents) : null} models={sol._count} href={sol._count ? "/categoria/anel-solitario" : "/categoria/aneis"} />);
         }
-        out.push(
-          <EditorialHero key={sec.id} media={media} pieces={pieces}
-            eyebrow={sec.subtitle ?? "Alta joalheria em ouro 18k · Curitiba"}
-            title={sec.title?.includes("|") ? (sec.title.split("|").map((x) => x.trim()) as [string, string]) : ["A joia certa", "para cada história."]}
-            subtitle={cfg.text ?? "Alianças, anéis, correntes, brincos e pingentes em ouro 18 quilates, com certificado de garantia e atendimento de joalheria."}
-            primary={{ label: cfg.ctaLabel ?? "Explorar a coleção", href: cfg.ctaUrl ?? "/busca" }} secondaryLabel="Descobrir minha joia ideal" />,
-        );
         // banners do painel seguem como faixa editorial logo após a abertura
         const banners = await prisma.banner.findMany({ where: { placement: "HOME_HERO", active: true, imageKey: { not: null }, AND: [{ OR: [{ startsAt: null }, { startsAt: { lte: now } }] }, { OR: [{ endsAt: null }, { endsAt: { gt: now } }] }] }, orderBy: { position: "asc" } });
         if (banners.length) out.push(<Container key={`${sec.id}-banners`} className="pb-20 sm:pb-28"><HeroCarousel slides={banners.map((b) => ({ id: b.id, eyebrow: b.eyebrow, title: b.title, subtitle: b.subtitle, ctaLabel: b.ctaLabel, ctaUrl: b.ctaUrl, image: mediaUrl(b.imageKey)!, mobile: mediaUrl(b.mobileKey), theme: b.theme }))} /></Container>);
@@ -86,7 +77,7 @@ export default async function Home() {
             <div className="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-6 sm:gap-y-14 lg:grid-cols-4">
               {tiles.map((c) => (
                 <Link key={c.id} href={`/categoria/${c.slug}`} className="group block">
-                  <div className="aspect-[4/5] overflow-hidden bg-white">{c.img && <img src={c.img} alt="" loading="lazy" className="h-full w-full object-contain p-[10%] transition duration-[1200ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.04]" />}</div>
+                  <div className="aspect-[4/5] overflow-hidden bg-plate">{c.img && <img src={c.img} alt="" loading="lazy" className="h-full w-full object-contain p-[10%] transition duration-[1200ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.04]" />}</div>
                   <div className="mt-4 flex items-baseline justify-between gap-3"><span className="font-serif text-[1.35rem] sm:text-[1.6rem]">{c.name}</span><span aria-hidden className="h-px w-5 bg-ink/30 transition-all duration-500 group-hover:w-9 group-hover:bg-gold" /></div>
                 </Link>
               ))}
@@ -123,7 +114,7 @@ export default async function Home() {
           <section key={sec.id} className="border-t border-line py-24 sm:py-32"><Container>
             <SectionHead eyebrow="Coleções" title={sec.title} subtitle={sec.subtitle} />
             <div className={`grid gap-x-6 gap-y-12 ${cols.length === 2 ? "md:grid-cols-2" : cols.length === 3 ? "md:grid-cols-3" : ""}`}>
-              {cols.map((c) => <Link key={c.id} href={`/colecao/${c.slug}`} className="group block"><div className="aspect-[4/5] overflow-hidden bg-white">{c.image && <img src={mediaUrl(c.image)!} alt="" loading="lazy" className="h-full w-full object-cover transition duration-[1200ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.03]" />}</div><div className="mt-5"><div className="eyebrow text-stone">{c.headline ?? "Coleção"}</div><div className="display mt-2 text-[2rem]">{c.name}</div></div></Link>)}
+              {cols.map((c) => <Link key={c.id} href={`/colecao/${c.slug}`} className="group block"><div className="aspect-[4/5] overflow-hidden bg-plate">{c.image && <img src={mediaUrl(c.image)!} alt="" loading="lazy" className="h-full w-full object-cover transition duration-[1200ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.03]" />}</div><div className="mt-5"><div className="eyebrow text-stone">{c.headline ?? "Coleção"}</div><div className="display mt-2 text-[2rem]">{c.name}</div></div></Link>)}
             </div>
           </Container></section>,
         );
@@ -152,7 +143,7 @@ export default async function Home() {
         out.push(
           <section key={sec.id} className="border-t border-line py-24 sm:py-32"><Container>
             <div className={`grid items-center gap-12 ${cfg.imageKey ? "lg:grid-cols-2 lg:gap-24" : "mx-auto max-w-2xl text-center"}`}>
-              {cfg.imageKey && <div className="aspect-[4/5] overflow-hidden bg-white"><img src={mediaUrl(cfg.imageKey)!} alt="" className="h-full w-full object-cover" loading="lazy" /></div>}
+              {cfg.imageKey && <div className="aspect-[4/5] overflow-hidden bg-plate"><img src={mediaUrl(cfg.imageKey)!} alt="" className="h-full w-full object-cover" loading="lazy" /></div>}
               <div>
                 <div className="eyebrow text-stone">{sec.subtitle ?? "Luxer AI Try-on"}</div>
                 <h2 className="display mt-5 text-[2.35rem] sm:text-[3.2rem]">{sec.title}</h2>
@@ -195,7 +186,7 @@ export default async function Home() {
         out.push(
           <section key={sec.id} className="border-t border-line py-24 sm:py-32"><Container>
             <SectionHead eyebrow="Instagram" title={sec.title} href={s.social.instagram || undefined} linkLabel="Seguir" />
-            {posts.length > 0 && <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">{posts.slice(0, 6).map((p) => <a key={p.url} href={p.url} target="_blank" rel="noopener noreferrer" className="group aspect-square overflow-hidden bg-white"><img src={mediaUrl(p.imageKey)!} alt={p.caption ?? ""} loading="lazy" className="h-full w-full object-cover transition duration-700 group-hover:scale-105" /></a>)}</div>}
+            {posts.length > 0 && <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">{posts.slice(0, 6).map((p) => <a key={p.url} href={p.url} target="_blank" rel="noopener noreferrer" className="group aspect-square overflow-hidden bg-plate"><img src={mediaUrl(p.imageKey)!} alt={p.caption ?? ""} loading="lazy" className="h-full w-full object-cover transition duration-700 group-hover:scale-105" /></a>)}</div>}
           </Container></section>,
         );
         break;

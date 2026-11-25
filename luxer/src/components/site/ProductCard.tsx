@@ -12,7 +12,7 @@ export function ProductCard({ p, priority = false }: { p: Card; priority?: boole
   return (
     <article className="group relative">
       <Link href={`/produto/${p.slug}`} className="block">
-        <div className="relative aspect-[4/5] overflow-hidden bg-white">
+        <div className="relative aspect-[4/5] overflow-hidden bg-plate">
           {p.image ? (
             <>
               <img src={p.image} alt={p.alt} loading={priority ? "eager" : "lazy"} className={`absolute inset-0 m-auto h-full w-full object-contain p-[6%] transition duration-[900ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.035] ${p.hoverImage ? "group-hover:opacity-0" : ""} ${!p.available ? "opacity-70" : ""}`} />
@@ -31,7 +31,7 @@ export function ProductCard({ p, priority = false }: { p: Card; priority?: boole
           </div>
         </div>
       </Link>
-      <div className="absolute right-2 top-2 transition-opacity duration-300 lg:opacity-0 lg:group-hover:opacity-100 lg:focus-within:opacity-100"><FavoriteButton productId={p.id} /></div>
+      <div className="absolute right-2 top-2 text-[#0b0b0c] transition-opacity duration-300 lg:opacity-0 lg:group-hover:opacity-100 lg:focus-within:opacity-100"><FavoriteButton productId={p.id} /></div>
     </article>
   );
 }

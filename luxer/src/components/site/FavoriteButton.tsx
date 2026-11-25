@@ -31,7 +31,7 @@ export function FavoriteButton({ productId, large = false }: { productId: string
   return (
     <button onClick={toggle} aria-pressed={on} aria-label={on ? "Remover dos favoritos" : "Adicionar aos favoritos"}
       className={`flex items-center justify-center transition-opacity ${large ? "h-12 w-12 border border-line hover:border-ink" : "h-9 w-9"}`}>
-      <svg viewBox="0 0 24 24" className={large ? "h-[18px] w-[18px]" : "h-4 w-4"} fill={on ? "#0b0b0c" : "none"} stroke="#0b0b0c" strokeWidth={1.2}>
+      <svg viewBox="0 0 24 24" className={large ? "h-[18px] w-[18px]" : "h-4 w-4"} fill={on ? "currentColor" : "none"} stroke="currentColor" strokeWidth={1.2}>
         <path d="M12 20s-7-4.4-8.9-8.6C1.7 8.3 3.6 4.8 7 4.8c2 0 3.3 1 4 2.2.7-1.2 2-2.2 4-2.2 3.4 0 5.3 3.5 3.9 6.6C19 15.6 12 20 12 20z" />
       </svg>
     </button>

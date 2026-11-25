@@ -140,7 +140,7 @@ export default async function ProductPage({ params }: P) {
         {(youtube.length > 0 || files.length > 0) && (
           <section className="mt-24"><h2 className="eyebrow mb-6 text-stone">Vídeos</h2><div className="grid gap-5 md:grid-cols-2">
             {youtube.map((id) => <iframe key={id} className="aspect-video w-full" src={`https://www.youtube-nocookie.com/embed/${id}`} title={`Vídeo de ${p.name}`} loading="lazy" allow="encrypted-media; picture-in-picture" allowFullScreen />)}
-            {files.map((v) => <video key={v.id} src={v.url} controls playsInline className="aspect-video w-full bg-white" preload="metadata" />)}
+            {files.map((v) => <video key={v.id} src={v.url} controls playsInline className="aspect-video w-full bg-plate" preload="metadata" />)}
           </div></section>
         )}
 

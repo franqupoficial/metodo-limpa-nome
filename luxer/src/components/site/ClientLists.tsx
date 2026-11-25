@@ -45,7 +45,7 @@ export function CompareTable() {
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[640px] table-fixed">
-        <thead><tr><th className="w-40" />{items.map((i) => <th key={i.id} className="px-3 pb-6 text-left align-top font-normal"><Link href={`/produto/${i.slug}`}><div className="aspect-[4/5] bg-white">{i.image && <img src={i.image} alt="" className="h-full w-full object-contain p-[6%]" />}</div><div className="mt-3 font-serif text-lg leading-snug">{i.name}</div></Link><button onClick={() => remove(i.id)} className="mt-2 text-[11px] text-stone underline underline-offset-4 hover:text-ink">remover</button></th>)}</tr></thead>
+        <thead><tr><th className="w-40" />{items.map((i) => <th key={i.id} className="px-3 pb-6 text-left align-top font-normal"><Link href={`/produto/${i.slug}`}><div className="aspect-[4/5] bg-plate">{i.image && <img src={i.image} alt="" className="h-full w-full object-contain p-[6%]" />}</div><div className="mt-3 font-serif text-lg leading-snug">{i.name}</div></Link><button onClick={() => remove(i.id)} className="mt-2 text-[11px] text-stone underline underline-offset-4 hover:text-ink">remover</button></th>)}</tr></thead>
         <tbody>
           {row("Preço", (i) => brl(i.price.price))}
           {row("No Pix", (i) => brl(i.price.pix))}

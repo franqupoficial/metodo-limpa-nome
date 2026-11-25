@@ -25,7 +25,7 @@ export default async function StoreLayout({ children }: { children: React.ReactN
   const now = new Date();
   const popup = await prisma.popup.findFirst({ where: { active: true, AND: [{ OR: [{ startsAt: null }, { startsAt: { lte: now } }] }, { OR: [{ endsAt: null }, { endsAt: { gt: now } }] }] }, orderBy: { updatedAt: "desc" } });
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="theme-obsidian flex min-h-dvh flex-col">
       <a href="#conteudo" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-ink focus:p-3 focus:text-ivory">Pular para o conteúdo</a>
       <Header cats={cats} cartCount={cart.count} logo={mediaUrl(s.store.logoKey)} storeName={s.store.name} logged={Boolean(customer)} />
       <main id="conteudo" className="flex-1">{children}</main>

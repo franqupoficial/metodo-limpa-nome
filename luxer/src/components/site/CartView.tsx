@@ -20,14 +20,14 @@ export function CartView({ lines, subtotal, discount, coupon, pixSavings, pixPct
       <ul className={`divide-y divide-line border-y border-line transition-opacity ${pending ? "opacity-60" : ""}`}>
         {lines.map((l) => (
           <li key={l.id} className="flex gap-5 py-7 sm:gap-7">
-            <Link href={`/produto/${l.slug}`} className="h-32 w-[6.4rem] shrink-0 bg-white sm:h-40 sm:w-32">{l.image && <img src={l.image} alt="" className="h-full w-full object-contain p-2" />}</Link>
+            <Link href={`/produto/${l.slug}`} className="h-32 w-[6.4rem] shrink-0 bg-plate sm:h-40 sm:w-32">{l.image && <img src={l.image} alt="" className="h-full w-full object-contain p-2" />}</Link>
             <div className="flex min-w-0 flex-1 flex-col">
               <div className="flex justify-between gap-3"><Link href={`/produto/${l.slug}`} className="font-serif text-lg leading-snug transition-colors hover:text-ink/70">{l.name}</Link><span className="whitespace-nowrap text-[13px] tabular-nums">{brl(l.totalCents)}</span></div>
               {l.option && <div className="mt-1 text-xs text-stone">{l.optionName ?? "Opção"}: {l.option}</div>}
               <div className="mt-1 text-xs text-stone">{brl(l.unitCents)} cada</div>
               {l.problem && <div className="mt-1 text-xs font-medium text-red-700">{l.problem}</div>}
               <div className="mt-auto flex items-center gap-4 pt-3">
-                <div className="flex items-center border border-line bg-white text-[13px]">
+                <div className="flex items-center border border-line bg-surface text-[13px]">
                   <button onClick={() => run(() => updateCartItem(l.id, l.quantity - 1))} className="px-3 py-1.5" aria-label="Diminuir">−</button>
                   <span className="w-6 text-center tabular-nums">{l.quantity}</span>
                   <button onClick={() => run(() => updateCartItem(l.id, l.quantity + 1))} className="px-3 py-1.5" aria-label="Aumentar">+</button>
@@ -42,7 +42,7 @@ export function CartView({ lines, subtotal, discount, coupon, pixSavings, pixPct
         <h2 className="eyebrow text-ink">Resumo</h2>
         <form onSubmit={(e) => { e.preventDefault(); const code = new FormData(e.currentTarget).get("code") as string; run(() => applyCoupon(code)); }} className="flex">
           <input name="code" defaultValue={coupon?.code ?? ""} placeholder="Cupom de desconto" className="field uppercase" aria-label="Cupom" />
-          <button className="btn-line !px-5 -ml-px border-line bg-white hover:border-ink">Aplicar</button>
+          <button className="btn-line !px-5 -ml-px border-line bg-surface hover:border-ink">Aplicar</button>
         </form>
         {coupon?.error && <p className="-mt-3 text-xs text-red-700">{coupon.error}</p>}
         {msg && <p className="-mt-3 text-xs text-red-700">{msg}</p>}

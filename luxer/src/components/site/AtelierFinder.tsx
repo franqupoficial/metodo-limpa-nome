@@ -100,7 +100,7 @@ export function AtelierFinder({ whatsapp, compact = false, onDone }: { whatsapp:
           <div className={`mt-10 grid ${compact ? "grid-cols-1 gap-6" : "gap-x-6 gap-y-14 sm:grid-cols-2 lg:grid-cols-3"}`}>
             {items?.map((it) => (
               <article key={it.id} className={`af-anim flex ${compact ? "gap-4" : "flex-col"}`}>
-                <Link href={`/produto/${it.slug}`} className={`group block shrink-0 overflow-hidden bg-white ${compact ? "h-28 w-24" : "aspect-[4/5] w-full"}`}>
+                <Link href={`/produto/${it.slug}`} className={`group block shrink-0 overflow-hidden bg-plate ${compact ? "h-28 w-24" : "aspect-[4/5] w-full"}`}>
                   {it.image && <img src={it.image} alt={it.name} loading="lazy" className="h-full w-full object-contain p-[6%] transition duration-[900ms] group-hover:scale-[1.035]" />}
                 </Link>
                 <div className={`flex min-w-0 flex-1 flex-col ${compact ? "" : "mt-5"}`}>

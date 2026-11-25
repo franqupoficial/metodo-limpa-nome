@@ -138,7 +138,8 @@ export function TryOnStudio({ product, consentText, onClose }: { product: Studio
 
   async function submit() {
     if (!photo || !consent) return;
-    setError(null); setSt(null); setDeleted(false); setCartMsg(null); setSplit(50); setDetail(false);
+    // descarta a simulação anterior antes de acompanhar a nova (senão o acompanhamento reexibiria o resultado antigo)
+    setJob(null); setError(null); setSt(null); setDeleted(false); setCartMsg(null); setSplit(50); setDetail(false);
     setStep("processing");
     const fd = new FormData();
     fd.set("photo", await normalizePhoto(photo.blob).catch(() => photo.blob), "foto.jpg");
@@ -190,7 +191,7 @@ export function TryOnStudio({ product, consentText, onClose }: { product: Studio
   const Header = (
     <div className="flex items-center justify-between gap-4 border-b border-line px-5 py-4 sm:px-8">
       <div className="flex min-w-0 items-center gap-4">
-        {product.image && <img src={product.image} alt="" className="h-11 w-11 shrink-0 bg-white object-contain p-0.5" />}
+        {product.image && <img src={product.image} alt="" className="h-11 w-11 shrink-0 bg-plate object-contain p-0.5" />}
         <div className="min-w-0">
           <div className="text-[9.5px] uppercase tracking-[0.3em] text-gold-2">Luxer AI · Provador</div>
           <div className="truncate font-serif text-[1.05rem]">{product.name}</div>
@@ -206,7 +207,7 @@ export function TryOnStudio({ product, consentText, onClose }: { product: Studio
       <div className="min-h-0 flex-1 overflow-y-auto">
         {step === "intro" && (
           <div className="grid gap-10 px-5 py-8 sm:px-8 sm:py-10 md:grid-cols-[1fr_1.1fr] md:items-center">
-            <div className="relative mx-auto flex aspect-[4/5] w-full max-w-[320px] items-center justify-center bg-white">
+            <div className="relative mx-auto flex aspect-[4/5] w-full max-w-[320px] items-center justify-center bg-plate">
               <Silhouette region={region} className="h-[70%] text-ink/70" />
               <span className="absolute inset-x-6 bottom-5 text-center text-[10px] uppercase tracking-[0.24em] text-stone">Enquadramento ideal</span>
             </div>
@@ -216,7 +217,7 @@ export function TryOnStudio({ product, consentText, onClose }: { product: Studio
                 {guide.tips.map((t, i) => <li key={t} className="flex gap-4"><span className="w-5 shrink-0 text-[11px] tabular-nums text-gold">0{i + 1}</span>{t}</li>)}
               </ul>
               <label className="mt-8 flex items-start gap-3 text-[12px] leading-relaxed text-ink/70">
-                <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-0.5 accent-[#0b0b0c]" />
+                <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-0.5 accent-[#d4af37]" />
                 <span>{consentText} <Link href="/privacidade" target="_blank" className="underline underline-offset-2">Privacidade</Link></span>
               </label>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -231,21 +232,21 @@ export function TryOnStudio({ product, consentText, onClose }: { product: Studio
         )}
 
         {step === "camera" && (
-          <div className="relative mx-auto flex h-full max-h-[78vh] min-h-[420px] w-full items-center justify-center overflow-hidden bg-ink">
+          <div className="relative mx-auto flex h-full max-h-[78vh] min-h-[420px] w-full items-center justify-center overflow-hidden bg-black">
             <video ref={video} playsInline muted className={`h-full w-full object-cover ${facing === "user" ? "-scale-x-100" : ""}`} />
-            <div className="pointer-events-none absolute inset-0 flex items-center justify-center"><Silhouette region={region} className="h-[62%] text-ivory/80 [stroke-dasharray:4_5]" /></div>
-            <p className="absolute inset-x-0 top-4 text-center text-[11px] uppercase tracking-[0.24em] text-ivory/85">Posicione {guide.where} dentro do contorno</p>
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center"><Silhouette region={region} className="h-[62%] text-white/80 [stroke-dasharray:4_5]" /></div>
+            <p className="absolute inset-x-0 top-4 text-center text-[11px] uppercase tracking-[0.24em] text-white/85">Posicione {guide.where} dentro do contorno</p>
             <div className="absolute inset-x-0 bottom-6 flex items-center justify-center gap-10">
-              <button type="button" onClick={() => { stopCamera(); setStep("intro"); }} className="text-[10.5px] uppercase tracking-[0.22em] text-ivory/80">Voltar</button>
-              <button type="button" onClick={capture} aria-label="Fotografar" className="flex h-[68px] w-[68px] items-center justify-center rounded-full border border-ivory/80"><span className="h-[54px] w-[54px] rounded-full bg-ivory" /></button>
-              <button type="button" onClick={() => { const f = facing === "user" ? "environment" : "user"; setFacing(f); openCamera(f); }} className="text-[10.5px] uppercase tracking-[0.22em] text-ivory/80">Girar</button>
+              <button type="button" onClick={() => { stopCamera(); setStep("intro"); }} className="text-[10.5px] uppercase tracking-[0.22em] text-white/80">Voltar</button>
+              <button type="button" onClick={capture} aria-label="Fotografar" className="flex h-[68px] w-[68px] items-center justify-center rounded-full border border-white/80"><span className="h-[54px] w-[54px] rounded-full bg-white" /></button>
+              <button type="button" onClick={() => { const f = facing === "user" ? "environment" : "user"; setFacing(f); openCamera(f); }} className="text-[10.5px] uppercase tracking-[0.22em] text-white/80">Girar</button>
             </div>
           </div>
         )}
 
         {step === "review" && photo && (
           <div className="grid gap-8 px-5 py-8 sm:px-8 md:grid-cols-[1.1fr_1fr] md:items-center">
-            <div className="flex max-h-[60vh] items-center justify-center bg-white"><img src={photo.url} alt="Sua foto" className="max-h-[60vh] w-auto object-contain" /></div>
+            <div className="flex max-h-[60vh] items-center justify-center bg-plate"><img src={photo.url} alt="Sua foto" className="max-h-[60vh] w-auto object-contain" /></div>
             <div>
               <h2 className="display text-[2rem]">Confira sua foto</h2>
               <ul className="mt-6 divide-y divide-line border-y border-line text-[13px]">
@@ -264,7 +265,7 @@ export function TryOnStudio({ product, consentText, onClose }: { product: Studio
 
         {step === "processing" && (
           <div className="grid gap-8 px-5 py-8 sm:px-8 md:grid-cols-[1.1fr_1fr] md:items-center">
-            <div className="relative mx-auto w-fit max-w-full overflow-hidden bg-white">
+            <div className="relative mx-auto w-fit max-w-full overflow-hidden bg-surface">
               {photo && <img src={photo.url} alt="" className="block max-h-[60vh] w-auto object-contain opacity-80" />}
               {box && <div className="absolute border border-gold transition-all duration-700" style={{ top: `${box[0] / 10}%`, left: `${box[1] / 10}%`, height: `${(box[2] - box[0]) / 10}%`, width: `${(box[3] - box[1]) / 10}%` }}><span className="absolute -top-5 left-0 whitespace-nowrap text-[9px] uppercase tracking-[0.2em] text-gold-2">ponto de aplicação</span></div>}
               <div aria-hidden className="pointer-events-none absolute inset-x-0 h-px animate-[lx-scan_2.4s_ease-in-out_infinite] bg-gold/70" />
@@ -293,9 +294,9 @@ export function TryOnStudio({ product, consentText, onClose }: { product: Studio
           <div className="grid gap-8 px-5 py-8 sm:px-8 lg:grid-cols-[1.35fr_1fr]">
             <div>
               {deleted ? (
-                <div className="flex aspect-[4/5] items-center justify-center bg-white px-10 text-center text-[13px] text-stone">Imagens excluídas a seu pedido.</div>
+                <div className="flex aspect-[4/5] items-center justify-center bg-plate px-10 text-center text-[13px] text-stone">Imagens excluídas a seu pedido.</div>
               ) : (
-                <div className="relative mx-auto w-fit max-w-full select-none overflow-hidden bg-white" style={{ touchAction: "pan-y" }}>
+                <div className="relative mx-auto w-fit max-w-full select-none overflow-hidden bg-surface" style={{ touchAction: "pan-y" }}>
                   <div className="transition-transform duration-700" style={{ transform: detail ? "scale(2.6)" : "none", transformOrigin: origin }}>
                     <img src={photo.url} alt="Sua foto original" className="block max-h-[66vh] w-auto" draggable={false} />
                     <img src={resultUrl} alt="Simulação da joia em você" className="absolute inset-0 h-full w-full" style={{ clipPath: `inset(0 0 0 ${split}%)` }} draggable={false} />
@@ -325,7 +326,7 @@ export function TryOnStudio({ product, consentText, onClose }: { product: Studio
                 <fieldset className="mt-8">
                   <legend className="eyebrow mb-3 text-stone">{product.optionName ?? "Opção"}</legend>
                   <div className="flex flex-wrap gap-2">
-                    {product.variants.map((v) => <button key={v.id} type="button" disabled={v.available <= 0} onClick={() => { setVariant(v.id); setCartMsg(null); }} aria-pressed={variant === v.id} className={`h-10 min-w-10 border px-3 text-[13px] tabular-nums transition-colors ${variant === v.id ? "border-ink bg-ink text-ivory" : "border-line bg-white hover:border-ink"} disabled:border-line disabled:bg-transparent disabled:text-stone/45 disabled:line-through`}>{v.option}</button>)}
+                    {product.variants.map((v) => <button key={v.id} type="button" disabled={v.available <= 0} onClick={() => { setVariant(v.id); setCartMsg(null); }} aria-pressed={variant === v.id} className={`h-10 min-w-10 border px-3 text-[13px] tabular-nums transition-colors ${variant === v.id ? "border-ink bg-ink text-ivory" : "border-line bg-surface hover:border-ink"} disabled:border-line disabled:bg-transparent disabled:text-stone/45 disabled:line-through`}>{v.option}</button>)}
                   </div>
                 </fieldset>
               )}

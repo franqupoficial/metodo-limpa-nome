@@ -53,12 +53,12 @@ export async function CatalogView({ base, sp, params, facetWhere, header, subnav
           {subnav.map((s) => <Link key={s.slug} href={`/categoria/${s.slug}`} className={`whitespace-nowrap border-b pb-1.5 transition-colors ${s.active ? "border-ink text-ink" : "border-transparent text-ink/55 hover:text-ink"}`}>{s.name}</Link>)}
         </div></div></Container>
       )}
-      <div className="bg-white">
+      <div className="bg-surface">
       <Container className="pb-24 pt-8 sm:pt-10">
         <div className="mb-10 flex flex-wrap items-center justify-between gap-3 border-b border-line pb-5">
           <span className="text-[11px] tracking-[0.12em] text-stone">{res.total} {res.total === 1 ? "peça" : "peças"}</span>
           <div className="flex items-center gap-6">
-            <details className="relative lg:hidden"><summary className="cursor-pointer list-none text-[10.5px] uppercase tracking-[0.22em]">Filtrar{active ? " · ativo" : ""}</summary><div className="absolute right-0 z-20 mt-4 w-[min(18rem,calc(100vw-2.5rem))] border border-line bg-white p-7">{Filters}</div></details>
+            <details className="relative lg:hidden"><summary className="cursor-pointer list-none text-[10.5px] uppercase tracking-[0.22em]">Filtrar{active ? " · ativo" : ""}</summary><div className="absolute right-0 z-20 mt-4 w-[min(18rem,calc(100vw-2.5rem))] border border-line bg-surface p-7">{Filters}</div></details>
             <form action={base} className="flex items-center gap-2">
               {Object.entries(sp).filter(([k, v]) => v && k !== "ordem" && k !== "pagina").map(([k, v]) => <input key={k} type="hidden" name={k} value={v} />)}
               <label htmlFor="ordem" className="sr-only">Ordenar</label>

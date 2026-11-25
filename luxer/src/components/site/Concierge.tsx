@@ -133,16 +133,16 @@ export function Concierge({ greeting, quick, whatsapp, whatsappMessage, chatEnab
 
             {view === "chat" && (
               <div className="space-y-3">
-                {msgs.length === 0 && <div className="bg-white px-4 py-3 text-[13px] leading-relaxed text-ink/80">{greeting}</div>}
+                {msgs.length === 0 && <div className="bg-surface px-4 py-3 text-[13px] leading-relaxed text-ink/80">{greeting}</div>}
                 {msgs.map((m) => (
                   <div key={m.id} className={`flex ${m.role === "USER" ? "justify-end" : m.role === "SYSTEM" ? "justify-center" : "justify-start"}`}>
                     {m.role === "SYSTEM" ? <span className="px-3 text-center text-[11px] text-stone">{m.body}</span> : (
-                      <div className={`max-w-[85%] px-4 py-2.5 text-[13px] leading-relaxed ${m.role === "USER" ? "bg-ink text-ivory" : "bg-white text-ink/85"}`}>
+                      <div className={`max-w-[85%] px-4 py-2.5 text-[13px] leading-relaxed ${m.role === "USER" ? "bg-ink text-ivory" : "bg-surface text-ink/85"}`}>
                         {m.role === "AGENT" && <div className="mb-0.5 text-[10px] uppercase tracking-[0.2em] text-gold-2">{m.agent} · equipe Luxer</div>}
                         <div className="whitespace-pre-wrap">{m.body}</div>
                         {m.products.length > 0 && <div className="mt-3 space-y-2">{m.products.map((p) => (
                           <Link key={p.slug} href={`/produto/${p.slug}`} onClick={() => setOpen(false)} className="flex items-center gap-3 border-t border-line pt-2 transition-opacity hover:opacity-75">
-                            {p.image && <img src={p.image} alt="" className="h-14 w-12 bg-white object-contain" />}
+                            {p.image && <img src={p.image} alt="" className="h-14 w-12 bg-plate object-contain" />}
                             <span className="min-w-0 text-xs"><span className="line-clamp-2 font-serif text-[14px]">{p.name}</span><span className="text-stone">{brl(p.price)} · {brl(p.pix)} no Pix</span></span>
                           </Link>
                         ))}</div>}
@@ -150,7 +150,7 @@ export function Concierge({ greeting, quick, whatsapp, whatsappMessage, chatEnab
                     )}
                   </div>
                 ))}
-                {busy && <div className="flex justify-start"><div className="bg-white px-4 py-2.5 text-[13px] text-stone">digitando…</div></div>}
+                {busy && <div className="flex justify-start"><div className="bg-surface px-4 py-2.5 text-[13px] text-stone">digitando…</div></div>}
                 {(status === "WAITING_HUMAN" || status === "HUMAN") && <p className="text-center text-[11px] text-stone">Você está com a equipe Luxer. As respostas aparecem aqui — pode fechar e voltar depois.</p>}
                 {status === "WAITING_HUMAN" && needsContact && !askHuman && <button onClick={() => setAskHuman(true)} className="w-full text-center text-[11px] text-stone underline underline-offset-4">Deixar meu contato para retorno</button>}
                 {askHuman && (

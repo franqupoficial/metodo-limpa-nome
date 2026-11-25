@@ -22,7 +22,7 @@ export default async function Account() {
         <ul className="divide-y divide-line border-y border-line">
           {orders.map((o) => (
             <li key={o.id}><Link href={`/pedido/${o.publicToken}`} className="group flex flex-wrap items-center gap-5 py-6">
-              <div className="flex gap-1.5">{o.items.map((i) => i.image && <img key={i.id} src={i.image} alt="" className="h-16 w-14 bg-white object-contain p-1" />)}</div>
+              <div className="flex gap-1.5">{o.items.map((i) => i.image && <img key={i.id} src={i.image} alt="" className="h-16 w-14 bg-plate object-contain p-1" />)}</div>
               <div className="flex-1"><div className="font-serif text-lg transition-colors group-hover:text-ink/70">Pedido #{o.number}</div><div className="text-xs text-stone">{formatDate(o.createdAt)}{o.trackingCode ? ` · rastreio ${o.trackingCode}` : ""}</div></div>
               <div className="text-[11px] uppercase tracking-[0.18em] text-stone">{ORDER_STATUS_LABEL[o.status]}</div><div className="w-28 text-right text-[14px] tabular-nums">{formatMoney(o.totalCents)}</div>
             </Link></li>

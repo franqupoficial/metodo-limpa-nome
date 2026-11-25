@@ -57,7 +57,7 @@ export default async function OrderPage({ params }: { params: Promise<{ token: s
 
       {awaitingPix && (
         <section className="mx-auto mt-14 grid max-w-3xl items-center gap-10 border-y border-line py-10 sm:grid-cols-[auto_1fr]">
-          <img src={qr!} alt="QR Code Pix" className="mx-auto h-56 w-56 bg-white p-3" />
+          <img src={qr!} alt="QR Code Pix" className="mx-auto h-56 w-56 bg-plate p-3" />
           <div>
             <div className="text-[1.9rem] font-light tabular-nums">{formatMoney(p!.amountCents)}</div>
             <p className="mt-2 text-sm text-stone">Abra o app do seu banco, escolha Pix e escaneie o QR Code ou use o código abaixo.{p!.pixExpiresAt && <> Válido até <b>{formatDate(p!.pixExpiresAt, true)}</b>.</>}</p>
@@ -72,7 +72,7 @@ export default async function OrderPage({ params }: { params: Promise<{ token: s
       <div className="mt-20 grid gap-14 md:grid-cols-[1.4fr_1fr] md:gap-20">
         <section>
           <h2 className="eyebrow mb-5 text-ink">Itens</h2>
-          <ul className="divide-y divide-line border-y border-line">{o.items.map((i) => <li key={i.id} className="flex gap-5 py-5">{i.image && <img src={i.image} alt="" className="h-24 w-20 bg-white object-contain p-1.5" />}<div className="flex-1 text-[13px]"><div className="font-serif text-lg">{i.name}</div>{i.option && <div className="text-stone">{i.option}</div>}<div className="text-stone">{i.quantity} × {formatMoney(i.unitCents)}</div></div><div className="text-[13px] tabular-nums">{formatMoney(i.totalCents)}</div></li>)}</ul>
+          <ul className="divide-y divide-line border-y border-line">{o.items.map((i) => <li key={i.id} className="flex gap-5 py-5">{i.image && <img src={i.image} alt="" className="h-24 w-20 bg-plate object-contain p-1.5" />}<div className="flex-1 text-[13px]"><div className="font-serif text-lg">{i.name}</div>{i.option && <div className="text-stone">{i.option}</div>}<div className="text-stone">{i.quantity} × {formatMoney(i.unitCents)}</div></div><div className="text-[13px] tabular-nums">{formatMoney(i.totalCents)}</div></li>)}</ul>
           {paid && <p className="mt-4 text-xs text-stone">Após receber, você pode avaliar as peças na página de cada produto (entre na sua conta).</p>}
         </section>
         <aside className="space-y-8 text-[13px]">

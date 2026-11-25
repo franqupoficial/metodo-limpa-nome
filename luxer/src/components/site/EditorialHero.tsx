@@ -124,12 +124,12 @@ export function EditorialHero({ eyebrow, title, subtitle, primary, secondaryLabe
       </div>
       {piece && (
         <figure className="order-1 lg:order-2">
-          <div ref={frame} className="eh-media relative aspect-square overflow-hidden bg-white lg:aspect-auto lg:h-[clamp(440px,calc(100svh-250px),760px)]">
+          <div ref={frame} className="eh-media relative aspect-square overflow-hidden bg-plate lg:aspect-auto lg:h-[clamp(440px,calc(100svh-250px),760px)]">
             <Link href={`/produto/${piece.slug}`} aria-label={piece.name} className="absolute inset-0 flex items-center justify-center">
               <img key={piece.image} src={piece.image} alt={piece.name} className="eh-piece h-full w-full object-contain p-[9%]" fetchPriority="high" />
             </Link>
             {piece.detail && (
-              <div className="absolute bottom-0 right-0 hidden h-[30%] w-[24%] border-l border-t border-line bg-white xl:block">
+              <div className="absolute bottom-0 right-0 hidden h-[30%] w-[24%] border-l border-t border-line bg-plate xl:block">
                 <img key={piece.detail} src={piece.detail} alt="" aria-hidden className="h-full w-full object-contain p-3" loading="lazy" />
               </div>
             )}

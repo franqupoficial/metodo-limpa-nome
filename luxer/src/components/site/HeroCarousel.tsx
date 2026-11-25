@@ -13,7 +13,7 @@ export function HeroCarousel({ slides }: { slides: Slide[] }) {
     return () => clearInterval(t);
   }, [slides.length, paused]);
   return (
-    <section className="relative h-[72svh] min-h-[460px] overflow-hidden bg-white" aria-roledescription="carrossel" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
+    <section className="relative h-[72svh] min-h-[460px] overflow-hidden bg-surface" aria-roledescription="carrossel" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
       {slides.map((s, k) => (
         <div key={s.id} className={`absolute inset-0 transition-opacity duration-[1400ms] ${k === i ? "opacity-100" : "pointer-events-none opacity-0"}`} aria-hidden={k !== i}>
           <picture>

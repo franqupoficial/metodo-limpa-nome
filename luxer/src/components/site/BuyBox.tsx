@@ -61,7 +61,7 @@ export function BuyBox({ product, variants, optionName, price, whatsapp, sizeGui
           <div className="flex flex-wrap gap-2">
             {variants.map((x) => (
               <button key={x.id} type="button" disabled={x.available <= 0} onClick={() => { setSel(x.id); setMsg(null); }} aria-pressed={sel === x.id}
-                className={`h-11 min-w-11 border px-3 text-[13px] tabular-nums transition-colors ${sel === x.id ? "border-ink bg-ink text-ivory" : "border-line bg-white hover:border-ink"} disabled:cursor-not-allowed disabled:border-line disabled:bg-transparent disabled:text-stone/45 disabled:line-through`}>
+                className={`h-11 min-w-11 border px-3 text-[13px] tabular-nums transition-colors ${sel === x.id ? "border-ink bg-ink text-ivory" : "border-line bg-surface hover:border-ink"} disabled:cursor-not-allowed disabled:border-line disabled:bg-transparent disabled:text-stone/45 disabled:line-through`}>
                 {x.option}
               </button>
             ))}
@@ -70,7 +70,7 @@ export function BuyBox({ product, variants, optionName, price, whatsapp, sizeGui
       )}
 
       <div className="mt-8 flex gap-3">
-        <div className="flex items-center border border-line bg-white">
+        <div className="flex items-center border border-line bg-surface">
           <button type="button" onClick={() => setQty(Math.max(1, qty - 1))} className="h-full px-3.5 text-stone transition-colors hover:text-ink" aria-label="Diminuir">−</button>
           <span className="w-8 text-center text-sm tabular-nums" aria-live="polite">{qty}</span>
           <button type="button" onClick={() => setQty(Math.min(10, qty + 1))} className="h-full px-3.5 text-stone transition-colors hover:text-ink" aria-label="Aumentar">+</button>
