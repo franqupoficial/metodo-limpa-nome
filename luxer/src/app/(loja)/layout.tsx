@@ -16,6 +16,9 @@ import { getCustomer } from "@/lib/customer-auth";
 import { prisma } from "@/lib/db";
 import { mediaUrl } from "@/lib/media-url";
 import { Header } from "@/components/site/Header";
+import { SmoothScroll } from "@/components/site/SmoothScroll";
+import { ClientErrorReporter } from "@/components/site/ClientErrorReporter";
+import { RevealObserver } from "@/components/site/Reveal";
 import { Footer } from "@/components/site/Footer";
 import { Consent } from "@/components/site/Consent";
 import { WhatsAppButton } from "@/components/site/WhatsAppButton";
@@ -41,6 +44,9 @@ export default async function StoreLayout({ children }: { children: React.ReactN
   const theme = (await cookies()).get(THEME_COOKIE)?.value === "dark" ? "dark" : "light";
   return (
     <StoreThemeProvider initial={theme} className="flex min-h-dvh flex-col">
+      <SmoothScroll />
+      <ClientErrorReporter />
+      <RevealObserver />
       <a href="#conteudo" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-ink focus:p-3 focus:text-ivory">Pular para o conteúdo</a>
       <Header cats={cats} cartCount={cart.count} logo={mediaUrl(s.store.logoKey)} storeName={s.store.name} logged={Boolean(customer)} faith={faith} />
       <main id="conteudo" className="flex-1">{children}</main>

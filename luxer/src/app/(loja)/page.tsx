@@ -1,4 +1,6 @@
 import Link from "next/link";
+import type React from "react";
+import { ParallaxGroup } from "@/components/site/ParallaxGroup";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { getSettings } from "@/lib/settings";
@@ -94,8 +96,8 @@ export default async function Home() {
           <section key={sec.id} className="border-t border-line py-24 sm:py-32"><Container>
             <SectionHead eyebrow="Coleção Luxer" title={sec.title} subtitle={sec.subtitle} />
             <div className="grid grid-cols-2 gap-x-3 gap-y-10 sm:gap-x-6 sm:gap-y-14 lg:grid-cols-4">
-              {tiles.map((c) => (
-                <Link key={c.id} href={`/categoria/${c.slug}`} className="group block">
+              {tiles.map((c, i) => (
+                <Link key={c.id} href={`/categoria/${c.slug}`} data-reveal style={{ "--i": i % 4 } as React.CSSProperties} className="group block">
                   <div className="aspect-[4/5] overflow-hidden bg-plate">{c.img && <img src={c.img} alt="" loading="lazy" className="h-full w-full object-contain p-[10%] transition duration-[1200ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.04]" />}</div>
                   <div className="mt-4 flex items-baseline justify-between gap-3"><span className="font-serif text-[1.35rem] sm:text-[1.6rem]">{c.name}</span><span aria-hidden className="h-px w-5 bg-ink/30 transition-all duration-500 group-hover:w-9 group-hover:bg-gold" /></div>
                 </Link>
@@ -154,13 +156,14 @@ export default async function Home() {
         const lead = devotions.filter((d) => d.image).slice(0, 6), more = devotions.filter((d) => !lead.includes(d));
         const names = devotions.slice(0, 4).map((d) => d.label.replace(/^Nossa Senhora .*/, "Nossa Senhora"));
         out.push(
-          <section key={sec.id} className="bg-sand py-24 sm:py-32" aria-labelledby={`fe-${sec.id}`}><Container>
+          <ParallaxGroup key={sec.id}>
+          <section className="bg-sand py-24 sm:py-32" aria-labelledby={`fe-${sec.id}`}><Container>
             <div className="grid gap-10 lg:grid-cols-[1fr_1.15fr] lg:items-end lg:gap-24">
               <div>
-                <div className="flex items-center gap-4"><span aria-hidden className="h-px w-8 bg-gold" /><span className="eyebrow text-stone">{sec.subtitle ?? "Especialidade da casa · Luxer Fé"}</span></div>
-                <h2 id={`fe-${sec.id}`} className="display mt-6 text-[2.6rem] sm:text-[4rem]">{sec.title && sec.title !== "Luxer Fé" ? sec.title : <>Joias de <span className="italic">devoção</span></>}</h2>
+                <div data-reveal="fade" className="flex items-center gap-4"><span aria-hidden className="h-px w-8 bg-gold" /><span className="eyebrow text-stone">{sec.subtitle ?? "Especialidade da casa · Luxer Fé"}</span></div>
+                <h2 id={`fe-${sec.id}`} data-reveal="line" className="display mt-6 text-[2.6rem] sm:text-[4rem]">{sec.title && sec.title !== "Luxer Fé" ? sec.title : <>Joias de <span className="italic">devoção</span></>}</h2>
               </div>
-              <div>
+              <div data-reveal style={{ "--i": 2 } as React.CSSProperties}>
                 <p className="max-w-lg text-[15px] leading-relaxed text-ink/65">{cfg.text ?? `Uma curadoria dedicada à fé, em ouro 18 quilates: ${total} peças entre ${[...new Set(names)].join(", ")} e outras devoções — para usar todos os dias ou presentear em um momento especial.`}</p>
                 <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
                   <Link href={cfg.ctaUrl ?? "/luxer-fe"} className="btn-gold">{cfg.ctaLabel ?? "Explorar a Luxer Fé"}</Link>
@@ -170,21 +173,22 @@ export default async function Home() {
             </div>
             {/* índice de devoções: fotografia real da peça mais representativa de cada uma */}
             <ul className="mt-16 grid grid-cols-2 gap-x-3 gap-y-10 sm:mt-20 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-6">
-              {lead.map((d) => (
-                <li key={d.href}><Link href={d.href} className="group block">
-                  <div className="aspect-square overflow-hidden bg-plate"><img src={d.image!} alt="" loading="lazy" className="h-full w-full object-contain p-[12%] transition duration-[1200ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.05]" /></div>
+              {lead.map((d, i) => (
+                <li key={d.href} data-reveal style={{ "--i": i } as React.CSSProperties}><Link href={d.href} className="group block">
+                  <div className="aspect-square overflow-hidden bg-plate"><img data-parallax src={d.image!} alt="" loading="lazy" className="h-full w-full object-contain p-[12%] transition duration-[1200ms] ease-[cubic-bezier(.2,.7,.2,1)] group-hover:scale-[1.05]" /></div>
                   <div className="mt-4 font-serif text-[1.2rem] leading-tight">{d.label}</div>
                   <div className="mt-1 text-[10px] uppercase tracking-[0.2em] text-stone">{d.count} {d.count === 1 ? "peça" : "peças"}</div>
                 </Link></li>
               ))}
             </ul>
             {more.length > 0 && (
-              <div className="mt-12 flex flex-wrap gap-x-7 gap-y-3 border-t border-line pt-8 text-[11px] uppercase tracking-[0.2em]">
+              <div data-reveal="fade" className="mt-12 flex flex-wrap gap-x-7 gap-y-3 border-t border-line pt-8 text-[11px] uppercase tracking-[0.2em]">
                 {more.map((d) => <Link key={d.href} href={d.href} className="text-ink/60 transition-colors hover:text-ink">{d.label}</Link>)}
               </div>
             )}
             {pick.length > 0 && <div className="mt-20 sm:mt-24"><ProductGrid items={pick} /></div>}
-          </Container></section>,
+          </Container></section>
+          </ParallaxGroup>,
         );
         break;
       }
@@ -196,8 +200,8 @@ export default async function Home() {
           <section key={sec.id} className="border-t border-line py-24 sm:py-32"><Container>
             <SectionHead eyebrow={sec.subtitle ?? "Guias Luxer"} title={sec.title ?? "Para escolher com significado"} href="/guias" linkLabel="Todos os guias" center={false} />
             <div className="grid gap-x-8 gap-y-14 md:grid-cols-3">
-              {guides.map((g) => (
-                <Link key={g.slug} href={`/p/${g.slug}`} className="group block">
+              {guides.map((g, i) => (
+                <Link key={g.slug} href={`/p/${g.slug}`} data-reveal style={{ "--i": i } as React.CSSProperties} className="group block">
                   {g.heroImageKey && <div className="mb-6 aspect-[4/3] overflow-hidden bg-plate"><img src={mediaUrl(g.heroImageKey)!} alt="" loading="lazy" className="h-full w-full object-cover transition duration-[1200ms] group-hover:scale-[1.03]" /></div>}
                   <div className="font-serif text-[1.6rem] leading-tight">{g.title}</div>
                   <p className="mt-3 text-[13.5px] leading-relaxed text-ink/60">{g.seoDescription ?? plainExcerpt(g.content, 150)}</p>
@@ -216,8 +220,8 @@ export default async function Home() {
             <div className={`grid items-center gap-12 ${cfg.imageKey ? "lg:grid-cols-2 lg:gap-24" : "mx-auto max-w-2xl text-center"}`}>
               {cfg.imageKey && <div className="aspect-[4/5] overflow-hidden bg-plate"><img src={mediaUrl(cfg.imageKey)!} alt="" className="h-full w-full object-cover" loading="lazy" /></div>}
               <div>
-                <div className="eyebrow text-stone">{sec.subtitle ?? "Luxer AR · ao vivo"}</div>
-                <h2 className="display mt-5 text-[2.35rem] sm:text-[3.2rem]">{sec.title}</h2>
+                <div data-reveal="fade" className="eyebrow text-stone">{sec.subtitle ?? "Luxer AR · ao vivo"}</div>
+                <h2 data-reveal="line" className="display mt-5 text-[2.35rem] sm:text-[3.2rem]">{sec.title}</h2>
                 <p className={`mt-6 max-w-md text-[14px] leading-relaxed text-ink/60 ${cfg.imageKey ? "" : "mx-auto"}`}>{cfg.text ?? "Abra a câmera e veja anéis, pulseiras, brincos e colares acompanhando você em tempo real. Tudo processado no seu aparelho."}</p>
                 <Link href="/provador" className="btn-gold mt-10">{cfg.ctaLabel ?? "Abrir o provador"}</Link>
               </div>
@@ -231,10 +235,10 @@ export default async function Home() {
         if (!page && !cfg.text) break;
         out.push(
           <section key={sec.id} className="border-t border-line py-28 sm:py-40"><Container className="max-w-3xl text-center">
-            <div className="eyebrow text-stone">Desde Curitiba</div>
-            <h2 className="display mt-5 text-[2.35rem] sm:text-[3.6rem]">{sec.title}</h2>
+            <div data-reveal="fade" className="eyebrow text-stone">Desde Curitiba</div>
+            <h2 data-reveal="line" className="display mt-5 text-[2.35rem] sm:text-[3.6rem]">{sec.title}</h2>
             <div className="mx-auto my-10 h-px w-12 bg-gold" />
-            <p className="font-serif text-[1.3rem] leading-[1.6] text-ink/75 sm:text-[1.6rem]">{cfg.text ?? plainExcerpt(page!.content.replace(/^## .*$/m, ""), 420)}</p>
+            <p data-reveal className="font-serif text-[1.3rem] leading-[1.6] text-ink/75 sm:text-[1.6rem]">{cfg.text ?? plainExcerpt(page!.content.replace(/^## .*$/m, ""), 420)}</p>
             <Link href={cfg.ctaUrl ?? "/p/quem-somos"} className="link-line mt-12 text-ink">{cfg.ctaLabel ?? "Conheça a Luxer"}</Link>
           </Container></section>,
         );

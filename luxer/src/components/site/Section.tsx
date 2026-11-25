@@ -1,14 +1,15 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import type React from "react";
 
 /** Cabeçalho de seção editorial: eyebrow discreto, título em serifa, link sublinhado. */
 export function SectionHead({ eyebrow, title, subtitle, href, linkLabel = "Ver todos", center = true }: { eyebrow?: string | null; title?: string | null; subtitle?: string | null; href?: string; linkLabel?: string; center?: boolean }) {
   return (
     <div className={`mb-12 sm:mb-16 ${center ? "text-center" : "flex flex-wrap items-end justify-between gap-6"}`}>
       <div>
-        {eyebrow && <div className="eyebrow text-stone">{eyebrow}</div>}
-        {title && <h2 className="display mt-4 text-[2.35rem] sm:text-[3.2rem]">{title}</h2>}
-        {subtitle && <p className={`mt-4 text-[14px] leading-relaxed text-ink/60 ${center ? "mx-auto max-w-lg" : "max-w-lg"}`}>{subtitle}</p>}
+        {eyebrow && <div data-reveal="fade" className="eyebrow text-stone">{eyebrow}</div>}
+        {title && <h2 data-reveal="line" className="display mt-4 text-[2.35rem] sm:text-[3.2rem]">{title}</h2>}
+        {subtitle && <p data-reveal style={{ "--i": 2 } as React.CSSProperties} className={`mt-4 text-[14px] leading-relaxed text-ink/60 ${center ? "mx-auto max-w-lg" : "max-w-lg"}`}>{subtitle}</p>}
       </div>
       {href && <Link href={href} className={`link-line text-ink ${center ? "mt-8" : ""}`}>{linkLabel}</Link>}
     </div>

@@ -10,6 +10,8 @@ import { ArrowDown } from "lucide-react";
 import { Crucifix } from "./three/Crucifix";
 import { Studio } from "./three/Studio";
 import { useWebGL } from "./useWebGL";
+import { SceneBoundary, watchContextLoss } from "./SceneBoundary";
+import { onLenis } from "@/lib/lenis-bus";
 import { useStoreTheme } from "@/components/site/StoreTheme";
 import { studioFor } from "@/lib/store-theme";
 
@@ -52,13 +54,29 @@ function Choreography({ progress, pointer }: { progress: MutableRefObject<number
   return <Crucifix ref={ring} metal="amarelo" quality={size.width < 700 ? "low" : "high"} />;
 }
 
+/** Quadro estático (sem WebGL ou após falha da cena): cruz em filetes de ouro, no mesmo lugar da peça 3D. */
+function StillCross() {
+  return (
+    <div aria-hidden className="flex h-full items-center justify-center">
+      <div className="relative h-[46vmin] w-[30vmin]">
+        <span className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-gold/60" />
+        <span className="absolute left-0 top-[28%] h-px w-full bg-gold/60" />
+        <span className="absolute left-1/2 top-[28%] h-[30vmin] w-[30vmin] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--color-gold)_14%,transparent),transparent)]" />
+      </div>
+    </div>
+  );
+}
+
 export function Hero3DCanvas({ priceFrom, models, href, faithTotal = 0 }: Props) {
   const root = useRef<HTMLElement>(null);
   const progress = useRef(0);
   const pointer = useRef({ x: 0, y: 0 });
   const webgl = useWebGL();
+  // resolução: no celular, até 1,5x (economia de bateria e GPU); o monitor de desempenho reduz se faltar fôlego
+  const maxDpr = useRef(2);
   const [dpr, setDpr] = useState<[number, number]>([1, 2]);
   const [active, setActive] = useState(true);
+  const boundary = useRef<SceneBoundary>(null);
   const { theme } = useStoreTheme();
   const [chapter, setChapter] = useState(0);
 
@@ -83,11 +101,14 @@ export function Hero3DCanvas({ priceFrom, models, href, faithTotal = 0 }: Props)
       el.style.setProperty("--hp", st.progress.toFixed(4));
       setChapter(st.progress < 0.3 ? 0 : st.progress < 0.65 ? 1 : 2);
     } });
+    // rolagem suave (Lenis, desktop): o ScrollTrigger lê a posição a cada quadro dele — scrub sem defasagem
+    const offLenis = onLenis((l) => { l?.on("scroll", ScrollTrigger.update); ScrollTrigger.refresh(); });
+    if (window.matchMedia("(max-width: 700px)").matches) { maxDpr.current = 1.5; setDpr([1, 1.5]); }
     const io = new IntersectionObserver(([e]) => setActive(e.isIntersecting), { rootMargin: "100px" });
     io.observe(el);
     const move = (e: PointerEvent) => { pointer.current = { x: e.clientX / window.innerWidth - 0.5, y: e.clientY / window.innerHeight - 0.5 }; };
     if (window.matchMedia("(pointer: fine)").matches) window.addEventListener("pointermove", move, { passive: true });
-    return () => { ctx.revert(); rail.kill(); io.disconnect(); window.removeEventListener("pointermove", move); };
+    return () => { offLenis(); ctx.revert(); rail.kill(); io.disconnect(); window.removeEventListener("pointermove", move); };
   }, []);
 
   return (
@@ -103,16 +124,16 @@ export function Hero3DCanvas({ priceFrom, models, href, faithTotal = 0 }: Props)
         </div>
 
         <div className="absolute inset-0">
-          {webgl === false ? (
-            <div className="flex h-full items-center justify-center"><div aria-hidden className="h-[38vmin] w-[38vmin] rounded-full border border-gold/40 shadow-[0_0_120px_color-mix(in_srgb,var(--color-gold)_15%,transparent)_inset]" /></div>
-          ) : webgl && (
-            <Canvas dpr={dpr} frameloop={active ? "always" : "never"} camera={{ fov: 30, near: 0.1, far: 50, position: [0, 0.55, 6.2] }} gl={{ antialias: true, alpha: true, powerPreference: "high-performance", toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.05 }} aria-hidden>
-              <PerformanceMonitor onDecline={() => setDpr([1, 1.25])} onIncline={() => setDpr([1, 2])} />
+          {webgl === false ? <StillCross /> : webgl && (
+            <SceneBoundary ref={boundary} name="hero" fallback={<StillCross />}>
+            <Canvas onCreated={({ gl }) => watchContextLoss(gl.domElement, () => boundary.current?.fail("webglcontextlost"))} dpr={dpr} frameloop={active ? "always" : "never"} camera={{ fov: 30, near: 0.1, far: 50, position: [0, 0.55, 6.2] }} gl={{ antialias: true, alpha: true, powerPreference: "high-performance", toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.05 }} aria-hidden>
+              <PerformanceMonitor onDecline={() => setDpr([1, 1.25])} onIncline={() => setDpr([1, maxDpr.current])} />
               <Suspense fallback={null}>
                 <Studio key={theme} {...studioFor(theme)} />
                 <Choreography progress={progress} pointer={pointer} />
               </Suspense>
             </Canvas>
+            </SceneBoundary>
           )}
         </div>
 
@@ -150,7 +171,8 @@ export function Hero3DCanvas({ priceFrom, models, href, faithTotal = 0 }: Props)
             {faithTotal > 0 && <div className="flex justify-between gap-6 py-3"><dt className="text-stone">Luxer Fé</dt><dd>{faithTotal} peças de devoção</dd></div>}
             {priceFrom && <div className="flex justify-between gap-6 py-3"><dt className="text-stone">Investimento</dt><dd>a partir de {priceFrom}</dd></div>}
           </dl>
-          <div className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-4">
+          <p className="mt-4 text-[11px] tracking-tight text-stone">Ilustração 3D da marca. As peças do acervo têm desenho próprio — veja as fotografias reais.</p>
+          <div className="mt-7 flex flex-wrap items-center gap-x-7 gap-y-4">
             <Link href={href} className="inline-flex items-center justify-center rounded-full bg-ink px-7 py-3.5 text-[12px] font-medium tracking-tight text-ivory transition-colors hover:bg-ink-2">Ver cruzes e crucifixos</Link>
             <Link href="/luxer-fe" className="text-[12px] tracking-tight text-ink/80 underline-offset-4 hover:text-ink hover:underline">Explorar a Luxer Fé</Link>
             <button type="button" onClick={() => { document.getElementById("atelier")?.scrollIntoView({ behavior: "smooth", block: "start" }); window.dispatchEvent(new Event("lx:finder-start")); }} className="text-[12px] tracking-tight text-ink/80 underline-offset-4 hover:text-ink hover:underline">Descobrir minha joia ideal</button>

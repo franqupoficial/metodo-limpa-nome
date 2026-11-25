@@ -44,6 +44,11 @@
 }
 
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+/* Lenis (rolagem suave no desktop): a suavização nativa sai de cena enquanto ele está ativo */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: clip; }
 body {
   background: var(--color-ivory);
   color: var(--color-ink);
@@ -51,6 +56,13 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
+
+/* Revelação editorial (ver Reveal.tsx): sobe 22px e acende; títulos com data-reveal="line" abrem por máscara */
+html.lx-reveal [data-reveal] { transition: opacity .95s cubic-bezier(.2,.7,.2,1), transform 1.15s cubic-bezier(.2,.7,.2,1), clip-path 1.2s cubic-bezier(.2,.7,.2,1); transition-delay: calc(var(--i, 0) * 75ms); }
+html.lx-reveal [data-reveal]:not(.is-in) { opacity: 0; transform: translateY(22px); }
+html.lx-reveal [data-reveal="line"]:not(.is-in) { opacity: 1; transform: translateY(0.35em); clip-path: inset(0 0 100% 0); }
+html.lx-reveal [data-reveal="line"].is-in { clip-path: inset(0 0 -0.2em 0); }
+html.lx-reveal [data-reveal="fade"]:not(.is-in) { transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }

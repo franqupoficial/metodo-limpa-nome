@@ -25,8 +25,8 @@ export default async function FaithPage({ searchParams }: { searchParams: Promis
           <Container className={banner ? "grid items-center gap-10 pb-12 pt-10 lg:grid-cols-2 lg:gap-20 lg:pt-14" : "pb-10 pt-14 text-center sm:pb-12 sm:pt-20"}>
             {banner && <div className="aspect-[4/5] overflow-hidden lg:order-2"><img src={mediaUrl(banner.imageKey)!} alt="" className="h-full w-full object-cover" /></div>}
             <div className={banner ? "lg:pl-8" : ""}>
-              <div className="eyebrow text-stone">Luxer Fé</div>
-              <h1 className="display mt-4 text-[2.7rem] sm:text-[4.2rem]">{banner?.title ?? "Joias que carregam devoção"}</h1>
+              <div data-reveal="fade" className="eyebrow text-stone">Luxer Fé</div>
+              <h1 data-reveal="line" className="display mt-4 text-[2.7rem] sm:text-[4.2rem]">{banner?.title ?? "Joias que carregam devoção"}</h1>
               <p className={`mt-5 max-w-xl text-[14px] leading-relaxed text-ink/60 ${banner ? "" : "mx-auto"}`}>{banner?.subtitle ?? `Nossa Senhora, Divino Espírito Santo, crucifixos, escapulários, anjos e santos — ${total} peças em ouro 18 quilates.`}</p>
             </div>
           </Container>

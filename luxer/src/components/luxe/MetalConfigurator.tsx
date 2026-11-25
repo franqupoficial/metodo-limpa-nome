@@ -6,6 +6,7 @@ import { AnimatePresence, motion, useSpring, type MotionValue } from "framer-mot
 import { MessageCircle } from "lucide-react";
 import { METALS, type Metal } from "./three/metals";
 import { useWebGL } from "./useWebGL";
+import { SceneBoundary } from "./SceneBoundary";
 
 export type FinishPiece = { name: string; slug: string; price: string; image: string | null } | null;
 type Props = { pieces: Record<Metal, FinishPiece>; whatsapp: string };
@@ -44,7 +45,7 @@ export function MetalConfigurator({ pieces, whatsapp }: Props) {
           <div aria-hidden className="absolute inset-0 bg-[radial-gradient(55%_45%_at_50%_45%,color-mix(in_srgb,var(--color-gold)_8%,transparent),transparent_70%)]" />
           {webgl === false ? (
             <div className="flex h-full items-center justify-center"><div className="h-1/2 w-1/2 rounded-full transition-[background] duration-700" style={{ background: METALS[metal].swatch, maskImage: "radial-gradient(circle, transparent 58%, #000 60%, #000 70%, transparent 72%)" }} /></div>
-          ) : webgl && <Stage metal={metal} spin={spin as MotionValue<number>} active={visible} />}
+          ) : webgl && <SceneBoundary name="metal-stage" fallback={<div className="flex h-full items-center justify-center text-[12px] tracking-tight text-stone">Visualização 3D indisponível neste aparelho.</div>}><Stage metal={metal} spin={spin as MotionValue<number>} active={visible} /></SceneBoundary>}
         </div>
         <div>
           <div className="text-[10px] uppercase tracking-[0.3em] text-gold sm:tracking-[0.45em]">One design. Three finishes.</div>

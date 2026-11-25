@@ -3,15 +3,16 @@ import type { ProductCard as Card } from "@/lib/catalog";
 import { formatMoney } from "@/lib/format";
 import { Camera } from "lucide-react";
 import { FavoriteButton } from "./FavoriteButton";
+import type React from "react";
 
 /**
  * Card editorial: fotografia original em fundo branco natural (sem recorte, sem mix-blend),
  * nome em serifa e preço discreto. Condições de pagamento ficam na página do produto.
  */
-export function ProductCard({ p, priority = false }: { p: Card; priority?: boolean }) {
+export function ProductCard({ p, priority = false, index }: { p: Card; priority?: boolean; index?: number }) {
   const tag = !p.available ? "Esgotado" : p.isNew ? "Novo" : p.price.discountPct ? `−${p.price.discountPct}%` : null;
   return (
-    <article className="group">
+    <article className="group" data-reveal={index === undefined ? undefined : ""} style={index === undefined ? undefined : ({ "--i": index % 4 } as React.CSSProperties)}>
       <div className="relative">
         <Link href={`/produto/${p.slug}`} className="block" tabIndex={-1} aria-hidden>
           <div className="relative aspect-[4/5] overflow-hidden bg-plate">
@@ -48,7 +49,7 @@ export function ProductCard({ p, priority = false }: { p: Card; priority?: boole
 export function ProductGrid({ items, cols = 4 }: { items: Card[]; cols?: 3 | 4 }) {
   return (
     <div className={`grid grid-cols-2 gap-x-3 gap-y-12 sm:gap-x-6 sm:gap-y-16 ${cols === 4 ? "lg:grid-cols-4" : "lg:grid-cols-3"}`}>
-      {items.map((p, i) => <ProductCard key={p.id} p={p} priority={i < 4} />)}
+      {items.map((p, i) => <ProductCard key={p.id} p={p} priority={i < 4} index={i} />)}
     </div>
   );
 }
