@@ -660,6 +660,19 @@ try {
     await admin.fill('input[name="analysisModel"]', "gemini-2.5-flash");
     await act(admin, () => admin.click('button:has-text("Salvar configuração")'));
   });
+  await step(23, "Vitrines: navegação sem recarregar entre categorias exibe todas as peças (nenhum card preso invisível)", async () => {
+    for (const vp of [{ width: 1440, height: 900 }, { width: 390, height: 844, isMobile: true, hasTouch: true }]) {
+      const ctx = await browser.newContext(vp); const m = await ctx.newPage();
+      await m.goto(BASE + "/");
+      await m.locator('main a[href^="/categoria/"]').first().click(); await m.waitForLoadState("networkidle");
+      await m.locator('main a[href^="/categoria/"]').nth(1).click(); await m.waitForLoadState("networkidle");
+      for (let i = 0; i < 10; i++) { await m.mouse.wheel(0, 700); await m.waitForTimeout(150); }
+      await m.waitForTimeout(1500);
+      const hidden = await m.evaluate(() => [...document.querySelectorAll("main article")].filter((a) => getComputedStyle(a).opacity === "0").length);
+      assert(hidden === 0, `${hidden} card(s) invisíveis após navegar entre categorias (${vp.width}px)`);
+      await ctx.close();
+    }
+  });
 
 
 
